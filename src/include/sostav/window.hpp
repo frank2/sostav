@@ -1,9 +1,11 @@
 #pragma once
 
+#include <windows.h>
+
+#include <iostream>
 #include <map>
 #include <set>
 #include <string>
-#include <windows.h>
 
 #include "sostav/exception.hpp"
 #include "sostav/types.hpp"
@@ -37,12 +39,16 @@ namespace Sostav
       std::set<Window *> children;
 
    public:
-      Window(HWND parent=NULL
-             ,std::wstring className=L"SvWindow");
-      Window(Window *parent=NULL
-             ,std::wstring className=L"SvWindow");
+      static std::map<HWND, Window *> WindowPool;
+      static Window *LastWindow;
+      
+      Window(HWND parent, std::wstring className);
+      Window(Window *parent, std::wstring className);
+      Window();
       ~Window();
 
+      static void MessageLoop(void);
+      static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
       static void MapWindow(HWND hwnd, Window *window);
       static void UnmapWindow(HWND hwnd);
       static Window *FindWindow(HWND hwnd);
@@ -56,7 +62,7 @@ namespace Sostav
       Window *getParentWindow(void);
       HWND getParentHWND(void);
 
-      void setHWND(HWND window);
+      virtual void setHWND(HWND window);
       HWND getHWND(void);
 
       void setPosition(long x, long y);
@@ -116,9 +122,11 @@ namespace Sostav
       virtual void create(void);
       virtual void destroy(void);
       virtual void invalidate(void);
-   };
+      virtual void update(void);
+      virtual void show(void);
+      virtual void hide(void);
 
-   extern std::map<HWND, Window *> WINDOW_POOL;
-   
-   LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+   protected:
+      virtual void initialize(HWND parent, std::wstring className);
+   };
 }

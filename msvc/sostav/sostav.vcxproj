@@ -143,11 +143,13 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\include\sostav\exception.hpp" />
     <ClInclude Include="..\..\src\include\sostav\sostav.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\subclassedwindow.hpp" />
     <ClInclude Include="..\..\src\include\sostav\types.hpp" />
     <ClInclude Include="..\..\src\include\sostav\window.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\lib\exception.cpp" />
+    <ClCompile Include="..\..\src\lib\subclassedwindow.cpp" />
     <ClCompile Include="..\..\src\lib\window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
