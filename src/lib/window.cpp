@@ -34,6 +34,9 @@ Window::Window
 Window::~Window
 ()
 {
+   if (this->parentWindow != NULL)
+      this->parentWindow->removeChild(this);
+
    if (this->hwnd != NULL)
       this->destroy();
 }
@@ -116,8 +119,15 @@ Window::windowProc
    /* handle some window messages */
    switch(msg)
    {
+   case WM_CTLCOLORSTATIC:
+      return (LRESULT)this->onCtlColorStatic((HDC)wParam, (HWND)lParam);
+
+   case WM_DESTROY:
+      this->onDestroy();
+      return (LRESULT)0;
+      
    default:
-      return DefWindowProc(this->hwnd, msg, wParam, lParam);
+      return this->defWndProc(this->hwnd, msg, wParam, lParam);
    }
 }
 
@@ -510,6 +520,13 @@ Window::setBGColor
    this->bgColor.g = g;
    this->bgColor.b = b;
 
+   if (this->fgBrush != NULL)
+   {
+      DeleteObject(this->bgBrush);
+      this->bgBrush = NULL;
+      this->getBGBrush();
+   }
+
    this->invalidate();
 }
 
@@ -536,6 +553,56 @@ Window::getBGColor
 {
    return this->bgColor;
 }
+
+void
+Window::setFGColor
+(BYTE a, BYTE r, BYTE g, BYTE b)
+{
+   this->fgColor.a = a;
+   this->fgColor.r = r;
+   this->fgColor.g = g;
+   this->fgColor.b = b;
+
+   if (this->fgBrush != NULL)
+   {
+      DeleteObject(this->fgBrush);
+      this->fgBrush = NULL;
+      this->getFGBrush();
+   }
+   
+   this->invalidate();
+}
+
+void
+Window::setFGColor
+(DWORD hexValue)
+{
+   setFGColor((hexValue >> 24) & 0xFF
+              ,(hexValue >> 16) & 0xFF
+              ,(hexValue >> 8) & 0xFF
+              ,hexValue & 0xFF);
+}
+
+void
+Window::setFGColor
+(Color color)
+{
+   setFGColor(color.a, color.r, color.g, color.b);
+}
+
+Color
+Window::getFGColor
+(void)
+{
+   return this->fgColor;
+}
+
+HBRUSH
+Window::getFGBrush
+(void)
+{
+   if (this->fgBrush == NULL)
+      this->fgBrush = CreateSolidBrush
 
 bool
 Window::hasChild
@@ -617,15 +684,7 @@ Window::destroy
 (void)
 {
    if (this->hwnd != NULL)
-   {
-      Window::UnmapWindow(this->hwnd);
       DestroyWindow(this->hwnd);
-   }
-
-   if (this->parentWindow != NULL)
-      this->parentWindow->removeChild(this);
-   
-   this->hwnd = NULL;
 }
 
 void
@@ -673,6 +732,7 @@ Window::initialize
    this->parentHWND = parent;
    this->parentWindow = Window::FindWindow(parent);
    this->hwnd = NULL;
+   this->defWndProc = DefWindowProc;
    
    this->style = WS_VISIBLE;
    this->exStyle = 0;
@@ -694,10 +754,69 @@ Window::initialize
    this->cursor = LoadCursor(NULL, IDC_ARROW);
    this->menu = NULL;
 
-   this->bgColor.hexValue = 0xFF000000 | GetSysColor(COLOR_WINDOW);
+   this->bgColor = Color::FromColorRef(GetSysColor(COLOR_WINDOW));
+   this->fgColor = Color::FromColorRef(GetSysColor(COLOR_WINDOWTEXT));
+   this->bgBrush = NULL;
+   this->fgBrush = NULL;
 
    if (className.empty())
       throw WindowException("class name cannot be empty");
    
    this->className.assign(className);
+}
+
+HBRUSH
+Window::onCtlColorStatic
+(HDC context, HWND control)
+{
+   Window *controlWindow = Window::FindWindow(control);
+   Color fg, bg;
+
+   /* if there's no window, then this must not be one of ours. do the default. */
+   if (controlWindow == NULL)
+      return (HBRUSH)this->defWndProc(this->hwnd
+                                      ,WM_CTLCOLORSTATIC
+                                      ,(WPARAM)context
+                                      ,(LPARAM)control);
+
+   fg = controlWindow->getFGColor();
+
+   if (fg.isTransparent())
+      throw WindowException("foreground color of static control cannot be transparent");
+
+   SetTextColor(fg.colorRef());
+   
+   bg = controlWindow->getBGColor();
+
+   if (bg.isTransparent())
+   {
+      SetBkMode(context, TRANSPARENT);
+      return GetStockObject(NULL_BRUSH);
+   }
+   else
+   {
+      SetBkColor(bg.colorRef());
+      return controlWindow->getBGBrush();
+   }
+}
+
+void
+Window::onDestroy
+(void)
+{
+   if (this->fgBrush != NULL)
+   {
+      DeleteObject(this->fgBrush);
+      this->fgBrush = NULL;
+   }
+
+   if (this->bgBrush != NULL)
+   {
+      DeleteObject(this->bgBrush);
+      this->bgBrush = NULL;
+   }
+
+   Window::UnmapWindow(this->hwnd);
+   
+   this->hwnd = NULL;
 }

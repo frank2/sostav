@@ -7,6 +7,7 @@
 #include <set>
 #include <string>
 
+#include "sostav/color.hpp"
 #include "sostav/exception.hpp"
 #include "sostav/types.hpp"
 
@@ -20,6 +21,7 @@ namespace Sostav
       HWND parentHWND;
       Window *parentWindow;
       HWND hwnd;
+      LRESULT (CALLBACK *defWndProc)(HWND, UINT, WPARAM, LPARAM);
 
       POINT position;
       SIZE size;
@@ -33,7 +35,8 @@ namespace Sostav
       
       DWORD style, exStyle, classStyle;
 
-      Color bgColor;
+      Color bgColor, fgColor;
+      HBRUSH bgBrush, fgBrush;
 
       std::wstring className, menuName, windowText;
       std::set<Window *> children;
@@ -114,6 +117,13 @@ namespace Sostav
       void setBGColor(DWORD hexValue);
       void setBGColor(Color color);
       Color getBGColor(void);
+      HBRUSH getBGBrush(void);
+
+      void setFGColor(BYTE a, BYTE r, BYTE g, BYTE b);
+      void setFGColor(DWORD hexValue);
+      void setFGColor(Color color);
+      Color getFGColor(void);
+      HBRUSH getFGBrush(void);
 
       bool hasChild(Window *child);
       void addChild(Window *child);
@@ -128,5 +138,8 @@ namespace Sostav
 
    protected:
       virtual void initialize(HWND parent, std::wstring className);
+
+      virtual HBRUSH onCtlColorStatic(HDC context, HWND control);
+      virtual void onDestroy(void);
    };
 }

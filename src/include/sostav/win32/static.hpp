@@ -15,6 +15,8 @@ namespace Sostav { namespace Win32
    class Static : public SubclassedWindow
    {
    public:
-      Static(
+      Static(HWND parent, std::wstring caption=std::wstring());
+      Static(Window *parent, std::wstring caption=std::wstring());
 
+      virtual void create(void);
    }}

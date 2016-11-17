@@ -28,10 +28,6 @@ namespace Sostav
                                               ,UINT_PTR uIdSubclass
                                               ,DWORD_PTR dwRefData);
 
-      virtual LRESULT CALLBACK subclassProc(UINT msg
-                                            ,WPARAM wParam
-                                            ,LPARAM lParam);
-
       virtual void setHWND(HWND window);
 
       void setSubclassID(UINT_PTR id);

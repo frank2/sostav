@@ -42,19 +42,7 @@ SubclassedWindow::WndProcSubclass
    if (window == NULL)
       throw SubclassedWindowException("no window pointer passed to subclass proc");
 
-   return window->subclassProc(msg, wParam, lParam);
-}
-
-LRESULT CALLBACK
-SubclassedWindow::subclassProc
-(UINT msg, WPARAM wParam, LPARAM lParam)
-{
-   /* handle some window messages */
-   switch(msg)
-   {
-   default:
-      return DefSubclassProc(this->hwnd, msg, wParam, lParam);
-   }
+   return window->windowProc(msg, wParam, lParam);
 }
 
 void
@@ -106,5 +94,6 @@ SubclassedWindow::initialize
 {
    Window::initialize(parent, className);
 
+   this->defWndProc = DefSubclassProc;
    this->subclassID = 0;
 }
