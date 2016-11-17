@@ -22,6 +22,7 @@ Window::Window
    {
       this->addStyle(WS_CHILD);
       this->parentWindow = parent;
+      this->parentWindow->addChild(this);
    }
 }
 
@@ -37,7 +38,7 @@ Window::~Window
    if (this->parentWindow != NULL)
       this->parentWindow->removeChild(this);
 
-   if (this->hwnd != NULL)
+   if (this->hasHWND())
       this->destroy();
 }
 
@@ -56,7 +57,7 @@ Window::MessageLoop
       }
       catch (Exception &e)
       {
-         std::wcerr << L"Caught exception:" << e.what() << std::endl;
+         std::wcerr << L"Sostav exception:" << e.what() << std::endl;
       }
    }
 }
@@ -121,21 +122,31 @@ Window::windowProc
    {
    case WM_CTLCOLORSTATIC:
       return (LRESULT)this->onCtlColorStatic((HDC)wParam, (HWND)lParam);
-
+      
    case WM_DESTROY:
       this->onDestroy();
       return (LRESULT)0;
+
+   case WM_ERASEBKGND:
+      return this->onEraseBkgnd((HDC)wParam);
       
    default:
       return this->defWndProc(this->hwnd, msg, wParam, lParam);
    }
 }
 
+bool
+Window::hasHWND
+(void)
+{
+   return this->hwnd != NULL;
+}
+
 void
 Window::setParent
 (HWND newParent)
 {
-   if (this->hwnd != NULL)
+   if (this->hasHWND())
       SetParent(this->hwnd, newParent);
 
    this->parentHWND = newParent;
@@ -193,9 +204,6 @@ HWND
 Window::getHWND
 (void)
 {
-   if (this->hwnd == NULL)
-      this->create();
-   
    return this->hwnd;
 }
 
@@ -203,14 +211,14 @@ void
 Window::setPosition
 (long x, long y)
 {
-   if (this->hwnd != NULL && !SetWindowPos(this->hwnd
-                                           ,NULL
-                                           ,x
-                                           ,y
-                                           ,0
-                                           ,0
-                                           ,SWP_NOACTIVATE | SWP_NOOWNERZORDER
-                                           | SWP_NOZORDER | SWP_NOSIZE))
+   if (this->hasHWND() && !SetWindowPos(this->hwnd
+                                        ,NULL
+                                        ,x
+                                        ,y
+                                        ,0
+                                        ,0
+                                        ,SWP_NOACTIVATE | SWP_NOOWNERZORDER
+                                        | SWP_NOZORDER | SWP_NOSIZE))
       throw WindowException("SetWindowPos failed");
 
    this->position.x = x;
@@ -235,14 +243,14 @@ void
 Window::setSize
 (long cx, long cy)
 {
-   if (this->hwnd != NULL && !SetWindowPos(this->hwnd
-                                           ,NULL
-                                           ,0
-                                           ,0
-                                           ,cx
-                                           ,cy
-                                           ,SWP_NOACTIVATE | SWP_NOOWNERZORDER
-                                           | SWP_NOZORDER | SWP_NOMOVE))
+   if (this->hasHWND() && !SetWindowPos(this->hwnd
+                                        ,NULL
+                                        ,0
+                                        ,0
+                                        ,cx
+                                        ,cy
+                                        ,SWP_NOACTIVATE | SWP_NOOWNERZORDER
+                                        | SWP_NOZORDER | SWP_NOMOVE))
       throw WindowException("SetWindowPos failed");
 
    this->size.cx = cx;
@@ -267,14 +275,14 @@ void
 Window::setRect
 (long left, long top, long right, long bottom)
 {
-   if (this->hwnd != NULL && !SetWindowPos(this->hwnd
-                                           ,NULL
-                                           ,left
-                                           ,top
-                                           ,right - left
-                                           ,bottom - top
-                                           ,SWP_NOACTIVATE | SWP_NOOWNERZORDER
-                                           | SWP_NOZORDER))
+   if (this->hasHWND() && !SetWindowPos(this->hwnd
+                                        ,NULL
+                                        ,left
+                                        ,top
+                                        ,right - left
+                                        ,bottom - top
+                                        ,SWP_NOACTIVATE | SWP_NOOWNERZORDER
+                                        | SWP_NOZORDER))
       throw WindowException("SetWindowPos failed");
 
    this->position.x = left;
@@ -308,9 +316,9 @@ void
 Window::setIcon
 (HICON icon)
 {
-   if (this->hwnd != NULL && SetClassLongPtr(this->hwnd
-                                             ,GCLP_HICON
-                                             ,(LONG_PTR)icon) == 0)
+   if (this->hasHWND() && SetClassLongPtr(this->hwnd
+                                          ,GCLP_HICON
+                                          ,(LONG_PTR)icon) == 0)
       throw WindowException("SetClassLong failed");
 
    this->icon = icon;
@@ -327,9 +335,9 @@ void
 Window::setCursor
 (HCURSOR cursor)
 {
-   if (this->hwnd != NULL && SetClassLongPtr(this->hwnd
-                                             ,GCLP_HCURSOR
-                                             ,(LONG_PTR)cursor) == 0)
+   if (this->hasHWND() && SetClassLongPtr(this->hwnd
+                                          ,GCLP_HCURSOR
+                                          ,(LONG_PTR)cursor) == 0)
       throw WindowException("SetClassLong failed");
 
    this->cursor = cursor;
@@ -346,7 +354,7 @@ void
 Window::setMenu
 (HMENU menu)
 {
-   if (this->hwnd != NULL && !SetMenu(this->hwnd, menu))
+   if (this->hasHWND() && !SetMenu(this->hwnd, menu))
       throw WindowException("SetMenu failed");
 
    this->menu = menu;
@@ -363,9 +371,9 @@ void
 Window::setStyle
 (DWORD style)
 {
-   if (this->hwnd != NULL && SetWindowLongPtr(this->hwnd
-                                              ,GWL_STYLE
-                                              ,style) == 0)
+   if (this->hasHWND() && SetWindowLongPtr(this->hwnd
+                                           ,GWL_STYLE
+                                           ,style) == 0)
       throw WindowException("SetWindowLongPtr failed");
 
    this->style = style;
@@ -375,6 +383,19 @@ DWORD
 Window::getStyle
 (void)
 {
+   if (this->hasHWND())
+   {
+      DWORD wndStyle;
+
+      wndStyle = (DWORD)GetWindowLongPtr(this->hwnd
+                                         ,GWL_STYLE);
+
+      if (wndStyle == 0)
+         throw WindowException("GetWindowLongPtr failed");
+
+      this->style = wndStyle;
+   }
+       
    return this->style;
 }
 
@@ -382,23 +403,23 @@ void
 Window::addStyle
 (DWORD style)
 {
-   this->setStyle(this->style | style);
+   this->setStyle(this->getStyle() | style);
 }
 
 void
 Window::removeStyle
 (DWORD style)
 {
-   this->setStyle(this->style & ~style);
+   this->setStyle(this->getStyle() & ~style);
 }
 
 void
 Window::setExStyle
 (DWORD exStyle)
 {
-   if (this->hwnd != NULL && SetWindowLongPtr(this->hwnd
-                                              ,GWL_EXSTYLE
-                                              ,exStyle) == 0)
+   if (this->hasHWND() && SetWindowLongPtr(this->hwnd
+                                           ,GWL_EXSTYLE
+                                           ,exStyle) == 0)
       throw WindowException("SetWindowLongPtr failed");
 
    this->exStyle = exStyle;
@@ -408,6 +429,19 @@ DWORD
 Window::getExStyle
 (void)
 {
+   if (this->hasHWND())
+   {
+      DWORD wndExStyle;
+
+      wndExStyle = (DWORD)GetWindowLongPtr(this->hwnd
+                                           ,GWL_EXSTYLE);
+
+      if (wndExStyle == 0)
+         throw WindowException("GetWindowLongPtr failed");
+
+      this->exStyle = wndExStyle;
+   }
+
    return this->exStyle;
 }
 
@@ -415,23 +449,23 @@ void
 Window::addExStyle
 (DWORD exStyle)
 {
-   this->setExStyle(this->exStyle | exStyle);
+   this->setExStyle(this->getExStyle() | exStyle);
 }
 
 void
 Window::removeExStyle
 (DWORD exStyle)
 {
-   this->setExStyle(this->exStyle & ~exStyle);
+   this->setExStyle(this->getExStyle() & ~exStyle);
 }
 
 void
 Window::setClassStyle
 (DWORD classStyle)
 {
-   if (this->hwnd != NULL && SetClassLongPtr(this->hwnd
-                                             ,GCL_STYLE
-                                             ,(LONG_PTR)classStyle) == 0)
+   if (this->hasHWND() && SetClassLongPtr(this->hwnd
+                                          ,GCL_STYLE
+                                          ,(LONG_PTR)classStyle) == 0)
       throw WindowException("SetClassLong failed");
 
    this->classStyle = classStyle;
@@ -441,6 +475,19 @@ DWORD
 Window::getClassStyle
 (void)
 {
+   if (this->hasHWND())
+   {
+      DWORD wndClassStyle;
+
+      wndClassStyle = (DWORD)GetClassLongPtr(this->hwnd
+                                         ,GCL_STYLE);
+
+      if (wndClassStyle == 0)
+         throw WindowException("GetClassLongPtr failed");
+
+      this->classStyle = wndClassStyle;
+   }
+
    return this->classStyle;
 }
 
@@ -462,7 +509,7 @@ void
 Window::setClassName
 (std::wstring className)
 {
-   if (this->hwnd != NULL)
+   if (this->hasHWND())
       throw WindowException("class already registered, window has been created");
 
    this->className.assign(className);
@@ -479,9 +526,9 @@ void
 Window::setMenuName
 (std::wstring menuName)
 {
-   if (this->hwnd != NULL && SetClassLongPtr(this->hwnd
-                                             ,GCLP_MENUNAME
-                                             ,(LONG_PTR)menuName.c_str()) == 0)
+   if (this->hasHWND() && SetClassLongPtr(this->hwnd
+                                          ,GCLP_MENUNAME
+                                          ,(LONG_PTR)menuName.c_str()) == 0)
       throw WindowException("SetClassLong failed");
 
    this->menuName.assign(menuName);
@@ -498,7 +545,7 @@ void
 Window::setWindowText
 (std::wstring windowText)
 {
-   if (this->hwnd != NULL && !SetWindowText(this->hwnd, windowText.c_str()))
+   if (this->hasHWND() && !SetWindowText(this->hwnd, windowText.c_str()))
       throw WindowException("SetWindowText failed");
 
    this->windowText.assign(windowText);
@@ -508,6 +555,30 @@ std::wstring
 Window::getWindowText
 (void)
 {
+   if (this->hasHWND())
+   {
+      WCHAR *windowText;
+      size_t textLength;
+
+      textLength = GetWindowTextLength(this->hwnd);
+
+      if (textLength == 0)
+         this->windowText = std::wstring();
+      else
+      {
+         windowText = (WCHAR *)malloc(sizeof(WCHAR) * (textLength+1));
+         
+         memset(windowText, 0, sizeof(WCHAR) * (textLength+1));
+
+         if (GetWindowText(this->hwnd, windowText, textLength+1) == 0)
+            throw WindowException("GetWindowText failed");
+
+         this->windowText.assign(windowText);
+
+         free(windowText);
+      }
+   }
+   
    return this->windowText;
 }
 
@@ -520,7 +591,7 @@ Window::setBGColor
    this->bgColor.g = g;
    this->bgColor.b = b;
 
-   if (this->fgBrush != NULL)
+   if (this->bgBrush != NULL)
    {
       DeleteObject(this->bgBrush);
       this->bgBrush = NULL;
@@ -552,6 +623,16 @@ Window::getBGColor
 (void)
 {
    return this->bgColor;
+}
+
+HBRUSH
+Window::getBGBrush
+(void)
+{
+   if (this->bgBrush == NULL)
+      this->bgBrush = CreateSolidBrush(this->bgColor.colorRef());
+
+   return this->bgBrush;
 }
 
 void
@@ -602,7 +683,10 @@ Window::getFGBrush
 (void)
 {
    if (this->fgBrush == NULL)
-      this->fgBrush = CreateSolidBrush
+      this->fgBrush = CreateSolidBrush(this->fgColor.colorRef());
+
+   return this->fgBrush;
+}
 
 bool
 Window::hasChild
@@ -632,36 +716,10 @@ void
 Window::create
 (void)
 {
-   WNDCLASSEX classInfo;
-
-   if (this->className.empty())
-      throw WindowException("class name cannot be empty");
-
-   /* if there's no such class, attempt to register it. */
-   if (!GetClassInfoEx(GetModuleHandle(NULL)
-                       ,this->className.c_str()
-                       ,&classInfo))
-   {
-      memset(&classInfo, 0, sizeof(WNDCLASSEX));
-      
-      classInfo.cbSize = sizeof(WNDCLASSEX);
-      classInfo.style = this->classStyle;
-      classInfo.lpfnWndProc = Window::WndProc;
-      classInfo.hInstance = GetModuleHandle(NULL);
-      classInfo.hIcon = this->icon;
-      classInfo.hCursor = this->cursor;
-      classInfo.hbrBackground = CreateSolidBrush(SVRGB(this->bgColor));
-
-      if (!this->menuName.empty())
-         classInfo.lpszMenuName = this->menuName.c_str();
-
-      classInfo.lpszClassName = this->className.c_str();
-      classInfo.hIconSm = this->icon;
-
-      if (RegisterClassEx(&classInfo) == 0)
-         throw WindowException("failed to register window class");
-   }
-
+   std::set<Window *>::iterator iter;
+   
+   this->registerClass();
+   
    Window::LastWindow = this;
 
    this->hwnd = CreateWindowEx(this->exStyle
@@ -677,13 +735,56 @@ Window::create
 
    if (this->hwnd == NULL)
       throw WindowException("failed to create window");
+
+   for (iter=this->children.begin(); iter!=this->children.end(); ++iter)
+   {
+      Window *child = *iter;
+
+      if (!child->hasHWND())
+         child->create();
+   }
+}
+
+void
+Window::registerClass
+(void)
+{
+   WNDCLASSEX classInfo;
+   
+   if (this->className.empty())
+      throw WindowException("class name cannot be empty");
+
+   /* if the class exists already, bail. */
+   if (GetClassInfoEx(GetModuleHandle(NULL)
+                      ,this->className.c_str()
+                      ,&classInfo))
+      return;
+
+   memset(&classInfo, 0, sizeof(WNDCLASSEX));
+      
+   classInfo.cbSize = sizeof(WNDCLASSEX);
+   classInfo.style = this->classStyle;
+   classInfo.lpfnWndProc = Window::WndProc;
+   classInfo.hInstance = GetModuleHandle(NULL);
+   classInfo.hIcon = this->icon;
+   classInfo.hCursor = this->cursor;
+   classInfo.hbrBackground = CreateSolidBrush(SVRGB(this->bgColor));
+
+   if (!this->menuName.empty())
+      classInfo.lpszMenuName = this->menuName.c_str();
+
+   classInfo.lpszClassName = this->className.c_str();
+   classInfo.hIconSm = this->icon;
+
+   if (RegisterClassEx(&classInfo) == 0)
+      throw WindowException("failed to register window class");
 }
 
 void
 Window::destroy
 (void)
 {
-   if (this->hwnd != NULL)
+   if (this->hasHWND())
       DestroyWindow(this->hwnd);
 }
 
@@ -693,7 +794,7 @@ Window::invalidate
 {
    RECT rect = {0,0,this->size.cx,this->size.cy};
 
-   if (this->hwnd != NULL)
+   if (this->hasHWND())
       InvalidateRect(this->hwnd, &rect, FALSE);
 }
 
@@ -701,7 +802,12 @@ void
 Window::update
 (void)
 {
-   if (!UpdateWindow(this->getHWND()))
+   std::set<Window *>::iterator iter;
+   
+   if (!this->hasHWND())
+      return;
+   
+   if (!UpdateWindow(this->hwnd))
       throw WindowException("UpdateWindow failed");
 }
 
@@ -709,8 +815,19 @@ void
 Window::show
 (void)
 {
-   if (!ShowWindow(this->getHWND(), SW_SHOW))
-      throw WindowException("ShowWindow failed");
+   std::set<Window *>::iterator iter;
+
+   if (!this->hasHWND())
+      this->create();
+
+   ShowWindow(this->hwnd, SW_SHOW);
+
+   for (iter=this->children.begin(); iter!=this->children.end(); ++iter)
+   {
+      Window *child = *iter;
+
+      child->show();
+   }
 
    this->update();
 }
@@ -719,7 +836,7 @@ void
 Window::hide
 (void)
 {
-   if (!ShowWindow(this->getHWND(), SW_HIDE))
+   if (!ShowWindow(this->hwnd, SW_HIDE))
       throw WindowException("ShowWindow failed");
 
    this->update();
@@ -729,6 +846,11 @@ void
 Window::initialize
 (HWND parent, std::wstring className)
 {
+   /* because this is usually called inside a constructor, we don't
+      need to call parent initializers here. coincidentally, the parent
+      initializer gets called by the parent constructor, so we only really
+      need to do our local initialization here once. */
+   
    this->parentHWND = parent;
    this->parentWindow = Window::FindWindow(parent);
    this->hwnd = NULL;
@@ -781,21 +903,23 @@ Window::onCtlColorStatic
 
    fg = controlWindow->getFGColor();
 
-   if (fg.isTransparent())
-      throw WindowException("foreground color of static control cannot be transparent");
+   if (!fg.isOpaque())
+      throw WindowException("foreground color of static control must be opaque");
 
-   SetTextColor(fg.colorRef());
+   SetTextColor(context, fg.colorRef());
    
    bg = controlWindow->getBGColor();
 
-   if (bg.isTransparent())
+   if (bg.isTranslucent())
+      throw WindowException("background color of static control cannot be translucent");
+   else if (bg.isTransparent())
    {
       SetBkMode(context, TRANSPARENT);
-      return GetStockObject(NULL_BRUSH);
+      return (HBRUSH)GetStockObject(NULL_BRUSH);
    }
    else
    {
-      SetBkColor(bg.colorRef());
+      SetBkColor(context, bg.colorRef());
       return controlWindow->getBGBrush();
    }
 }
@@ -819,4 +943,24 @@ Window::onDestroy
    Window::UnmapWindow(this->hwnd);
    
    this->hwnd = NULL;
+}
+
+LRESULT
+Window::onEraseBkgnd
+(HDC context)
+{
+   HBRUSH bgBrush;
+   RECT rect = {0,0,this->size.cx,this->size.cy};
+
+   if (this->bgColor.isTranslucent())
+      throw WindowException("background can't be translucent, use a layered window instead");
+
+   if (this->bgColor.isTransparent())
+      bgBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
+   else
+      bgBrush = this->getBGBrush();
+   
+   FillRect(context, &rect, bgBrush);
+
+   return (LRESULT)TRUE;
 }

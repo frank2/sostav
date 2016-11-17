@@ -6,12 +6,14 @@ SubclassedWindow::SubclassedWindow
 (HWND parent, std::wstring className)
    : Window::Window(parent, className)
 {
+   this->initialize(parent, className);
 }
 
 SubclassedWindow::SubclassedWindow
 (Window *parent, std::wstring className)
    : Window::Window(parent, className)
 {
+   this->initialize((parent == NULL) ? NULL : parent->getHWND(), className);
 }
 
 SubclassedWindow::~SubclassedWindow
@@ -92,8 +94,6 @@ void
 SubclassedWindow::initialize
 (HWND parent, std::wstring className)
 {
-   Window::initialize(parent, className);
-
    this->defWndProc = DefSubclassProc;
    this->subclassID = 0;
 }

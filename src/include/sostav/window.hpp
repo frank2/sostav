@@ -9,7 +9,6 @@
 
 #include "sostav/color.hpp"
 #include "sostav/exception.hpp"
-#include "sostav/types.hpp"
 
 namespace Sostav
 {
@@ -59,6 +58,8 @@ namespace Sostav
       virtual LRESULT CALLBACK windowProc(UINT msg
                                           ,WPARAM wParam
                                           ,LPARAM lParam);
+
+      bool hasHWND(void);
 
       void setParent(HWND newParent);
       void setParent(Window *newParent);
@@ -130,6 +131,7 @@ namespace Sostav
       void removeChild(Window *child);
 
       virtual void create(void);
+      virtual void registerClass(void);
       virtual void destroy(void);
       virtual void invalidate(void);
       virtual void update(void);
@@ -141,5 +143,6 @@ namespace Sostav
 
       virtual HBRUSH onCtlColorStatic(HDC context, HWND control);
       virtual void onDestroy(void);
+      virtual LRESULT onEraseBkgnd(HDC context);
    };
 }

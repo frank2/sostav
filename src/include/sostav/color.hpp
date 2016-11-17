@@ -15,18 +15,18 @@ namespace Sostav
          };
          DWORD hexValue;
       };
-
-      static BYTE Alpha_Transparent = 0;
-      static BYTE Alpha_Opaque = 0xFF;
       
       Color(BYTE a, BYTE r, BYTE g, BYTE b);
       Color(BYTE r, BYTE g, BYTE b);
       Color(DWORD hexValue);
-      Color(Color color);
+      Color(Color &color);
       Color();
 
-      static Color FromColorRef(COLORREF color);
+      const static BYTE Alpha_Transparent = 0;
+      const static BYTE Alpha_Opaque = 0xFF;
+
       static Color Transparent(void);
+      static Color FromColorRef(COLORREF color);
 
       COLORREF colorRef(void);
       bool isOpaque(void);

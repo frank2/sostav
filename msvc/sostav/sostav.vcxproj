@@ -141,15 +141,18 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\include\sostav\color.hpp" />
     <ClInclude Include="..\..\src\include\sostav\exception.hpp" />
     <ClInclude Include="..\..\src\include\sostav\sostav.hpp" />
     <ClInclude Include="..\..\src\include\sostav\subclassedwindow.hpp" />
-    <ClInclude Include="..\..\src\include\sostav\types.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\win32\static.hpp" />
     <ClInclude Include="..\..\src\include\sostav\window.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\lib\color.cpp" />
     <ClCompile Include="..\..\src\lib\exception.cpp" />
     <ClCompile Include="..\..\src\lib\subclassedwindow.cpp" />
+    <ClCompile Include="..\..\src\lib\win32\static.cpp" />
     <ClCompile Include="..\..\src\lib\window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

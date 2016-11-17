@@ -6,7 +6,6 @@
 
 #include "sostav/exception.hpp"
 #include "sostav/subclassedwindow.hpp"
-#include "sostav/types.hpp"
 
 namespace Sostav { namespace Win32
 {
@@ -17,6 +16,5 @@ namespace Sostav { namespace Win32
    public:
       Static(HWND parent, std::wstring caption=std::wstring());
       Static(Window *parent, std::wstring caption=std::wstring());
-
-      virtual void create(void);
-   }}
+   };
+}}

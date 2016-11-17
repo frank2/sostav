@@ -27,7 +27,7 @@ Color::Color
 }
 
 Color::Color
-(Color color)
+(Color &color)
 {
    this->hexValue = color.hexValue;
 }
