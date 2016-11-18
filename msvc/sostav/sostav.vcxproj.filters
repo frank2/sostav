@@ -42,6 +42,9 @@
     <ClInclude Include="..\..\src\include\sostav\win32\static.hpp">
       <Filter>Header Files\win32</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\include\sostav\win32\edit.hpp">
+      <Filter>Header Files\win32</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\lib\exception.cpp">
@@ -57,6 +60,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\lib\win32\static.cpp">
+      <Filter>Source Files\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib\win32\edit.cpp">
       <Filter>Source Files\win32</Filter>
     </ClCompile>
   </ItemGroup>

@@ -16,5 +16,6 @@ namespace Sostav { namespace Win32
    public:
       Static(HWND parent, std::wstring caption=std::wstring());
       Static(Window *parent, std::wstring caption=std::wstring());
+      ~Static();
    };
 }}

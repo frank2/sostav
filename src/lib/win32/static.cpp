@@ -16,3 +16,9 @@ Static::Static
 {
    this->setWindowText(caption);
 }
+
+Static::~Static
+(void)
+{
+   SubclassedWindow::~SubclassedWindow();
+}

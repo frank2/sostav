@@ -120,6 +120,9 @@ Window::windowProc
    /* handle some window messages */
    switch(msg)
    {
+   case WM_CTLCOLOREDIT:
+      return (LRESULT)this->onCtlColorEdit((HDC)wParam, (HWND)lParam);
+   
    case WM_CTLCOLORSTATIC:
       return (LRESULT)this->onCtlColorStatic((HDC)wParam, (HWND)lParam);
       
@@ -129,6 +132,10 @@ Window::windowProc
 
    case WM_ERASEBKGND:
       return this->onEraseBkgnd((HDC)wParam);
+
+   case WM_PAINT:
+      this->onPaint();
+      return (LRESULT)0;
       
    default:
       return this->defWndProc(this->hwnd, msg, wParam, lParam);
@@ -828,8 +835,6 @@ Window::show
 
       child->show();
    }
-
-   this->update();
 }
 
 void
@@ -840,6 +845,29 @@ Window::hide
       throw WindowException("ShowWindow failed");
 
    this->update();
+}
+
+void
+Window::beginPaint
+(void)
+{
+   if (!this->hasHWND())
+      throw WindowException("can't begin paint without an hwnd");
+   
+   this->paintContext = BeginPaint(this->hwnd, &this->paintStruct);
+}
+
+void
+Window::endPaint
+(void)
+{
+   if (!this->hasHWND())
+      throw WindowException("no way to end paint on an object with no hwnd");
+
+   EndPaint(this->hwnd, &this->paintStruct);
+
+   memset(&this->paintStruct, 0, sizeof(this->paintStruct));
+   this->paintContext = NULL;
 }
 
 void
@@ -871,6 +899,7 @@ Window::initialize
    this->position.x = this->position.y = this->size.cx = this->size.cy = 0;
 
    this->paintContext = NULL;
+   memset(&this->paintStruct, 0, sizeof(this->paintStruct));
 
    this->icon = NULL;
    this->cursor = LoadCursor(NULL, IDC_ARROW);
@@ -888,9 +917,47 @@ Window::initialize
 }
 
 HBRUSH
+Window::onCtlColorEdit
+(HDC context, HWND control)
+{
+   Window *controlWindow = Window::FindWindow(control);
+   Color fg, bg;
+
+   /* if there's no window, then this must not be one of ours. do the default. */
+   if (controlWindow == NULL)
+      return (HBRUSH)this->defWndProc(this->hwnd
+                                      ,WM_CTLCOLOREDIT
+                                      ,(WPARAM)context
+                                      ,(LPARAM)control);
+
+   fg = controlWindow->getFGColor();
+
+   if (!fg.isOpaque())
+      throw WindowException("foreground color of control must be opaque");
+
+   SetTextColor(context, fg.colorRef());
+   
+   bg = controlWindow->getBGColor();
+
+   if (bg.isTranslucent())
+      throw WindowException("background color of control cannot be translucent");
+   else if (bg.isTransparent())
+   {
+      SetBkMode(context, TRANSPARENT);
+      return (HBRUSH)GetStockObject(NULL_BRUSH);
+   }
+   else
+   {
+      SetBkColor(context, bg.colorRef());
+      return controlWindow->getBGBrush();
+   }
+}
+
+HBRUSH
 Window::onCtlColorStatic
 (HDC context, HWND control)
 {
+   /* copy the code intentionally, because what if someone overloads onCtlColorEdit? */
    Window *controlWindow = Window::FindWindow(control);
    Color fg, bg;
 
@@ -904,14 +971,14 @@ Window::onCtlColorStatic
    fg = controlWindow->getFGColor();
 
    if (!fg.isOpaque())
-      throw WindowException("foreground color of static control must be opaque");
+      throw WindowException("foreground color of control must be opaque");
 
    SetTextColor(context, fg.colorRef());
    
    bg = controlWindow->getBGColor();
 
    if (bg.isTranslucent())
-      throw WindowException("background color of static control cannot be translucent");
+      throw WindowException("background color of control cannot be translucent");
    else if (bg.isTransparent())
    {
       SetBkMode(context, TRANSPARENT);
@@ -963,4 +1030,11 @@ Window::onEraseBkgnd
    FillRect(context, &rect, bgBrush);
 
    return (LRESULT)TRUE;
+}
+
+void
+Window::onPaint
+(void)
+{
+   this->defWndProc(this->hwnd, WM_PAINT, NULL, NULL);
 }

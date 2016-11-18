@@ -137,12 +137,16 @@ namespace Sostav
       virtual void update(void);
       virtual void show(void);
       virtual void hide(void);
+      virtual void beginPaint(void);
+      virtual void endPaint(void);
 
    protected:
       virtual void initialize(HWND parent, std::wstring className);
 
+      virtual HBRUSH onCtlColorEdit(HDC context, HWND control);
       virtual HBRUSH onCtlColorStatic(HDC context, HWND control);
       virtual void onDestroy(void);
       virtual LRESULT onEraseBkgnd(HDC context);
+      virtual void onPaint(void);
    };
 }
