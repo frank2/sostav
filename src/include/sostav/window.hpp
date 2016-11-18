@@ -8,6 +8,7 @@
 #include <string>
 
 #include "sostav/color.hpp"
+#include "sostav/font.hpp"
 #include "sostav/exception.hpp"
 
 namespace Sostav
@@ -34,6 +35,7 @@ namespace Sostav
       
       DWORD style, exStyle, classStyle;
 
+      Font typeface;
       Color bgColor, fgColor;
       HBRUSH bgBrush, fgBrush;
 
@@ -114,6 +116,9 @@ namespace Sostav
       void setWindowText(std::wstring windowText);
       std::wstring getWindowText(void);
 
+      void setFont(Font font);
+      Font getFont(void);
+
       void setBGColor(BYTE a, BYTE r, BYTE g, BYTE b);
       void setBGColor(DWORD hexValue);
       void setBGColor(Color color);
@@ -137,10 +142,12 @@ namespace Sostav
       virtual void update(void);
       virtual void show(void);
       virtual void hide(void);
+      virtual void paint(HDC context);
+
+   protected:
       virtual void beginPaint(void);
       virtual void endPaint(void);
 
-   protected:
       virtual void initialize(HWND parent, std::wstring className);
 
       virtual HBRUSH onCtlColorEdit(HDC context, HWND control);

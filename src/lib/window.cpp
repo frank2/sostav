@@ -590,6 +590,22 @@ Window::getWindowText
 }
 
 void
+Window::setFont
+(Font font)
+{
+   this->typeface = font;
+
+   this->invalidate();
+}
+
+Font
+Window::getFont
+(void)
+{
+   return this->typeface;
+}
+
+void
 Window::setBGColor
 (BYTE a, BYTE r, BYTE g, BYTE b)
 {
