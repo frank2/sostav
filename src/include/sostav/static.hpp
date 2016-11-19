@@ -11,7 +11,7 @@ namespace Sostav
 {
    typedef Exception StaticException;
 
-   class Static
+   class Static : public Window
    {
    public:
       Static(HWND parent, std::wstring caption=std::wstring());
@@ -19,7 +19,6 @@ namespace Sostav
       Static();
       ~Static();
 
-   protected:
-      virtual void onPaint(void);
+      virtual void paint(HDC context);
    };
 }

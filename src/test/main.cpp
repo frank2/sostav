@@ -5,8 +5,7 @@ wWinMain
 (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
    Sostav::Window window;
-   Sostav::Win32::Static staticText(&window, L"Test string");
-   Sostav::Win32::Edit editBox(&window);
+   Sostav::Static staticText(&window, L"Test string");
 
    window.addStyle(WS_POPUP);
    window.setPosition(50, 50);
@@ -16,14 +15,10 @@ wWinMain
 
    staticText.setPosition(10, 30);
    staticText.setSize(100, 20);
-   staticText.setBGColor(Sostav::Color::Transparent());
-
-   editBox.setPosition(10, 60);
-   editBox.setSize(100, 20);
-   editBox.setFGColor(Sostav::Color::Alpha_Opaque
-                      ,0xFF, 0xFF, 0xFF);
-   editBox.setBGColor(Sostav::Color::Alpha_Opaque
-                      ,0x08, 0x42, 0x50);
+   staticText.setFGColor(Sostav::Color::Alpha_Opaque
+                         ,0xFF, 0xFF, 0xFF);
+   staticText.setBGColor(Sostav::Color::Alpha_Opaque
+                         ,0x06, 0x28, 0x33);
    
    window.show();
 

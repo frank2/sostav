@@ -29,47 +29,44 @@ Static::~Static
 }
 
 void
-Static::onPaint
-(void)
+Static::paint
+(HDC context)
 {
    HFONT fontHandle;
    HGDIOBJ oldFont;
    
-   this->beginPaint();
-
    fontHandle = this->typeface.getHandle();
 
-   oldFont = SelectObject(this->paintContext, fontHandle);
+   oldFont = SelectObject(context, fontHandle);
 
    if (this->bgColor.isTranslucent())
       throw StaticException("static controls can't be translucent");
-   else if (this->bgColor.isTransparent)
+   else if (this->bgColor.isTransparent())
       SetBkMode(this->paintContext, TRANSPARENT);
    else
    {
       RECT rect = {0,0,this->size.cx, this->size.cy};
       HBRUSH brush;
       
-      SetBkColor(this->paintContext, this->bgColor.colorRef());
+      SetBkColor(context, this->bgColor.colorRef());
       brush = this->getBGBrush();
 
-      FillRect(this->paintContext, &rect, brush);
+      FillRect(context, &rect, brush);
    }
 
    if (!this->fgColor.isOpaque())
       throw StaticException("foreground color must be opaque");
 
-   SetTextColor(this->paintContext, this->fgColor.colorRef());
+   SetTextColor(context, this->fgColor.colorRef());
 
-   TextOut(this->paintContext
-           ,0
-           ,0
-           ,this->windowText.c_str()
-           ,this->windowText.size());
+   if (!TextOut(context
+                ,0
+                ,0
+                ,this->windowText.c_str()
+                ,this->windowText.size()))
+      throw StaticException("TextOut failed");
 
-   fontHandle = (HBRUSH)SelectObject(this->paintContext, oldFont);
+   fontHandle = (HFONT)SelectObject(context, oldFont);
 
    DeleteObject(fontHandle);
-   
-   this->endPaint();
 }

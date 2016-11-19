@@ -22,6 +22,9 @@ namespace Sostav
       Font();
       ~Font();
 
+      void setLogFont(LOGFONT logFont);
+      LOGFONT getLogFont(void);
+
       void setHeight(LONG height);
       LONG getHeight(void);
 
