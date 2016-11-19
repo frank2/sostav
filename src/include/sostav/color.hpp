@@ -32,6 +32,7 @@ namespace Sostav
       bool isOpaque(void);
       bool isTransparent(void);
       bool isTranslucent(void);
+      void blend(Color color, double percentage);
    };
 }
 

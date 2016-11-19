@@ -79,3 +79,21 @@ Color::isTranslucent
 {
    return !this->isOpaque() && !this->isTransparent();
 }
+
+Color
+Color::blend
+(Color color, double percentage)
+{
+   LONG aD, rD, gD, bD;
+   Color newColor;
+
+   aD = color.a - this->a;
+   rD = color.r - this->r;
+   gD = color.g - this->g;
+   bD = color.b - this->b;
+
+   newColor.a = this->a + floor(aD * percentage);
+   newColor.r = this->r + floor(rD * percentage);
+   newColor.g = this->g + floor(gD * percentage);
+   newColor.b = this->b + floor(bD * percentage);
+}
