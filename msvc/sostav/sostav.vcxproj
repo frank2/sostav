@@ -141,21 +141,30 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\include\sostav\color.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\drawing.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\drawing\color.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\drawing\font.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\drawing\gradient.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\drawing\point.hpp" />
     <ClInclude Include="..\..\src\include\sostav\exception.hpp" />
-    <ClInclude Include="..\..\src\include\sostav\font.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\math.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\math\line.hpp" />
     <ClInclude Include="..\..\src\include\sostav\sostav.hpp" />
-    <ClInclude Include="..\..\src\include\sostav\static.hpp" />
-    <ClInclude Include="..\..\src\include\sostav\subclassedwindow.hpp" />
-    <ClInclude Include="..\..\src\include\sostav\window.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\windows.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\windows\static.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\windows\subclassedwindow.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\windows\window.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\lib\color.cpp" />
+    <ClCompile Include="..\..\src\lib\drawing\color.cpp" />
+    <ClCompile Include="..\..\src\lib\drawing\font.cpp" />
+    <ClCompile Include="..\..\src\lib\drawing\gradient.cpp" />
+    <ClCompile Include="..\..\src\lib\drawing\point.cpp" />
     <ClCompile Include="..\..\src\lib\exception.cpp" />
-    <ClCompile Include="..\..\src\lib\font.cpp" />
-    <ClCompile Include="..\..\src\lib\static.cpp" />
-    <ClCompile Include="..\..\src\lib\subclassedwindow.cpp" />
-    <ClCompile Include="..\..\src\lib\window.cpp" />
+    <ClCompile Include="..\..\src\lib\math\line.cpp" />
+    <ClCompile Include="..\..\src\lib\windows\static.cpp" />
+    <ClCompile Include="..\..\src\lib\windows\subclassedwindow.cpp" />
+    <ClCompile Include="..\..\src\lib\windows\window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

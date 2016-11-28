@@ -13,51 +13,96 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\drawing">
+      <UniqueIdentifier>{1d19178e-c5ec-4c2b-9798-2cc69673ef2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\math">
+      <UniqueIdentifier>{ff69595a-7815-4b42-aa85-392a4baaf306}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\windows">
+      <UniqueIdentifier>{2264cb62-d752-4a29-afeb-021824bd9e36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\drawing">
+      <UniqueIdentifier>{917674c2-0934-420d-a09a-a7fa66792867}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\math">
+      <UniqueIdentifier>{2efd07df-5cc6-4470-98d9-7646b6048247}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\windows">
+      <UniqueIdentifier>{1b9bf1cd-b567-4d4e-aade-b81b05f3dc42}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\include\sostav\drawing.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\include\sostav\exception.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\include\sostav\math.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\include\sostav\sostav.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\sostav\window.hpp">
+    <ClInclude Include="..\..\src\include\sostav\windows.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\sostav\subclassedwindow.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\src\include\sostav\drawing\color.hpp">
+      <Filter>Header Files\drawing</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\sostav\color.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\src\include\sostav\drawing\font.hpp">
+      <Filter>Header Files\drawing</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\sostav\font.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\src\include\sostav\drawing\gradient.hpp">
+      <Filter>Header Files\drawing</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\sostav\static.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\src\include\sostav\drawing\point.hpp">
+      <Filter>Header Files\drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\include\sostav\math\line.hpp">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\include\sostav\windows\static.hpp">
+      <Filter>Header Files\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\include\sostav\windows\subclassedwindow.hpp">
+      <Filter>Header Files\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\include\sostav\windows\window.hpp">
+      <Filter>Header Files\windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\lib\exception.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\lib\window.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\src\lib\drawing\color.cpp">
+      <Filter>Source Files\drawing</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\lib\subclassedwindow.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\src\lib\drawing\font.cpp">
+      <Filter>Source Files\drawing</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\lib\color.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\src\lib\drawing\gradient.cpp">
+      <Filter>Source Files\drawing</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\lib\font.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\src\lib\drawing\point.cpp">
+      <Filter>Source Files\drawing</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\lib\static.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\src\lib\math\line.cpp">
+      <Filter>Source Files\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib\windows\static.cpp">
+      <Filter>Source Files\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib\windows\subclassedwindow.cpp">
+      <Filter>Source Files\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib\windows\window.cpp">
+      <Filter>Source Files\windows</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
