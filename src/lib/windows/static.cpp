@@ -1,6 +1,7 @@
-#include "sostav/static.hpp"
+#include "sostav/windows/static.hpp"
 
 using namespace Sostav;
+using namespace Sostav::Windows;
 
 Static::Static
 (HWND parent, std::wstring caption)

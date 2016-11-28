@@ -1,6 +1,7 @@
-#include "sostav/font.hpp"
+#include "sostav/drawing/font.hpp"
 
 using namespace Sostav;
+using namespace Sostav::Drawing;
 
 Font::Font
 (std::wstring face, LONG points)

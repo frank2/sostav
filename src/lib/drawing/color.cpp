@@ -1,6 +1,7 @@
-#include "sostav/color.hpp"
+#include "sostav/drawing/color.hpp"
 
 using namespace Sostav;
+using namespace Sostav::Drawing;
 
 Color::Color
 (BYTE a, BYTE r, BYTE g, BYTE b)

@@ -1,6 +1,7 @@
-#include "sostav/subclassedwindow.hpp"
+#include "sostav/windows/subclassedwindow.hpp"
 
 using namespace Sostav;
+using namespace Sostav::Windows;
 
 SubclassedWindow::SubclassedWindow
 (HWND parent, std::wstring className)
