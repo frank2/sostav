@@ -182,4 +182,7 @@ void
 Gradient::paint
 (HDC context)
 {
+   BITMAP contextBitmap;
+
+   memset(&contextBitmap, 0, sizeof(BITMAP));
 }
