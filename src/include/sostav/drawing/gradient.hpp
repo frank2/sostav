@@ -7,6 +7,7 @@
 
 #include "sostav/drawing/color.hpp"
 #include "sostav/drawing/point.hpp"
+#include "sostav/math/line.hpp"
 
 namespace Sostav
 {
@@ -38,14 +39,16 @@ namespace Sostav
          void removeColor(RelativePoint key);
          void moveColor(RelativePoint key, RelativePoint newKey);
          
-         virtual Color formula(long x, long y, long width, long height);
-         virtual Color formula(long x, long y, SIZE size);
-         virtual Color formula(AbsolutePoint point, long width, long height);
-         virtual Color formula(AbsolutePoint point, SIZE size);
          virtual Color formula(double x, double y, long width, long height);
          virtual Color formula(double x, double y, SIZE size);
          virtual Color formula(RelativePoint point, long width, long height);
          virtual Color formula(RelativePoint point, SIZE size);
+         virtual Color formula(long x, long y, long width, long height);
+         virtual Color formula(long x, long y, SIZE size);
+         virtual Color formula(AbsolutePoint point, long width, long height);
+         virtual Color formula(AbsolutePoint point, SIZE size);
+
+         virtual void paint(HDC context);
       };
    }
 }
