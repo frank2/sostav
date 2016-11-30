@@ -91,17 +91,20 @@ Gradient::moveColor
 
 Color
 Gradient::formula
-(double x, double y, long width, long height)
+(double x, double y)
 {
    Color result = this->base;
-   Line diagonal(0, height, width, 0);
-   double diagonalLength = diagonal.length();
+   Line diagonal(0, 1.0, 1.0, 0);
+   double diagonalLength = diagonal.length() / 2.0;
    std::map<RelativePoint, Color>::iterator iter;
+   WCHAR debugString[1024];
+   memset(debugString, 0, sizeof(debugString));
 
    for (iter=this->modes.begin(); iter!=this->modes.end(); ++iter)
    {
       RelativePoint point = iter->first;
       Color color = iter->second;
+      Color newColor;
       Line modeLine(x, y, point.getX(), point.getY());
       double lineLength = modeLine.length();
       double ratio;
@@ -111,7 +114,22 @@ Gradient::formula
       else
          ratio = (diagonalLength - lineLength) / diagonalLength;
 
-      result.blend(color, ratio);
+      newColor = result.blend(color, ratio);
+
+      /*
+      swprintf_s(debugString
+                 ,1024
+                 ,L"{%0.4f,%0.4f}->{%0.4f,%0.4f}->%0.4f base:[R:%d,G:%d,B:%d,A:%d] target:[R:%d,G:%d,B:%d,A:%d] ratio:%0.4f new:[R:%d,G:%d,B:%d,A:%d]\n"
+                 ,x, y, point.getX(), point.getY(), lineLength
+                 ,result.r, result.g, result.b, result.a
+                 ,color.r, color.g, color.b, color.a
+                 ,ratio
+                 ,newColor.r, newColor.g, newColor.b, newColor.a);
+
+      OutputDebugString(debugString);
+      */
+
+      result = newColor;
    }
 
    return result;
@@ -119,33 +137,17 @@ Gradient::formula
 
 Color
 Gradient::formula
-(double x, double y, SIZE size)
+(RelativePoint point)
 {
-   return this->formula(x, y, size.cx, size.cy);
-}
-
-Color
-Gradient::formula
-(RelativePoint point, long width, long height)
-{
-   return this->formula(point.getX(), point.getY(), width, height);
-}
-
-Color
-Gradient::formula
-(RelativePoint point, SIZE size)
-{
-   return this->formula(point.getX(), point.getY(), size.cx, size.cy);
+   return this->formula(point.getX(), point.getY());
 }
 
 Color
 Gradient::formula
 (long x, long y, long width, long height)
 {
-   return this->formula(RelativePoint::FromAbsolulteX(x, width)
-                        ,RelativePoint::FromAbsoluteY(y, height)
-                        ,width
-                        ,height);
+   return this->formula(RelativePoint::FromAbsoluteX(x, width)
+                        ,RelativePoint::FromAbsoluteY(y, height));
 }
 
 Color
@@ -153,9 +155,7 @@ Gradient::formula
 (long x, long y, SIZE size)
 {
    return this->formula(RelativePoint::FromAbsoluteX(x, size.cx)
-                        ,RelativePoint::FromAbsoluteY(y, size.cy)
-                        ,size.cx
-                        ,size.cy);
+                        ,RelativePoint::FromAbsoluteY(y, size.cy));
 }
 
 Color
@@ -163,9 +163,7 @@ Gradient::formula
 (AbsolutePoint point, long width, long height)
 {
    return this->formula(RelativePoint::FromAbsoluteX(point.getX(), width)
-                        ,RelativePoint::FromAbsoluteY(point.getY(), height)
-                        ,width
-                        ,height);
+                        ,RelativePoint::FromAbsoluteY(point.getY(), height));
 }
 
 Color
@@ -173,16 +171,66 @@ Gradient::formula
 (AbsolutePoint point, SIZE size)
 {
    return this->formula(RelativePoint::FromAbsoluteX(point.getX(), size.cx)
-                        ,RelativePoint::FromAbsoluteY(point.getY(), size.cy)
-                        ,size.cx
-                        ,size.cy);
+                        ,RelativePoint::FromAbsoluteY(point.getY(), size.cy));
 }
 
-void
-Gradient::paint
-(HDC context)
+HBITMAP
+Gradient::render
+(long width, long height)
 {
-   BITMAP contextBitmap;
+   HDC screen;
+   HBITMAP dibSection;
+   BITMAPINFO info;
+   RGBQUAD *quadData, *quadPointer;
 
-   memset(&contextBitmap, 0, sizeof(BITMAP));
+   memset(&info, 0, sizeof(BITMAPINFO));
+
+   info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+   info.bmiHeader.biWidth = width;
+   info.bmiHeader.biHeight = height;
+   info.bmiHeader.biPlanes = 1;
+   info.bmiHeader.biBitCount = 32;
+
+   screen = GetDC(NULL);
+
+   dibSection = CreateDIBSection(screen
+                                 ,&info
+                                 ,DIB_RGB_COLORS
+                                 ,(LPVOID *)&quadData
+                                 ,NULL, 0);
+
+   if (dibSection == NULL)
+      throw GradientException("failed to create DIB section");
+   
+   quadData = (RGBQUAD *)malloc(width * height * sizeof(RGBQUAD));
+   quadPointer = quadData;
+
+   for (long y=0; y<height; ++y)
+   {
+      for (long x=0; x<width; ++x)
+      {
+         Color color = this->formula(x, y, width, height);
+         
+         quadPointer->rgbRed = (BYTE)((DWORD)(color.r * color.a / 255));
+         quadPointer->rgbGreen = (BYTE)((DWORD)(color.g * color.a / 255));
+         quadPointer->rgbBlue = (BYTE)((DWORD)(color.b * color.a / 255));
+         quadPointer->rgbReserved = color.a;
+            
+         ++quadPointer;
+      }
+   }
+
+   if (!SetDIBits(screen, dibSection, 0, height, quadData, &info, DIB_RGB_COLORS))
+      throw GradientException("SetDIBits failed");
+
+   ReleaseDC(NULL, screen);
+
+   return dibSection;
+}
+
+HBITMAP
+Gradient::render
+(SIZE size)
+{
+   return this->render(size.cx, size.cy);
 }

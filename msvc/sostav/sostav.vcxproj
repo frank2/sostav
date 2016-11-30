@@ -151,6 +151,7 @@
     <ClInclude Include="..\..\src\include\sostav\math\line.hpp" />
     <ClInclude Include="..\..\src\include\sostav\sostav.hpp" />
     <ClInclude Include="..\..\src\include\sostav\windows.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\windows\layeredwindow.hpp" />
     <ClInclude Include="..\..\src\include\sostav\windows\static.hpp" />
     <ClInclude Include="..\..\src\include\sostav\windows\subclassedwindow.hpp" />
     <ClInclude Include="..\..\src\include\sostav\windows\window.hpp" />
@@ -162,6 +163,7 @@
     <ClCompile Include="..\..\src\lib\drawing\point.cpp" />
     <ClCompile Include="..\..\src\lib\exception.cpp" />
     <ClCompile Include="..\..\src\lib\math\line.cpp" />
+    <ClCompile Include="..\..\src\lib\windows\layeredwindow.cpp" />
     <ClCompile Include="..\..\src\lib\windows\static.cpp" />
     <ClCompile Include="..\..\src\lib\windows\subclassedwindow.cpp" />
     <ClCompile Include="..\..\src\lib\windows\window.cpp" />

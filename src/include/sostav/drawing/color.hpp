@@ -1,6 +1,7 @@
 #pragma once
 
 #include <windows.h>
+#include <math.h>
 
 namespace Sostav
 {
@@ -21,7 +22,7 @@ namespace Sostav
          Color(BYTE a, BYTE r, BYTE g, BYTE b);
          Color(BYTE r, BYTE g, BYTE b);
          Color(DWORD hexValue);
-         Color(Color &color);
+         Color(const Color &color);
          Color();
          
          const static BYTE Alpha_Transparent = 0;
@@ -30,10 +31,10 @@ namespace Sostav
          static Color Transparent(void);
          static Color FromColorRef(COLORREF color);
 
-         COLORREF colorRef(void);
-         bool isOpaque(void);
-         bool isTransparent(void);
-         bool isTranslucent(void);
+         COLORREF colorRef(void) const;
+         bool isOpaque(void) const;
+         bool isTransparent(void) const;
+         bool isTranslucent(void) const;
          Color blend(Color color, double percentage);
       };
    }

@@ -25,15 +25,15 @@ namespace Sostav
       public:
          AbsolutePoint(long x, long y);
          AbsolutePoint(POINT point);
-         AbsolutePoint(AbsolutePoint &abs);
+         AbsolutePoint(const AbsolutePoint &abs);
          AbsolutePoint();
 
-         bool operator==(const AbsolutePoint &b);
-         bool operator!=(const AbsolutePoint &b);
-         bool operator<(const AbsolutePoint &b);
-         bool operator>(const AbsolutePoint &b);
-         bool operator<=(const AbsolutePoint &b);
-         bool operator>=(const AbsolutePoint &b);
+         bool operator<(const AbsolutePoint &b) const;
+         bool operator==(const AbsolutePoint &b) const;
+         bool operator!=(const AbsolutePoint &b) const;
+         bool operator>(const AbsolutePoint &b) const;
+         bool operator<=(const AbsolutePoint &b) const;
+         bool operator>=(const AbsolutePoint &b) const;
 
          static AbsolutePoint FromRelative(double x, double y, long width, long height);
          static AbsolutePoint FromRelative(double x, double y, SIZE size);
@@ -53,14 +53,14 @@ namespace Sostav
          void setY(long y);
          void setRelativeY(double y, long height);
          
-         long getX(void);
-         double getRelativeX(long width);
-         long getY(void);
-         double getRelativeY(long height);
-         POINT getPoint(void);
+         long getX(void) const;
+         double getRelativeX(long width) const;
+         long getY(void) const;
+         double getRelativeY(long height) const;
+         POINT getPoint(void) const;
 
-         RelativePoint relative(long width, long height);
-         RelativePoint relative(SIZE size);
+         RelativePoint relative(long width, long height) const;
+         RelativePoint relative(SIZE size) const;
       };
 
       class RelativePoint
@@ -70,15 +70,15 @@ namespace Sostav
 
       public:
          RelativePoint(double x, double y);
-         RelativePoint(RelativePoint &rel);
+         RelativePoint(const RelativePoint &rel);
          RelativePoint();
 
-         bool operator==(const RelativePoint &b);
-         bool operator!=(const RelativePoint &b);
-         bool operator<(const RelativePoint &b);
-         bool operator>(const RelativePoint &b);
-         bool operator<=(const RelativePoint &b);
-         bool operator>=(const RelativePoint &b);
+         bool operator<(const RelativePoint &b) const;
+         bool operator==(const RelativePoint &b) const;
+         bool operator!=(const RelativePoint &b) const;
+         bool operator>(const RelativePoint &b) const;
+         bool operator<=(const RelativePoint &b) const;
+         bool operator>=(const RelativePoint &b) const;
 
          static RelativePoint FromAbsolute(long x, long y, long width, long height);
          static RelativePoint FromAbsolute(POINT point, long width, long height);
@@ -100,13 +100,13 @@ namespace Sostav
          void setY(double y);
          void setAbsoluteY(long y, long height);
          
-         double getX(void);
-         long getAbsoluteX(long width);
-         double getY(void);
-         long getAbsoluteY(long height);
+         double getX(void) const;
+         long getAbsoluteX(long width) const;
+         double getY(void) const;
+         long getAbsoluteY(long height) const;
 
-         AbsolutePoint absolute(long width, long height);
-         AbsolutePoint absolute(SIZE size);
+         AbsolutePoint absolute(long width, long height) const;
+         AbsolutePoint absolute(SIZE size) const;
       };
 
       class MixedPoint

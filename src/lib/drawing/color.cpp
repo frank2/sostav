@@ -28,7 +28,7 @@ Color::Color
 }
 
 Color::Color
-(Color &color)
+(const Color &color)
 {
    this->hexValue = color.hexValue;
 }
@@ -55,28 +55,28 @@ Color::Transparent
 
 COLORREF
 Color::colorRef
-(void)
+(void) const
 {
    return RGB(this->r, this->g, this->b);
 }
 
 bool
 Color::isOpaque
-(void)
+(void) const
 {
    return this->a == Color::Alpha_Opaque;
 }
 
 bool
 Color::isTransparent
-(void)
+(void) const
 {
    return this->a == Color::Alpha_Transparent;
 }
 
 bool
 Color::isTranslucent
-(void)
+(void) const
 {
    return !this->isOpaque() && !this->isTransparent();
 }
@@ -97,4 +97,6 @@ Color::blend
    newColor.r = this->r + floor(rD * percentage);
    newColor.g = this->g + floor(gD * percentage);
    newColor.b = this->b + floor(bD * percentage);
+
+   return newColor;
 }

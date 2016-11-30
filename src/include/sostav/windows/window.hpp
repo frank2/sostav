@@ -152,7 +152,10 @@ namespace Sostav
          void addChild(Window *child);
          void removeChild(Window *child);
 
+         virtual void preCreate(void);
          virtual void create(void);
+         virtual void postCreate(void);
+
          virtual void registerClass(void);
          virtual void destroy(void);
          virtual void invalidate(void);

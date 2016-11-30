@@ -75,6 +75,9 @@
     <ClInclude Include="..\..\src\include\sostav\windows\window.hpp">
       <Filter>Header Files\windows</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\include\sostav\windows\layeredwindow.hpp">
+      <Filter>Header Files\windows</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\lib\exception.cpp">
@@ -102,6 +105,9 @@
       <Filter>Source Files\windows</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\lib\windows\window.cpp">
+      <Filter>Source Files\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib\windows\layeredwindow.cpp">
       <Filter>Source Files\windows</Filter>
     </ClCompile>
   </ItemGroup>

@@ -22,7 +22,7 @@ AbsolutePoint::AbsolutePoint
 }
 
 AbsolutePoint::AbsolutePoint
-(AbsolutePoint &abs)
+(const AbsolutePoint &abs)
 {
    this->set(abs.getX(), abs.getY());
 }
@@ -34,45 +34,54 @@ AbsolutePoint::AbsolutePoint
 }
 
 bool
-AbsolutePoint::operator==
-(const AbsolutePoint &b)
+AbsolutePoint::operator<
+(const AbsolutePoint &b) const
 {
-   return (this->x == b.getX() && this->y == b.getY());
+   long x, y;
+
+   x = b.getX();
+
+   if (x != this->x)
+      return this->x < x;
+
+   y = b.getY();
+
+   return this->y < y;
+}
+
+bool
+AbsolutePoint::operator==
+(const AbsolutePoint &b) const
+{
+   return !(*this < b) && !(b < *this);
 }
 
 bool
 AbsolutePoint::operator!=
-(const AbsolutePoint &b)
+(const AbsolutePoint &b) const
 {
-   return !(this == b);
-}
-
-bool
-AbsolutePoint::operator<
-(const AbsolutePoint &b)
-{
-   return this->x < b.getX() && this->y < b.getY();
+   return !(*this == b);
 }
 
 bool
 AbsolutePoint::operator>
-(const AbsolutePoint &b)
+(const AbsolutePoint &b) const
 {
-   return this->x > b.getX() && this->y > b.getY();
+   return b < *this;
 }
 
 bool
 AbsolutePoint::operator<=
-(const AbsolutePoint &b)
+(const AbsolutePoint &b) const
 {
-   return this < b || this == b;
+   return *this < b || *this == b;
 }
 
 bool
 AbsolutePoint::operator>=
-(const AbsolutePoint &b)
+(const AbsolutePoint &b) const
 {
-   return this > b || this == b;
+   return *this > b || *this == b;
 }
 
 AbsolutePoint
@@ -210,35 +219,35 @@ AbsolutePoint::setRelativeY
 
 long
 AbsolutePoint::getX
-(void)
+(void) const
 {
    return this->x;
 }
 
 double
 AbsolutePoint::getRelativeX
-(long width)
+(long width) const
 {
    return RelativePoint::FromAbsoluteX(this->x, width);
 }
 
 long
 AbsolutePoint::getY
-(void)
+(void) const
 {
    return this->y;
 }
 
 double
 AbsolutePoint::getRelativeY
-(long height)
+(long height) const
 {
    return RelativePoint::FromAbsoluteY(this->y, height);
 }
 
 POINT
 AbsolutePoint::getPoint
-(void)
+(void) const
 {
    POINT ret;
    
@@ -250,7 +259,7 @@ AbsolutePoint::getPoint
 
 RelativePoint
 AbsolutePoint::relative
-(long width, long height)
+(long width, long height) const
 {
    RelativePoint ret;
 
@@ -262,7 +271,7 @@ AbsolutePoint::relative
 
 RelativePoint
 AbsolutePoint::relative
-(SIZE size)
+(SIZE size) const
 {
    return this->relative(size.cx, size.cy);
 }
@@ -274,7 +283,7 @@ RelativePoint::RelativePoint
 }
 
 RelativePoint::RelativePoint
-(RelativePoint &rel)
+(const RelativePoint &rel)
 {
    this->setX(rel.getX());
    this->setY(rel.getY());
@@ -287,45 +296,55 @@ RelativePoint::RelativePoint
 }
 
 bool
-RelativePoint::operator==
-(const RelativePoint &b)
+RelativePoint::operator<
+(const RelativePoint &b) const
 {
-   return (this->x == b.getX() && this->y == b.getY());
+   double x, y;
+
+   x = b.getX();
+
+   if (x != this->x)
+      return this->x < x;
+
+   y = b.getY();
+
+   return this->y < y;
+}
+
+bool
+RelativePoint::operator==
+(const RelativePoint &b) const
+{
+   return !(*this < b) && !(b < *this);
 }
 
 bool
 RelativePoint::operator!=
-(const RelativePoint &b)
+(const RelativePoint &b) const
 {
-   return !(this == b);
+   return !(*this == b);
 }
 
-bool
-RelativePoint::operator<
-(const RelativePoint &b)
-{
-   return this->x < b.getX() && this->y < b.getY();
-}
 
 bool
 RelativePoint::operator>
-(const RelativePoint &b)
+(const RelativePoint &b) const
 {
-   return this->x > b.getX() && this->y > b.getY();
+   return b < *this;
 }
 
 bool
 RelativePoint::operator<=
-(const RelativePoint &b)
+(const RelativePoint &b) const
 {
-   return this < b || this == b;
+   return *this < b || *this == b;
 }
 
 bool
 RelativePoint::operator>=
-(const RelativePoint &b)
+(const RelativePoint &b) const
 {
-   return this > b || this == b;
+   return *this > b || *this == b;
 }
 
 RelativePoint
@@ -463,35 +482,35 @@ RelativePoint::setAbsoluteY
 
 double
 RelativePoint::getX
-(void)
+(void) const
 {
    return this->x;
 }
 
 long
 RelativePoint::getAbsoluteX
-(long width)
+(long width) const
 {
    return AbsolutePoint::FromRelativeX(this->x, width);
 }
 
 double
 RelativePoint::getY
-(void)
+(void) const
 {
    return this->y;
 }
 
 long
 RelativePoint::getAbsoluteY
-(long height)
+(long height) const
 {
    return AbsolutePoint::FromRelativeY(this->y, height);
 }
 
 AbsolutePoint
 RelativePoint::absolute
-(long width, long height)
+(long width, long height) const
 {
    AbsolutePoint ret;
 
@@ -503,7 +522,7 @@ RelativePoint::absolute
 
 AbsolutePoint
 RelativePoint::absolute
-(SIZE size)
+(SIZE size) const
 {
    return this->absolute(size.cx, size.cy);
 }

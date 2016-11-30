@@ -824,10 +824,19 @@ Window::removeChild
 }
 
 void
+Window::preCreate
+(void)
+{
+   return;
+}
+
+void
 Window::create
 (void)
 {
    std::list<Window *>::iterator iter;
+
+   this->preCreate();
    
    this->registerClass();
    
@@ -848,6 +857,8 @@ Window::create
    if (this->hwnd == NULL)
       throw WindowException("failed to create window");
 
+   this->postCreate();
+
    for (iter=this->children.begin(); iter!=this->children.end(); ++iter)
    {
       Window *child = *iter;
@@ -855,6 +866,13 @@ Window::create
       if (!child->hasHWND())
          child->create();
    }
+}
+
+void
+Window::postCreate
+(void)
+{
+   return;
 }
 
 void

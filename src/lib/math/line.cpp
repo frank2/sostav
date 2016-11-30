@@ -1,4 +1,4 @@
-#include "sostav/line.hpp"
+#include "sostav/math/line.hpp"
 
 using namespace Sostav;
 using namespace Sostav::Math;
@@ -57,9 +57,9 @@ Line::length
    slope = this->slope();
 
    if (slope == 0.0)
-      return this->x2 - this->x1;
+      return fabs(this->x2 - this->x1);
    else if (isnan(slope))
-      return this->y2 - this->y1;
+      return fabs(this->y2 - this->y1);
    else
       return sqrt(pow(this->x2 - this->x1, 2.0) + pow(this->y2 - this->y1, 2.0));
 }
