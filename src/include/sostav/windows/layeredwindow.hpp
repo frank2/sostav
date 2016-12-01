@@ -17,7 +17,10 @@ namespace Sostav
       class LayeredWindow : public Window
       {
       protected:
+         HDC screenDC;
+         
          Drawing::Color transparency;
+         DWORD updateFlag;
          
       public:
          LayeredWindow(HWND parent, std::wstring className=L"SvLayeredWindow");
@@ -30,10 +33,17 @@ namespace Sostav
          void setAlpha(BYTE alpha);
          BYTE getAlpha(void) const;
 
-         virtual void preCreate(void);
-         virtual void updateLayered(HDC context);
+         void setUpdateFlag(DWORD flag);
+         DWORD getUpdateFlag(void) const;
 
+         virtual void show(void);
+         virtual void update(void);
+         virtual void preCreate(void);
+         virtual void layeredUpdate(HDC context);
+         
       protected:
+         virtual void beginPaint(void);
+         virtual void endPaint(void);
          virtual void initialize(HWND parent, std::wstring className);
       };
    }

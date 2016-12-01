@@ -32,15 +32,15 @@ void
 LayeredWindow::setTransparency
 (Drawing::Color color)
 {
-   if (this->hasHWND() && !SetLayeredWindowAttributes(this->hwnd
-                                                      ,color.colorRef()
-                                                      ,this->transparency.a
-                                                      ,LWA_COLORKEY))
-      throw LayeredWindowException("SetLayeredWindowAttributes failed");
-   
    this->transparency.r = color.r;
    this->transparency.g = color.g;
    this->transparency.b = color.b;
+
+   if (this->hasHWND())
+   {
+      this->setUpdateFlag(ULW_COLORKEY);
+      this->layeredUpdate(NULL);
+   }
 }
 
 Drawing::Color
@@ -54,13 +54,13 @@ void
 LayeredWindow::setAlpha
 (BYTE alpha)
 {
-   if (this->hasHWND() && !SetLayeredWindowAttributes(this->hwnd
-                                                      ,this->transparency.colorRef()
-                                                      ,alpha
-                                                      ,LWA_ALPHA))
-      throw LayeredWindowException("SetLayeredWindowAttributes failed");
-
    this->transparency.a = alpha;
+
+   if (this->hasHWND())
+   {
+      this->setUpdateFlag(ULW_ALPHA);
+      this->layeredUpdate(NULL);
+   }
 }
 
 BYTE
@@ -71,6 +71,41 @@ LayeredWindow::getAlpha
 }
 
 void
+LayeredWindow::setUpdateFlag
+(DWORD flag)
+{
+   this->updateFlag = flag;
+}
+
+DWORD
+LayeredWindow::getUpdateFlag
+(void) const
+{
+   return this->updateFlag;
+}
+
+void
+LayeredWindow::show
+(void)
+{
+   Window::show();
+
+   this->update();
+}
+
+void
+LayeredWindow::update
+(void)
+{
+   if (!this->hasHWND())
+      return;
+
+   this->beginPaint();
+   this->paint(this->paintContext);
+   this->endPaint();
+}
+
+void
 LayeredWindow::preCreate
 (void)
 {
@@ -78,30 +113,53 @@ LayeredWindow::preCreate
 }
 
 void
-LayeredWindow::updateLayered
+LayeredWindow::layeredUpdate
 (HDC context)
 {
    POINT ptZero = { 0 };
    BLENDFUNCTION blender;
+   POINT position;
    
    if (!this->hasHWND())
       throw LayeredWindowException("can't update window without an hwnd");
 
    blender.BlendOp = AC_SRC_OVER;
    blender.BlendFlags = 0;
-   blender.SourceConstantAlpha = 255;
+   blender.SourceConstantAlpha = this->transparency.a;
    blender.AlphaFormat = AC_SRC_ALPHA;
+
+   position = this->point.getAbsolute().getPoint();
    
    if (!UpdateLayeredWindow(this->hwnd
-                            ,NULL
-                            ,NULL
-                            ,NULL
+                            ,(context == NULL) ? NULL : this->screenDC
+                            ,&position
+                            ,&this->size
                             ,context
-                            ,&ptZero
+                            ,(context == NULL) ? NULL : &ptZero
                             ,this->transparency.colorRef()
                             ,&blender
-                            ,ULW_ALPHA))
+                            ,this->updateFlag))
       throw LayeredWindowException("UpdateLayeredWindow failed");
+}
+
+void
+LayeredWindow::beginPaint
+(void)
+{
+   this->screenDC = GetDC(NULL);
+   this->paintContext = CreateCompatibleDC(this->screenDC);
+}
+
+void
+LayeredWindow::endPaint
+(void)
+{
+   if (!this->hasHWND())
+      throw LayeredWindowException("can't end paint with no hwnd present");
+   
+   this->layeredUpdate(this->paintContext);
+   DeleteDC(this->paintContext);
+   ReleaseDC(NULL, this->screenDC);
 }
 
 void
@@ -110,4 +168,6 @@ LayeredWindow::initialize
 {
    this->addExStyle(WS_EX_LAYERED);
    this->transparency = Drawing::Color::Transparent();
+   this->screenDC = NULL;
+   this->updateFlag = ULW_ALPHA;
 }

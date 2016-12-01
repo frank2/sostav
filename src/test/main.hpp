@@ -8,7 +8,7 @@
 
 #pragma comment(lib, "sostav")
 
-class GradientTest : public Sostav::Windows::LayeredWindow
+class GradientTest : public Sostav::Windows::LayeredImageWindow
 {
 protected:
    Sostav::Drawing::Gradient gradient;
@@ -18,7 +18,7 @@ public:
    GradientTest(Window *parent);
    GradientTest();
 
-   virtual void postCreate(void);
+   virtual void preCreate(void);
 
 protected:
    virtual void initialize(HWND parent, std::wstring className);
