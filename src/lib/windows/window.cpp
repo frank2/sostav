@@ -162,9 +162,16 @@ void
 Window::setParent
 (HWND newParent)
 {
+   RECT parentRect;
+   
    if (this->hasHWND())
       SetParent(this->hwnd, newParent);
 
+   GetWindowRect(newParent, &parentRect);
+
+   this->setParentSize(parentRect.bottom - parentRect.top
+                       ,parentRect.right - parentRect.left);
+   
    this->parentHWND = newParent;
 }
 
@@ -294,6 +301,34 @@ Window::getRelativePosition
 }
 
 void
+Window::center
+(void)
+{
+   this->centerX();
+   this->centerY();
+}
+
+void
+Window::centerX
+(void)
+{
+   SIZE parentSize = this->getParentSize();
+
+   this->setPosition(parentSize.cx / 2 - this->size.cx / 2
+                     ,this->getAbsolutePosition().getY());
+}
+
+void
+Window::centerY
+(void)
+{
+   SIZE parentSize = this->getParentSize();
+
+   this->setPosition(this->getAbsolutePosition().getX()
+                     ,parentSize.cy / 2 - this->size.cy / 2);
+}
+
+void
 Window::setSize
 (long cx, long cy)
 {
@@ -353,6 +388,14 @@ Window::getParentSize
 {
    if (this->parentWindow != NULL)
       return this->parentWindow->getSize();
+   else if (this->getParentHWND() != NULL)
+   {
+      RECT parentRect;
+
+      GetWindowRect(this->getParentHWND(), &parentRect);
+
+      return {parentRect.bottom - parentRect.top, parentRect.left - parentRect.right};
+   }
 
    return this->point.getSize();
 }
@@ -1059,6 +1102,9 @@ Window::initialize
       throw WindowException("class name cannot be empty");
    
    this->className.assign(className);
+
+   this->point.setSize(GetSystemMetrics(SM_CXFULLSCREEN)
+                       ,GetSystemMetrics(SM_CYFULLSCREEN));
 }
 
 HBRUSH

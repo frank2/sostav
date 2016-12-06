@@ -88,6 +88,10 @@ namespace Sostav
          Drawing::AbsolutePoint getAbsolutePosition(void);
          Drawing::RelativePoint getRelativePosition(void);
 
+         void center(void);
+         void centerX(void);
+         void centerY(void);
+
          void setSize(long cx, long cy);
          void setSize(SIZE size);
          SIZE getSize(void);

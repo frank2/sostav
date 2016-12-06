@@ -18,7 +18,6 @@ namespace Sostav
       {
       protected:
          HDC screenDC;
-         
          Drawing::Color transparency;
          DWORD updateFlag;
          
