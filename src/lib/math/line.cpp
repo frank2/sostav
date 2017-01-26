@@ -26,14 +26,20 @@ Line::Line
 Line::Line
 (double slope, double yIntercept)
 {
+   this->slope.setRadians(slope);
+   this->yIntercept = yIntercept;
+   this->xIntercept = NAN;
+   this->length = NAN;
+   this->solve();
+}
+
+Line::Line
+(Angle slope, double yIntercept)
+{
    this->slope = slope;
    this->yIntercept = yIntercept;
    this->xIntercept = NAN;
-   
-   this->length = 0;
-   this->p1 = Point::InvalidPoint();
-   this->p2 = Point::InvalidPoint();
-
+   this->length = NAN;
    this->solve();
 }
 
@@ -43,7 +49,7 @@ Line::Line
    this->p1 = line.getP1();
    this->p2 = line.getP2();
 
-   if (this->p1.valid() && this->p2.valid())
+   if (!this->p1.isNan() && !this->p2.isNan())
    {
       this->setP1(p1);
       this->setP2(p2);
@@ -59,11 +65,10 @@ Line::Line
 Line::Line
 (void)
 {
-   this->slope = this->yIntercept = this->xIntercept = NAN;
-   this->length = 0;
+   this->yIntercept = this->xIntercept = this->length = NAN;
 }
 
-double
+Angle
 Line::getSlope
 (void) const
 {
@@ -74,10 +79,8 @@ void
 Line::setSlope
 (double slope)
 {
-   double p1X, p2X, p1Y, p2Y;
-
    /* setting the slope invalidates the X intercept and shifts the points */
-   this->slope = slope;
+   this->slope.setRadians(slope);
 
    if (!isnan(this->yIntercept))
       this->setXIntercept(NAN);
@@ -85,6 +88,13 @@ Line::setSlope
       this->setYIntercept(NAN);
    else
       this->solve();
+}
+
+void
+Line::setSlope
+(Angle angle)
+{
+   this->setSlope(angle.getRadians());
 }
 
 double
@@ -98,12 +108,9 @@ void
 Line::setXIntercept
 (double xIntercept)
 {
-   double p1X, p2X, p1Y, p2Y;
-
    this->xIntercept = xIntercept;
    this->p1.setX(NAN);
    this->p2.setX(NAN);
-   
    this->solve();
 }
 
@@ -118,12 +125,9 @@ void
 Line::setYIntercept
 (double yIntercept)
 {
-   double p1Y, p2Y, p1X, p2X;
-   
    this->yIntercept = yIntercept;
    this->p1.setY(NAN);
    this->p2.setY(NAN);
-
    this->solve();
 }
 
@@ -184,14 +188,14 @@ bool
 Line::isVertical
 (void) const
 {
-   return isnan(this->getSlope());
+   return this->getSlope().isNan();
 }
 
 bool
 Line::isHorizontal
 (void) const
 {
-   return this->getSlope() == 0.0;
+   return this->getSlope().getRadians() == 0.0;
 }
 
 double
@@ -209,7 +213,7 @@ Line::fX
          return NAN;
    }
 
-   return this->getSlope() * x + this->getYIntercept();
+   return this->getSlope().getRadians() * x + this->getYIntercept();
 }
 
 double
@@ -229,21 +233,21 @@ Line::fY
    else if (this->isVertical())
       return this->getXIntercept();
       
-   return y/this->getSlope() + this->getXIntercept();
+   return y/this->getSlope().getRadians() + this->getXIntercept();
 }
 
 Point
 Line::intersection
 (const Line line) const
 {
-   double m = this->getSlope();
-   double n = line.getSlope();
+   double m = this->getSlope().getRadians();
+   double n = line.getSlope().getRadians();
    double b, c, d, e;
    double ix, iy;
 
    /* lines are parallel and do not intersect */
    if (m == n)
-      return Point::InvalidPoint();
+      return Point();
 
    b = this->getYIntercept();
    c = line.getYIntercept();
@@ -272,9 +276,10 @@ Line::solve
     * have point and a slope
     * have two intercepts */
 
-   if (this->p1.valid() && this->p2.valid())
+   if (!this->p1.isNan() && !this->p2.isNan())
    {
       this->slope = this->p1.slope(this->p2);
+      this->length = this->p1.length(this->p2);
 
       /* y = mx + b
          -b = mx - y
@@ -283,7 +288,7 @@ Line::solve
       if (this->isVertical())
          this->yIntercept = NAN;
       else
-         this->yIntercept = this->p1.getY() - this->slope * this->p1.getX();
+         this->yIntercept = this->p1.getY() - this->slope.getRadians() * this->p1.getX();
 
       /* x = y/m + d
          -d = y/m - x
@@ -294,9 +299,9 @@ Line::solve
       else if (this->isVertical())
          this->xIntercept = this->p1.getX();
       else
-         this->xIntercept = this->p1.getX() - this->p1.getY() / this->slope;
+         this->xIntercept = this->p1.getX() - this->p1.getY() / this->slope.getRadians();
    }
-   else if (!isnan(this->slope) && (!isnan(this->xIntercept) || !isnan(this->yIntercept)))
+   else if (!this->slope.isNan() && (!isnan(this->xIntercept) || !isnan(this->yIntercept)))
    {
       if (!isnan(this->yIntercept))
       {
@@ -304,10 +309,10 @@ Line::solve
             d * m = -b
             d = -b/m */
          
-         if (this->slope == 0.0)
+         if (this->slope.getRadians() == 0.0)
             this->xIntercept = NAN;
          else
-            this->xIntercept = -this->yIntercept/this->slope;
+            this->xIntercept = -this->yIntercept/this->slope.getRadians();
 
          this->alignYIntercept();
       }
@@ -317,33 +322,33 @@ Line::solve
             d * m = -b
             b = -d * m */
 
-         this->yIntercept = -this->xIntercept * this->slope;
+         this->yIntercept = -this->xIntercept * this->slope.getRadians();
 
          this->alignXIntercept();
       }
    }
-   else if (!isnan(this->slope) && (this->p1.valid() || this->p2.valid()))
+   else if (!this->slope.isNan() && (!this->p1.isNan() || !this->p2.isNan()))
    {
-      Point validPoint = (this->p1.valid()) ? this->p1 : this->p2;
+      Point validPoint = (!this->p1.isNan()) ? this->p1 : this->p2;
 
       /* y2 - y1 / x2 - x1 = m
          y2 - y1 / 0 - x = m
          y2 - y1 = m * -x
          y2 = y1 + m * -x */
 
-      this->yIntercept = this->slope * -this->p1.getX();
+      this->yIntercept = this->slope.getRadians() * -this->p1.getX();
 
-      if (this->slope == 0.0)
+      if (this->slope.getRadians() == 0.0)
          this->xIntercept = NAN;
       else
-         this->xIntercept = -this->yIntercept/this->slope;
+         this->xIntercept = -this->yIntercept/this->slope.getRadians();
    }
    else if (!isnan(this->xIntercept) && !isnan(this->yIntercept))
    {
       if (this->xIntercept == 0.0)
-         this->slope = NAN;
+         this->slope.setRadians(NAN);
       else
-         this->slope = -this->yIntercept/this->xIntercept;
+         this->slope.setRadians(-this->yIntercept/this->xIntercept);
    }
 }
 

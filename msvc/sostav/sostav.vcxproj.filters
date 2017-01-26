@@ -84,6 +84,9 @@
     <ClInclude Include="..\..\src\include\sostav\math\point.hpp">
       <Filter>Header Files\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\include\sostav\math\angle.hpp">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\lib\exception.cpp">
@@ -116,11 +119,14 @@
     <ClCompile Include="..\..\src\lib\windows\imagewindow.cpp">
       <Filter>Source Files\windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\lib\drawing\windowpoint.cpp">
-      <Filter>Source Files\drawing</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\lib\math\mathpoint.cpp">
       <Filter>Source Files\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib\math\angle.cpp">
+      <Filter>Source Files\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib\drawing\drawingpoint.cpp">
+      <Filter>Source Files\drawing</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

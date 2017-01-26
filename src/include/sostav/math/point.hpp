@@ -4,6 +4,7 @@
 #include <math.h>
 
 #include "sostav/exception.hpp"
+#include "sostav/math/angle.hpp"
 
 namespace Sostav
 {
@@ -24,8 +25,6 @@ namespace Sostav
          Point(const Point &p);
          Point();
 
-         static const Point InvalidPoint(void);
-
          bool operator<(const Point &b) const;
          bool operator>(const Point &b) const;
          bool operator==(const Point &b) const;
@@ -39,13 +38,15 @@ namespace Sostav
          double getY(void) const;
          void setY(double y);
 
-         double slope(double x2, double y2) const;
-         double slope(Point p2) const;
+         void set(double x, double y);
+
+         Angle slope(double x2, double y2) const;
+         Angle slope(Point p2) const;
 
          double length(double x2, double y2) const;
          double length(Point p2) const;
 
-         bool valid(void) const;
+         bool isNan(void) const;
       };
    }
 }

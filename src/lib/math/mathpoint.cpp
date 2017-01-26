@@ -26,15 +26,8 @@ Point::Point
 Point::Point
 (void)
 {
-   this->setX(0.0);
-   this->setY(0.0);
-}
-
-const Point
-Point::InvalidPoint
-(void)
-{
-   return Point(NAN, NAN);
+   this->setX(NAN);
+   this->setY(NAN);
 }
 
 bool
@@ -51,7 +44,7 @@ Point::operator<
       else if (isnan(this->x))
          return true;
    }
-   else if (x != this->x)
+   else if (x != this->x && !(isnan(x) && isnan(this->x)))
       return this->x < x;
 
    y = b.getY();
@@ -130,17 +123,25 @@ Point::setY
    this->y = y;
 }
 
-double
+void
+Point::set
+(double x, double y)
+{
+   this->setX(x);
+   this->setY(y);
+}
+
+Angle
 Point::slope
 (double x2, double y2) const
 {
    if (x2 - this->x == 0)
-      return NAN;
+      return Angle(); /* angle inits as nan */
    
-   return (y2 - this->y)/(x2 - this->x);
+   return Angle((y2 - this->y)/(x2 - this->x));
 }
 
-double
+Angle
 Point::slope
 (Point p2) const
 {
@@ -151,16 +152,16 @@ double
 Point::length
 (double x2, double y2) const
 {
-   double slope;
+   Angle slope;
 
    if (isnan(x2) || isnan(y2))
       return NAN;
    
    slope = this->slope(x2, y2);
 
-   if (slope == 0.0)
+   if (slope.getRadians() == 0.0)
       return fabs(x2 - this->x);
-   else if (isnan(slope))
+   else if (!slope.isNan())
       return fabs(y2 - this->y);
    else
       return sqrt(pow(x2 - this->x, 2.0) + pow(y2 - this->y, 2.0));
@@ -174,8 +175,8 @@ Point::length
 }
 
 bool
-Point::valid
+Point::isNan
 (void) const
 {
-   return !isnan(this->x) && !isnan(this->y);
+   return isnan(this->x) || isnan(this->y);
 }

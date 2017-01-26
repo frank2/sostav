@@ -4,17 +4,12 @@
 #include <math.h>
 
 #include "sostav/exception.hpp"
+#include "sostav/math/point.hpp"
 
 namespace Sostav
 {
    namespace Drawing
    {
-      class PointException : public Exception
-      {
-      public:
-         PointException(const char *what);
-      };
-
       class RelativePoint;
 
       class AbsolutePoint
@@ -63,22 +58,12 @@ namespace Sostav
          RelativePoint relative(SIZE size) const;
       };
 
-      class RelativePoint
+      class RelativePoint : public Math::Point
       {
-      protected:
-         double x, y;
-
       public:
          RelativePoint(double x, double y);
          RelativePoint(const RelativePoint &rel);
          RelativePoint();
-
-         bool operator<(const RelativePoint &b) const;
-         bool operator==(const RelativePoint &b) const;
-         bool operator!=(const RelativePoint &b) const;
-         bool operator>(const RelativePoint &b) const;
-         bool operator<=(const RelativePoint &b) const;
-         bool operator>=(const RelativePoint &b) const;
 
          static RelativePoint FromAbsolute(long x, long y, long width, long height);
          static RelativePoint FromAbsolute(POINT point, long width, long height);
@@ -88,21 +73,16 @@ namespace Sostav
          static double FromAbsoluteX(long x, long width);
          static double FromAbsoluteY(long y, long height);
 
-         void set(double x, double y);
          void setAbsolute(long x, long y, long width, long height);
          void setAbsolute(long x, long y, SIZE size);
          void setAbsolute(POINT point, long width, long height);
          void setAbsolute(POINT point, SIZE size);
          void setAbsolute(AbsolutePoint point, long width, long height);
          void setAbsolute(AbsolutePoint point, SIZE size);
-         void setX(double x);
          void setAbsoluteX(long x, long width);
-         void setY(double y);
          void setAbsoluteY(long y, long height);
          
-         double getX(void) const;
          long getAbsoluteX(long width) const;
-         double getY(void) const;
          long getAbsoluteY(long height) const;
 
          AbsolutePoint absolute(long width, long height) const;

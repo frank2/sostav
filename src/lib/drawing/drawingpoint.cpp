@@ -2,12 +2,7 @@
 
 using namespace Sostav;
 using namespace Sostav::Drawing;
-
-PointException::PointException
-(const char *what)
-   : Exception(what)
-{
-}
+using namespace Sostav::Math;
 
 AbsolutePoint::AbsolutePoint
 (long x, long y)
@@ -278,73 +273,20 @@ AbsolutePoint::relative
 
 RelativePoint::RelativePoint
 (double x, double y)
+   : Point(x, y)
 {
-   this->set(x, y);
 }
 
 RelativePoint::RelativePoint
 (const RelativePoint &rel)
+   : Point((Point &)rel)
 {
-   this->setX(rel.getX());
-   this->setY(rel.getY());
 }
 
 RelativePoint::RelativePoint
 (void)
+   : Point()
 {
-   this->set(0.0, 0.0);
-}
-
-bool
-RelativePoint::operator<
-(const RelativePoint &b) const
-{
-   double x, y;
-
-   x = b.getX();
-
-   if (x != this->x)
-      return this->x < x;
-
-   y = b.getY();
-
-   return this->y < y;
-}
-
-bool
-RelativePoint::operator==
-(const RelativePoint &b) const
-{
-   return !(*this < b) && !(b < *this);
-}
-
-bool
-RelativePoint::operator!=
-(const RelativePoint &b) const
-{
-   return !(*this == b);
-}
-
-
-bool
-RelativePoint::operator>
-(const RelativePoint &b) const
-{
-   return b < *this;
-}
-
-bool
-RelativePoint::operator<=
-(const RelativePoint &b) const
-{
-   return *this < b || *this == b;
-}
-
-bool
-RelativePoint::operator>=
-(const RelativePoint &b) const
-{
-   return *this > b || *this == b;
 }
 
 RelativePoint
@@ -402,14 +344,6 @@ RelativePoint::FromAbsoluteY
 }
 
 void
-RelativePoint::set
-(double x, double y)
-{
-   this->setX(x);
-   this->setY(y);
-}
-
-void
 RelativePoint::setAbsolute
 (long x, long y, long width, long height)
 {
@@ -453,24 +387,10 @@ RelativePoint::setAbsolute
 }
 
 void
-RelativePoint::setX
-(double x)
-{
-   this->x = x;
-}
-
-void
 RelativePoint::setAbsoluteX
 (long x, long width)
 {
    this->x = RelativePoint::FromAbsoluteX(x, width);
-}
-
-void
-RelativePoint::setY
-(double y)
-{
-   this->y = y;
 }
 
 void
@@ -480,25 +400,11 @@ RelativePoint::setAbsoluteY
    this->y = RelativePoint::FromAbsoluteY(y, height);
 }
 
-double
-RelativePoint::getX
-(void) const
-{
-   return this->x;
-}
-
 long
 RelativePoint::getAbsoluteX
 (long width) const
 {
    return AbsolutePoint::FromRelativeX(this->x, width);
-}
-
-double
-RelativePoint::getY
-(void) const
-{
-   return this->y;
 }
 
 long

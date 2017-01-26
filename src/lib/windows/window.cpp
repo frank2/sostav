@@ -14,25 +14,9 @@ WindowException::WindowException
 }
 
 Window::Window
-(HWND parent, std::wstring className)
-{
-   this->initialize(parent, className);
-}
-
-Window::Window
 (Window *parent, std::wstring className)
 {
-   this->initialize((parent == NULL) ? NULL : parent->getHWND()
-                    ,className);
-
-   /* if the parent window doesn't have an hwnd, set the parentWindow after
-      the fact */
-   if (this->parentWindow == NULL && parent != NULL)
-   {
-      this->addStyle(WS_CHILD);
-      this->parentWindow = parent;
-      this->parentWindow->addChild(this);
-   }
+   this->initialize(parent, className);
 }
 
 Window::Window
@@ -44,8 +28,8 @@ Window::Window
 Window::~Window
 ()
 {
-   if (this->parentWindow != NULL)
-      this->parentWindow->removeChild(this);
+   if (this->parent != NULL)
+      this->parent->removeChild(this);
 
    if (this->hasHWND())
       this->destroy();
@@ -152,59 +136,55 @@ Window::windowProc
 }
 
 bool
+Window::hasChild
+(Window *child) const
+{
+   return (std::find(this->children.begin(), this->children.end(), child) != this->children.end());
+}
+
+void
+Window::addChild
+(Window *child)
+{
+   if (!this->hasChild(child))
+      this->children.push_back(child);
+}
+
+void
+Window::removeChild
+(Window *child)
+{
+   if (!this->hasChild(child))
+      throw WindowException("couldn't find child window");
+
+   this->children.erase(std::find(this->children.begin(), this->children.end(), child));
+}
+
+bool
 Window::hasHWND
-(void)
+(void) const
 {
    return this->hwnd != NULL;
 }
 
 void
 Window::setParent
-(HWND newParent)
-{
-   RECT parentRect;
-   
-   if (this->hasHWND())
-      SetParent(this->hwnd, newParent);
-
-   GetWindowRect(newParent, &parentRect);
-
-   this->setParentSize(parentRect.bottom - parentRect.top
-                       ,parentRect.right - parentRect.left);
-   
-   this->parentHWND = newParent;
-}
-
-void
-Window::setParent
 (Window *newParent)
 {
-   if (this->parentWindow != NULL)
-      this->parentWindow->removeChild(this);
+   if (this->parent != NULL)
+      this->parent->removeChild(this);
 
    if (newParent != NULL)
       newParent->addChild(this);
 
-   this->parentWindow = newParent;
-
-   this->setParent((HWND)((newParent == NULL) ? NULL : newParent->getHWND()));
+   this->parent = newParent;
 }
 
 Window *
-Window::getParentWindow
-(void)
+Window::getParent
+(void) const
 {
-   return this->parentWindow;
-}
-
-HWND
-Window::getParentHWND
-(void)
-{
-   if (this->parentWindow != NULL)
-      this->parentHWND = this->parentWindow->getHWND();
-   
-   return this->parentHWND;
+   return this->parent;
 }
 
 void
@@ -220,12 +200,14 @@ Window::setHWND
       return;
    
    Window::MapWindow(hwnd, this);
-   SetParent(hwnd, this->getParentHWND());
+
+   if (this->parent != NULL)
+      SetParent(hwnd, this->parent->getHWND());
 }
 
 HWND
 Window::getHWND
-(void)
+(void) const
 {
    return this->hwnd;
 }
@@ -244,8 +226,8 @@ Window::setPosition
                                         | SWP_NOZORDER | SWP_NOSIZE))
       throw WindowException("SetWindowPos failed");
 
-   this->point.setAbsoluteX(x);
-   this->point.setAbsoluteY(y);
+   this->point.setX(x);
+   this->point.setY(y);
 }
 
 void
@@ -262,42 +244,36 @@ Window::setPosition
    this->setPosition(point.getX(), point.getY());
 }
 
-void
-Window::setPosition
-(double x, double y)
-{
-   this->point.setRelativeX(x);
-   this->point.setRelativeY(y);
-
-   this->setPosition(this->point.getAbsoluteX(), this->point.getAbsoluteY());
-}
-
-void
-Window::setPosition
-(RelativePoint point)
-{
-   this->setPosition(point.getX(), point.getY());
-}
-
-MixedPoint
+AbsolutePoint
 Window::getPosition
-(void)
+(void) const
 {
    return this->point;
 }
 
-AbsolutePoint
-Window::getAbsolutePosition
-(void)
+void
+Window::setRelativePosition
+(double x, double y)
 {
-   return this->point.getAbsolute();
+   SIZE parentSize = this->getParentSize();
+
+   this->point.setRelative(x, y, parentSize.cx, parentSize.cy);
+
+   this->setPosition(this->point.getX(), this->point.getY());
+}
+
+void
+Window::setRelativePosition
+(Math::Point point)
+{
+   this->setRelativePosition(point.getX(), point.getY());
 }
 
 RelativePoint
 Window::getRelativePosition
-(void)
+(void) const
 {
-   return this->point.getRelative();
+   return this->point.relative(this->size);
 }
 
 void
@@ -313,9 +289,9 @@ Window::centerX
 (void)
 {
    SIZE parentSize = this->getParentSize();
-
+   
    this->setPosition(parentSize.cx / 2 - this->size.cx / 2
-                     ,this->getAbsolutePosition().getY());
+                     ,this->point.getY());
 }
 
 void
@@ -324,7 +300,7 @@ Window::centerY
 {
    SIZE parentSize = this->getParentSize();
 
-   this->setPosition(this->getAbsolutePosition().getX()
+   this->setPosition(this->point.getX()
                      ,parentSize.cy / 2 - this->size.cy / 2);
 }
 
@@ -332,8 +308,6 @@ void
 Window::setSize
 (long cx, long cy)
 {
-   std::list<Window *>::iterator iter;
-   
    if (this->hasHWND() && !SetWindowPos(this->hwnd
                                         ,NULL
                                         ,0
@@ -346,12 +320,6 @@ Window::setSize
 
    this->size.cx = cx;
    this->size.cy = cy;
-
-   for (iter=this->children.begin(); iter!=this->children.end(); ++iter)
-   {
-      Window *child = *iter;
-      child->setParentSize(cx, cy);
-   }
 }
 
 void
@@ -363,49 +331,37 @@ Window::setSize
 
 SIZE
 Window::getSize
-(void)
+(void) const
 {
    return this->size;
 }
 
-void
-Window::setParentSize
-(long cx, long cy)
-{
-   this->point.setSize(cx, cy);
-}
-
-void
-Window::setParentSize
-(SIZE size)
-{
-   this->setParentSize(size.cx, size.cy);
-}
-
 SIZE
 Window::getParentSize
-(void)
+(void) const
 {
-   if (this->parentWindow != NULL)
-      return this->parentWindow->getSize();
-   else if (this->getParentHWND() != NULL)
+   if (this->parent != NULL)
+      return this->parent->getSize();
+   else
    {
-      RECT parentRect;
+      HWND desktop = GetDesktopWindow();
+      RECT rect;
+      SIZE size;
 
-      GetWindowRect(this->getParentHWND(), &parentRect);
+      if (!GetWindowRect(desktop, &rect))
+         throw WindowException("GetWindowRect failed");
+      
+      size.cx = rect.right - rect.left;
+      size.cy = rect.bottom - rect.top;
 
-      return {parentRect.bottom - parentRect.top, parentRect.left - parentRect.right};
+      return size;
    }
-
-   return this->point.getSize();
 }
 
 void
 Window::setRect
 (long left, long top, long right, long bottom)
 {
-   std::list<Window *>::iterator iter;
-   
    if (this->hasHWND() && !SetWindowPos(this->hwnd
                                         ,NULL
                                         ,left
@@ -416,16 +372,10 @@ Window::setRect
                                         | SWP_NOZORDER))
       throw WindowException("SetWindowPos failed");
 
-   this->point.setAbsoluteX(left);
-   this->point.setAbsoluteY(top);
+   this->point.setX(left);
+   this->point.setY(top);
    this->size.cx = right - left;
    this->size.cy = bottom - top;
-
-   for (iter=this->children.begin(); iter!=this->children.end(); ++iter)
-   {
-      Window *child = *iter;
-      child->setParentSize(this->size.cx, this->size.cy);
-   }
 }
 
 void
@@ -437,12 +387,12 @@ Window::setRect
 
 RECT
 Window::getRect
-(void)
+(void) const
 {
    RECT rect;
 
-   rect.left = this->point.getAbsoluteX();
-   rect.top = this->point.getAbsoluteY();
+   rect.left = this->point.getX();
+   rect.top = this->point.getY();
    rect.right = rect.left + this->size.cx;
    rect.bottom = rect.top + this->size.cy;
 
@@ -463,7 +413,7 @@ Window::setIcon
 
 HICON
 Window::getIcon
-(void)
+(void) const
 {
    return this->icon;
 }
@@ -482,7 +432,7 @@ Window::setCursor
 
 HCURSOR
 Window::getCursor
-(void)
+(void) const
 {
    return this->cursor;
 }
@@ -499,7 +449,7 @@ Window::setMenu
 
 HMENU
 Window::getMenu
-(void)
+(void) const
 {
    return this->menu;
 }
@@ -654,7 +604,7 @@ Window::setClassName
 
 std::wstring
 Window::getClassName
-(void)
+(void) const
 {
    return this->className;
 }
@@ -673,7 +623,7 @@ Window::setMenuName
 
 std::wstring
 Window::getMenuName
-(void)
+(void) const
 {
    return this->menuName;
 }
@@ -700,7 +650,7 @@ Window::getWindowText
       textLength = GetWindowTextLength(this->hwnd);
 
       if (textLength == 0)
-         this->windowText = std::wstring();
+         this->windowText.clear();
       else
       {
          windowText = (WCHAR *)malloc(sizeof(WCHAR) * (textLength+1));
@@ -720,22 +670,6 @@ Window::getWindowText
 }
 
 void
-Window::setFont
-(Font font)
-{
-   this->typeface = font;
-
-   this->invalidate();
-}
-
-Font
-Window::getFont
-(void)
-{
-   return this->typeface;
-}
-
-void
 Window::setBGColor
 (BYTE a, BYTE r, BYTE g, BYTE b)
 {
@@ -748,7 +682,16 @@ Window::setBGColor
    {
       DeleteObject(this->bgBrush);
       this->bgBrush = NULL;
-      this->getBGBrush();
+   }
+
+   if (this->hasHWND())
+   {
+      HBRUSH brush = this->getBGBrush();
+
+      if (SetClassLongPtr(this->hwnd
+                          ,GCLP_HBRBACKGROUND
+                          ,(LONG_PTR)brush) == 0)
+         throw WindowException("SetClassLongPtr failed");
    }
 
    this->invalidate();
@@ -773,7 +716,7 @@ Window::setBGColor
 
 Color
 Window::getBGColor
-(void)
+(void) const
 {
    return this->bgColor;
 }
@@ -826,7 +769,7 @@ Window::setFGColor
 
 Color
 Window::getFGColor
-(void)
+(void) const
 {
    return this->fgColor;
 }
@@ -839,31 +782,6 @@ Window::getFGBrush
       this->fgBrush = CreateSolidBrush(this->fgColor.colorRef());
 
    return this->fgBrush;
-}
-
-bool
-Window::hasChild
-(Window *child)
-{
-   return (std::find(this->children.begin(), this->children.end(), child) != this->children.end());
-}
-
-void
-Window::addChild
-(Window *child)
-{
-   if (!this->hasChild(child))
-      this->children.push_back(child);
-}
-
-void
-Window::removeChild
-(Window *child)
-{
-   if (!this->hasChild(child))
-      throw WindowException("couldn't find child window");
-
-   this->children.erase(std::find(this->children.begin(), this->children.end(), child));
 }
 
 void
@@ -889,18 +807,15 @@ Window::create
                                ,this->className.c_str()
                                ,(this->windowText.empty()) ? NULL : this->windowText.c_str()
                                ,this->style
-                               ,this->point.getAbsoluteX()
-                               ,this->point.getAbsoluteY()
+                               ,this->point.getX(), this->point.getY()
                                ,this->size.cx, this->size.cy
-                               ,this->getParentHWND()
+                               ,(this->parent == NULL) ? NULL : this->parent->getHWND()
                                ,this->menu
                                ,GetModuleHandle(NULL)
                                ,NULL);
 
    if (this->hwnd == NULL)
-      throw WindowException("failed to create window");
-
-   this->postCreate();
+      throw WindowException("CreateWindowEx failed");
 
    for (iter=this->children.begin(); iter!=this->children.end(); ++iter)
    {
@@ -909,6 +824,8 @@ Window::create
       if (!child->hasHWND())
          child->create();
    }
+
+   this->postCreate();
 }
 
 void
@@ -941,7 +858,7 @@ Window::registerClass
    classInfo.hInstance = GetModuleHandle(NULL);
    classInfo.hIcon = this->icon;
    classInfo.hCursor = this->cursor;
-   classInfo.hbrBackground = CreateSolidBrush(SVRGB(this->bgColor));
+   classInfo.hbrBackground = this->getBGBrush();
 
    if (!this->menuName.empty())
       classInfo.lpszMenuName = this->menuName.c_str();
@@ -1020,12 +937,6 @@ Window::hide
    
    if (!ShowWindow(this->hwnd, SW_HIDE))
       throw WindowException("ShowWindow failed");
-
-   for (iter=this->children.begin(); iter!=this->children.end(); ++iter)
-   {
-      Window *child = *iter;
-      child->hide();
-   }
 }
 
 void
@@ -1060,15 +971,9 @@ Window::endPaint
 
 void
 Window::initialize
-(HWND parent, std::wstring className)
+(Window *parent, std::wstring className)
 {
-   /* because this is usually called inside a constructor, we don't
-      need to call parent initializers here. coincidentally, the parent
-      initializer gets called by the parent constructor, so we only really
-      need to do our local initialization here once. */
-   
-   this->parentHWND = parent;
-   this->parentWindow = Window::FindWindow(parent);
+   this->parent = parent;
    this->hwnd = NULL;
    this->defWndProc = DefWindowProc;
    
@@ -1076,12 +981,10 @@ Window::initialize
    this->exStyle = 0;
    this->classStyle = 0;
 
-   if (this->parentWindow != NULL || this->parentHWND != NULL)
+   if (this->parent != NULL)
    {
       this->addStyle(WS_CHILD);
-
-      if (this->parentWindow != NULL)
-         this->parentWindow->addChild(this);
+      this->parent->addChild(this);
    }
    
    this->size.cx = this->size.cy = 0;

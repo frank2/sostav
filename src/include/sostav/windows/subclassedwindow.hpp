@@ -11,7 +11,11 @@ namespace Sostav
 {
    namespace Windows
    {
-      typedef Exception SubclassedWindowException;
+      class SubclassedWindowException : public Exception
+      {
+      public:
+         SubclassedWindowException(const char *what);
+      };
 
       class SubclassedWindow : public Window
       {
@@ -19,8 +23,8 @@ namespace Sostav
          UINT_PTR subclassID;
       
       public:
-         SubclassedWindow(HWND parent, std::wstring className);
          SubclassedWindow(Window *parent, std::wstring className);
+         SubclassedWindow(const SubclassedWindow &window);
          ~SubclassedWindow();
 
          static LRESULT CALLBACK WndProcSubclass(HWND hwnd
@@ -33,12 +37,12 @@ namespace Sostav
          virtual void setHWND(HWND window);
 
          void setSubclassID(UINT_PTR id);
-         UINT_PTR getSubclassID(void);
+         UINT_PTR getSubclassID(void) const;
 
          virtual void create(void);
 
       protected:
-         virtual void initialize(HWND parent, std::wstring className);
+         virtual void initialize(Window *parent, std::wstring className);
       };
    }
 }

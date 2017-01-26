@@ -148,6 +148,7 @@
     <ClInclude Include="..\..\src\include\sostav\drawing\point.hpp" />
     <ClInclude Include="..\..\src\include\sostav\exception.hpp" />
     <ClInclude Include="..\..\src\include\sostav\math.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\math\angle.hpp" />
     <ClInclude Include="..\..\src\include\sostav\math\line.hpp" />
     <ClInclude Include="..\..\src\include\sostav\math\point.hpp" />
     <ClInclude Include="..\..\src\include\sostav\sostav.hpp" />
@@ -160,10 +161,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\lib\drawing\color.cpp" />
+    <ClCompile Include="..\..\src\lib\drawing\drawingpoint.cpp" />
     <ClCompile Include="..\..\src\lib\drawing\font.cpp" />
     <ClCompile Include="..\..\src\lib\drawing\gradient.cpp" />
-    <ClCompile Include="..\..\src\lib\drawing\windowpoint.cpp" />
     <ClCompile Include="..\..\src\lib\exception.cpp" />
+    <ClCompile Include="..\..\src\lib\math\angle.cpp" />
     <ClCompile Include="..\..\src\lib\math\line.cpp" />
     <ClCompile Include="..\..\src\lib\math\mathpoint.cpp" />
     <ClCompile Include="..\..\src\lib\windows\imagewindow.cpp" />

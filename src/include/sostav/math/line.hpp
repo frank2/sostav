@@ -6,6 +6,7 @@
 #include <cmath>
 
 #include "sostav/exception.hpp"
+#include "sostav/math/angle.hpp"
 #include "sostav/math/point.hpp"
 
 namespace Sostav
@@ -20,18 +21,21 @@ namespace Sostav
       class Line
       {
       protected:
-         double slope, xIntercept, yIntercept, length;
+         Angle slope;
+         double xIntercept, yIntercept, length;
          Point p1, p2;
 
       public:
          Line(Point p1, Point p2);
          Line(double x1, double y1, double x2, double y2);
          Line(double slope, double yIntercept);
+         Line(Angle slope, double yIntercept);
          Line(const Line &line);
          Line();
 
-         double getSlope(void) const;
+         Angle getSlope(void) const;
          void setSlope(double slope);
+         void setSlope(Angle slope);
 
          double getXIntercept(void) const;
          void setXIntercept(double xIntercept);

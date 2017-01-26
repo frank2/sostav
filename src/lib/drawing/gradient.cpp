@@ -39,7 +39,7 @@ Gradient::setModes
 
 std::map<RelativePoint, Color>
 Gradient::getModes
-(void)
+(void) const
 {
    return this->modes;
 }
@@ -53,7 +53,7 @@ Gradient::setBase
 
 Color
 Gradient::getBase
-(void)
+(void) const
 {
    return this->base;
 }
@@ -91,11 +91,11 @@ Gradient::moveColor
 
 Color
 Gradient::formula
-(double x, double y)
+(double x, double y) const
 {
    Color result = this->base;
    Line diagonal(0, 1.0, 1.0, 0);
-   double diagonalLength = diagonal.length() / 2.0;
+   double diagonalLength = diagonal.getLength() / 2.0;
    std::map<RelativePoint, Color>::iterator iter;
    WCHAR debugString[1024];
    memset(debugString, 0, sizeof(debugString));
@@ -106,7 +106,7 @@ Gradient::formula
       Color color = iter->second;
       Color newColor;
       Line modeLine(x, y, point.getX(), point.getY());
-      double lineLength = modeLine.length();
+      double lineLength = modeLine.getLength();
       double ratio;
 
       if (lineLength >= diagonalLength)
@@ -137,14 +137,14 @@ Gradient::formula
 
 Color
 Gradient::formula
-(RelativePoint point)
+(RelativePoint point) const
 {
    return this->formula(point.getX(), point.getY());
 }
 
 Color
 Gradient::formula
-(long x, long y, long width, long height)
+(long x, long y, long width, long height) const
 {
    return this->formula(RelativePoint::FromAbsoluteX(x, width)
                         ,RelativePoint::FromAbsoluteY(y, height));
@@ -152,7 +152,7 @@ Gradient::formula
 
 Color
 Gradient::formula
-(long x, long y, SIZE size)
+(long x, long y, SIZE size) const
 {
    return this->formula(RelativePoint::FromAbsoluteX(x, size.cx)
                         ,RelativePoint::FromAbsoluteY(y, size.cy));
@@ -160,7 +160,7 @@ Gradient::formula
 
 Color
 Gradient::formula
-(AbsolutePoint point, long width, long height)
+(AbsolutePoint point, long width, long height) const
 {
    return this->formula(RelativePoint::FromAbsoluteX(point.getX(), width)
                         ,RelativePoint::FromAbsoluteY(point.getY(), height));
@@ -168,7 +168,7 @@ Gradient::formula
 
 Color
 Gradient::formula
-(AbsolutePoint point, SIZE size)
+(AbsolutePoint point, SIZE size) const
 {
    return this->formula(RelativePoint::FromAbsoluteX(point.getX(), size.cx)
                         ,RelativePoint::FromAbsoluteY(point.getY(), size.cy));
@@ -176,7 +176,7 @@ Gradient::formula
 
 HBITMAP
 Gradient::render
-(long width, long height)
+(long width, long height) const
 {
    HDC screen;
    HBITMAP dibSection;
@@ -230,7 +230,7 @@ Gradient::render
 
 HBITMAP
 Gradient::render
-(SIZE size)
+(SIZE size) const
 {
    return this->render(size.cx, size.cy);
 }

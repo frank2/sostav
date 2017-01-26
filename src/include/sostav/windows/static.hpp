@@ -16,7 +16,6 @@ namespace Sostav
       class Static : public Window
       {
       public:
-         Static(HWND parent, std::wstring caption=std::wstring());
          Static(Window *parent, std::wstring caption=std::wstring());
          Static();
          ~Static();

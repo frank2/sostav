@@ -3,18 +3,17 @@
 using namespace Sostav;
 using namespace Sostav::Windows;
 
-SubclassedWindow::SubclassedWindow
-(HWND parent, std::wstring className)
-   : Window::Window(parent, className)
+SubclassedWindowException::SubclassedWindowException
+(const char *what)
+   : Exception(what)
 {
-   this->initialize(parent, className);
 }
 
 SubclassedWindow::SubclassedWindow
 (Window *parent, std::wstring className)
    : Window::Window(parent, className)
 {
-   this->initialize((parent == NULL) ? NULL : parent->getHWND(), className);
+   this->initialize(parent, className);
 }
 
 SubclassedWindow::~SubclassedWindow
@@ -65,7 +64,7 @@ void
 SubclassedWindow::setSubclassID
 (UINT_PTR id)
 {
-   if (this->hwnd != NULL)
+   if (this->hasHWND())
       throw SubclassedWindowException("cannot set subclass ID after subclassed window created");
 
    this->subclassID = id;
@@ -73,7 +72,7 @@ SubclassedWindow::setSubclassID
 
 UINT_PTR
 SubclassedWindow::getSubclassID
-(void)
+(void) const
 {
    return this->subclassID;
 }
