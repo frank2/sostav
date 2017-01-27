@@ -10,22 +10,30 @@ LayeredWindowException::LayeredWindowException
 }
 
 LayeredWindow::LayeredWindow
-(HWND parent, std::wstring className)
+(Window *parent, std::wstring className)
    : Window(parent, className)
 {
-   this->initialize(parent, className);
+   this->transparency = Drawing::Color::Transparent();
+   this->screenDC = NULL;
+   this->updateFlag = ULW_ALPHA;
 }
 
 LayeredWindow::LayeredWindow
-(Window *parent, std::wstring className)
+(LayeredWindow &window)
+   : Window(window)
 {
-   this->initialize((parent == NULL) ? NULL : parent->getHWND(), className);
+   this->setTransparency(window.getTransparency());
+   this->screenDC = NULL;
+   this->setUpdateFlag(window.getUpdateFlag);
 }
 
 LayeredWindow::LayeredWindow
 (void)
+   : Window()
 {
-   this->initialize(NULL, L"SvLayeredWindow");
+   this->transparency = Drawing::Color::Transparent();
+   this->screenDC = NULL;
+   this->updateFlag = ULW_ALPHA;
 }
 
 void
@@ -128,7 +136,7 @@ LayeredWindow::layeredUpdate
    blender.SourceConstantAlpha = this->transparency.a;
    blender.AlphaFormat = AC_SRC_ALPHA;
 
-   position = this->point.getAbsolute().getPoint();
+   position = this->point.getPoint();
    
    if (!UpdateLayeredWindow(this->hwnd
                             ,(context == NULL) ? NULL : this->screenDC
@@ -160,14 +168,4 @@ LayeredWindow::endPaint
    this->layeredUpdate(this->paintContext);
    DeleteDC(this->paintContext);
    ReleaseDC(NULL, this->screenDC);
-}
-
-void
-LayeredWindow::initialize
-(HWND parent, std::wstring className)
-{
-   this->addExStyle(WS_EX_LAYERED);
-   this->transparency = Drawing::Color::Transparent();
-   this->screenDC = NULL;
-   this->updateFlag = ULW_ALPHA;
 }

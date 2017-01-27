@@ -24,7 +24,8 @@ namespace Sostav
       
       public:
          SubclassedWindow(Window *parent, std::wstring className);
-         SubclassedWindow(const SubclassedWindow &window);
+         SubclassedWindow(SubclassedWindow &window);
+         SubclassedWindow();
          ~SubclassedWindow();
 
          static LRESULT CALLBACK WndProcSubclass(HWND hwnd
@@ -40,9 +41,6 @@ namespace Sostav
          UINT_PTR getSubclassID(void) const;
 
          virtual void create(void);
-
-      protected:
-         virtual void initialize(Window *parent, std::wstring className);
       };
    }
 }

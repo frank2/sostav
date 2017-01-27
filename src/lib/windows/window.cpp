@@ -16,13 +16,99 @@ WindowException::WindowException
 Window::Window
 (Window *parent, std::wstring className)
 {
-   this->initialize(parent, className);
+   this->parent = parent;
+   this->hwnd = NULL;
+   this->setDefWndProc(DefWindowProc);
+   
+   this->style = WS_VISIBLE;
+   this->exStyle = 0;
+   this->classStyle = 0;
+
+   if (this->parent != NULL)
+   {
+      this->addStyle(WS_CHILD);
+      this->parent->addChild(this);
+   }
+   
+   this->size.cx = this->size.cy = 0;
+
+   this->paintContext = NULL;
+   memset(&this->paintStruct, 0, sizeof(this->paintStruct));
+
+   this->icon = NULL;
+   this->cursor = LoadCursor(NULL, IDC_ARROW);
+   this->menu = NULL;
+
+   this->bgColor = Color::FromColorRef(GetSysColor(COLOR_WINDOW));
+   this->fgColor = Color::FromColorRef(GetSysColor(COLOR_WINDOWTEXT));
+   this->bgBrush = NULL;
+   this->fgBrush = NULL;
+
+   if (className.empty())
+      throw WindowException("class name cannot be empty");
+   
+   this->className.assign(className);
+}
+
+Window::Window
+(const Window &window)
+{
+   this->parent = window.getParent();
+   this->hwnd = NULL; /* intentionally do not copy the hwnd */
+   this->setDefWndProc(window.getDefWndProc());
+
+   this->style = window.getStyle();
+   this->exStyle = window.getExStyle();
+   this->classStyle = window.getClassStyle();
+
+   if (this->parent != NULL)
+   {
+      this->addStyle(WS_CHILD);
+      this->parent.addChild(this);
+   }
+
+   this->setPosition(window.getPosition());
+   this->setSize(window.getSize());
+
+   /* intentionally skip the paint context */
+   this->paintContext = NULL;
+   memset(&this->paintStruct, 0, sizeof(this->paintStruct));
+
+   this->icon = window.getIcon();
+   this->cursor = window.getCursor();
+   this->menu = window.getMenu();
+
+   this->typeface = window.getTypeface();
+   this->bgColor = window.getBGColor();
+   this->fgColor = window.getFGColor();
+   this->bgBrush = NULL;
+   this->fgBrush = NULL;
+
+   this->className.assign(window.getClassName());
+   this->menuName.assign(window.getMenuName());
+   this->windowText.assign(window.getWindowText());
 }
 
 Window::Window
 (void)
 {
-   this->initialize(NULL, L"SvWindow");
+   this->parent = NULL;
+   this->hwnd = NULL;
+   this->setDefWndProc(DefWindowProc);
+   
+   this->style = 0;
+   this->exStyle = 0;
+   this->classStyle = 0;
+   this->size.cx = this->size.cy = 0;
+
+   this->paintContext = NULL;
+   memset(&this->paintStruct, 0, sizeof(this->paintStruct));
+
+   this->icon = NULL;
+   this->cursor = NULL;
+   this->menu = NULL;
+   this->bgBrush = NULL;
+   this->fgBrush = NULL;
 }
 
 Window::~Window
@@ -210,6 +296,20 @@ Window::getHWND
 (void) const
 {
    return this->hwnd;
+}
+
+void
+Window::setDefWndProc
+(WindowProcedure wndProc)
+{
+   this->defWndProc = wndProc;
+}
+
+WindowProcedure
+Window::getDefWndProc
+(void) const
+{
+   return this->defWndProc;
 }
 
 void
@@ -670,6 +770,23 @@ Window::getWindowText
 }
 
 void
+Window::setTypeface
+(Font typeface)
+{
+   this->typeface = typeface;
+
+   if (this->hasHWND())
+      this->invalidate();
+}
+
+Font
+Window::getTypeface
+(void) const
+{
+   return this->typeface;
+}
+
+void
 Window::setBGColor
 (BYTE a, BYTE r, BYTE g, BYTE b)
 {
@@ -973,41 +1090,6 @@ void
 Window::initialize
 (Window *parent, std::wstring className)
 {
-   this->parent = parent;
-   this->hwnd = NULL;
-   this->defWndProc = DefWindowProc;
-   
-   this->style = WS_VISIBLE;
-   this->exStyle = 0;
-   this->classStyle = 0;
-
-   if (this->parent != NULL)
-   {
-      this->addStyle(WS_CHILD);
-      this->parent->addChild(this);
-   }
-   
-   this->size.cx = this->size.cy = 0;
-
-   this->paintContext = NULL;
-   memset(&this->paintStruct, 0, sizeof(this->paintStruct));
-
-   this->icon = NULL;
-   this->cursor = LoadCursor(NULL, IDC_ARROW);
-   this->menu = NULL;
-
-   this->bgColor = Color::FromColorRef(GetSysColor(COLOR_WINDOW));
-   this->fgColor = Color::FromColorRef(GetSysColor(COLOR_WINDOWTEXT));
-   this->bgBrush = NULL;
-   this->fgBrush = NULL;
-
-   if (className.empty())
-      throw WindowException("class name cannot be empty");
-   
-   this->className.assign(className);
-
-   this->point.setSize(GetSystemMetrics(SM_CXFULLSCREEN)
-                       ,GetSystemMetrics(SM_CYFULLSCREEN));
 }
 
 HBRUSH

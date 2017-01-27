@@ -11,9 +11,26 @@ SubclassedWindowException::SubclassedWindowException
 
 SubclassedWindow::SubclassedWindow
 (Window *parent, std::wstring className)
-   : Window::Window(parent, className)
+   : Window(parent, className)
 {
-   this->initialize(parent, className);
+   this->defWndProc = DefSubclassProc;
+   this->subclassID = 0;
+}
+
+SubclassedWindow::SubclassedWindow
+(SubclassedWindow &window)
+   : Window(window)
+{
+   this->setDefWndProc(window.getDefWndProc());
+   this->setSubclassID(window.getSubclassID());
+}
+
+SubclassedWindow::SubclassedWindow
+(void)
+   : Window()
+{
+   this->defWndProc = DefSubclassProc;
+   this->subclassID = 0;
 }
 
 SubclassedWindow::~SubclassedWindow
@@ -88,12 +105,4 @@ SubclassedWindow::create
                           ,this->subclassID
                           ,(DWORD_PTR)this))
       throw SubclassedWindowException("SetWindowSubclass failed");
-}
-
-void
-SubclassedWindow::initialize
-(HWND parent, std::wstring className)
-{
-   this->defWndProc = DefSubclassProc;
-   this->subclassID = 0;
 }

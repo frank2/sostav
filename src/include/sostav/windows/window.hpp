@@ -10,6 +10,7 @@
 
 #include "sostav/exception.hpp"
 #include "sostav/drawing/color.hpp"
+#include "sostav/drawing/font.hpp"
 #include "sostav/drawing/point.hpp"
 
 namespace Sostav
@@ -22,12 +23,14 @@ namespace Sostav
          WindowException(const char *what);
       };
 
+      typedef LRESULT (CALLBACK *WindowProcedure)(HWND, UINT, WPARAM, LPARAM);
+
       class Window
       {
       protected:
          Window *parent;
          HWND hwnd;
-         LRESULT (CALLBACK *defWndProc)(HWND, UINT, WPARAM, LPARAM);
+         WindowProcedure defWndProc;
 
          Drawing::AbsolutePoint point;
          SIZE size;
@@ -41,6 +44,7 @@ namespace Sostav
       
          DWORD style, exStyle, classStyle;
 
+         Drawing::Font typeface;
          Drawing::Color bgColor, fgColor;
          HBRUSH bgBrush, fgBrush;
 
@@ -51,8 +55,8 @@ namespace Sostav
          static std::map<HWND, Window *> WindowPool;
          static Window *LastWindow;
       
-         Window(Window *parent, std::wstring className);
-         Window(const Window &window);
+         Window(Window *parent, std::wstring className=L"SvWindow");
+         Window(Window &window);
          Window();
          ~Window();
 
@@ -77,6 +81,9 @@ namespace Sostav
 
          virtual void setHWND(HWND window);
          HWND getHWND(void) const;
+
+         void setDefWndProc(WindowProcedure wndProc);
+         WindowProcedure getDefWndProc(void) const;
 
          void setPosition(long x, long y);
          void setPosition(POINT position);
@@ -132,6 +139,9 @@ namespace Sostav
 
          void setWindowText(std::wstring windowText);
          std::wstring getWindowText(void);
+
+         void setTypeface(Drawing::Font typeface);
+         Drawing::Font getTypeface(void) const;
 
          void setBGColor(BYTE a, BYTE r, BYTE g, BYTE b);
          void setBGColor(DWORD hexValue);

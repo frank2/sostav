@@ -10,13 +10,6 @@ ImageWindowException::ImageWindowException
 }
 
 ImageWindow::ImageWindow
-(HWND parent, std::wstring className, HBITMAP image)
-   : Window(parent, className)
-{
-   this->image = image;
-}
-
-ImageWindow::ImageWindow
 (Window *window, std::wstring className, HBITMAP image)
    : Window(window, className)
 {
@@ -74,13 +67,6 @@ ImageWindow::drawImage
 
    SelectObject(imageContext, oldBitmap);
    DeleteDC(imageContext);
-}
-
-LayeredImageWindow::LayeredImageWindow
-(HWND parent, std::wstring className, HBITMAP image)
-   : LayeredWindow(parent, className)
-{
-   this->image = image;
 }
 
 LayeredImageWindow::LayeredImageWindow

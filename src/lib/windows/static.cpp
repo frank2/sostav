@@ -46,7 +46,7 @@ Static::paint
       SetBkMode(this->paintContext, TRANSPARENT);
    else
    {
-      RECT rect = {0,0,this->size.cx, this->size.cy};
+      RECT rect = {0,0,this->size.cx,this->size.cy};
       HBRUSH brush;
       
       SetBkColor(context, this->bgColor.colorRef());

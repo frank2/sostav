@@ -3,6 +3,7 @@
 #include <windows.h>
 
 #include "sostav/windows/window.hpp"
+#include "sostav/drawing/color.hpp"
 
 namespace Sostav
 {
@@ -22,9 +23,10 @@ namespace Sostav
          DWORD updateFlag;
          
       public:
-         LayeredWindow(HWND parent, std::wstring className=L"SvLayeredWindow");
          LayeredWindow(Window *parent, std::wstring className=L"SvLayeredWindow");
+         LayeredWindow(LayeredWindow &window);
          LayeredWindow();
+         ~LayeredWindow();
 
          void setTransparency(Drawing::Color color);
          Drawing::Color getTransparency(void) const;
@@ -43,7 +45,6 @@ namespace Sostav
       protected:
          virtual void beginPaint(void);
          virtual void endPaint(void);
-         virtual void initialize(HWND parent, std::wstring className);
       };
    }
 }

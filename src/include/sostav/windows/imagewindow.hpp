@@ -24,9 +24,10 @@ namespace Sostav
          HBITMAP image;
          
       public:
-         ImageWindow(HWND parent, std::wstring className=L"SvImageWindow", HBITMAP image=NULL);
          ImageWindow(Window *window, std::wstring className=L"SvImageWindow", HBITMAP image=NULL);
+         ImageWindow(ImageWindow &window);
          ImageWindow();
+         ~ImageWindow();
 
          HBITMAP getImage(void) const;
          void setImage(HBITMAP image);
@@ -41,8 +42,8 @@ namespace Sostav
          HBITMAP image;
          
       public:
-         LayeredImageWindow(HWND parent, std::wstring className=L"SvLayeredImageWindow", HBITMAP image=NULL);
          LayeredImageWindow(Window *window, std::wstring className=L"SvLayeredImageWindow", HBITMAP image=NULL);
+         LayeredImageWindow(LayeredImageWindow &window);
          LayeredImageWindow();
 
          HBITMAP getImage(void) const;
