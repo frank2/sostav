@@ -31,6 +31,18 @@
     <Filter Include="Source Files\windows">
       <UniqueIdentifier>{1b9bf1cd-b567-4d4e-aade-b81b05f3dc42}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\win32">
+      <UniqueIdentifier>{1c8e3c65-a925-4fe4-b273-352b9863257a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\controls">
+      <UniqueIdentifier>{d26ce26a-1d11-458a-8828-3fdb27ea0d62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\controls">
+      <UniqueIdentifier>{2075d117-b18f-4ae3-b0eb-de52d9d9d885}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\win32">
+      <UniqueIdentifier>{3c07e6f5-f593-45e5-99bb-21f72d629587}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -66,9 +78,6 @@
     <ClInclude Include="..\..\src\include\sostav\math\line.hpp">
       <Filter>Header Files\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\sostav\windows\static.hpp">
-      <Filter>Header Files\windows</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\include\sostav\windows\subclassedwindow.hpp">
       <Filter>Header Files\windows</Filter>
     </ClInclude>
@@ -87,6 +96,27 @@
     <ClInclude Include="..\..\src\include\sostav\math\angle.hpp">
       <Filter>Header Files\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\include\sostav\win32\button.hpp">
+      <Filter>Header Files\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\include\sostav\win32\combobox.hpp">
+      <Filter>Header Files\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\include\sostav\win32\edit.hpp">
+      <Filter>Header Files\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\include\sostav\win32\static.hpp">
+      <Filter>Header Files\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\include\sostav\controls\static.hpp">
+      <Filter>Header Files\controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\include\sostav\controls.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\include\sostav\win32.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\lib\exception.cpp">
@@ -103,9 +133,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\lib\math\line.cpp">
       <Filter>Source Files\math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\lib\windows\static.cpp">
-      <Filter>Source Files\windows</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\lib\windows\subclassedwindow.cpp">
       <Filter>Source Files\windows</Filter>
@@ -127,6 +154,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\lib\drawing\drawingpoint.cpp">
       <Filter>Source Files\drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib\controls\static.cpp">
+      <Filter>Source Files\controls</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

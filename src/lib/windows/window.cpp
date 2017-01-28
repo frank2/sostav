@@ -51,7 +51,7 @@ Window::Window
 }
 
 Window::Window
-(const Window &window)
+(Window &window)
 {
    this->parent = window.getParent();
    this->hwnd = NULL; /* intentionally do not copy the hwnd */
@@ -64,7 +64,7 @@ Window::Window
    if (this->parent != NULL)
    {
       this->addStyle(WS_CHILD);
-      this->parent.addChild(this);
+      this->parent->addChild(this);
    }
 
    this->setPosition(window.getPosition());
@@ -1123,6 +1123,8 @@ Window::onDestroy
    }
 
    Window::UnmapWindow(this->hwnd);
+
+   this->defWndProc(this->hwnd, WM_DESTROY, NULL, NULL);
    
    this->hwnd = NULL;
 }

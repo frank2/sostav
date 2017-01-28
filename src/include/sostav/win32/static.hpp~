@@ -1,0 +1,25 @@
+#pragma once
+
+#include <windows.h>
+
+#include "sostav/windows/subclassedwindow.hpp"
+
+namespace Sostav
+{
+   namespace Windows
+   {
+      namespace Win32
+      {
+         class Static : public SubclassedWindow
+         {
+         public:
+            Static(Window *parent, std::wstring caption);
+            Static(Static &window);
+            Static();
+            ~Static();
+         };
+      }
+   }
+}
+
+         

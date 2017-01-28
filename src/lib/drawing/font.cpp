@@ -6,7 +6,7 @@ using namespace Sostav::Drawing;
 Font::Font
 (std::wstring face, LONG points)
 {
-   this->initialize();
+   memset(&this->fontData, 0, sizeof(LOGFONT));
 
    this->setFace(face);
    this->setPointSize(points);
@@ -15,7 +15,7 @@ Font::Font
 Font::Font
 (std::wstring face, LONG height, LONG width)
 {
-   this->initialize();
+   memset(&this->fontData, 0, sizeof(LOGFONT));
 
    this->setFace(face);
    this->setHeight(height);
@@ -23,7 +23,7 @@ Font::Font
 }
 
 Font::Font
-(Font &font)
+(const Font &font)
 {
    this->setLogFont(font.getLogFont());
 }
@@ -40,8 +40,9 @@ Font::Font
                              ,(LPVOID)&metrics
                              ,NULL))
       throw FontException("couldn't query system metrics");
-   
-   this->initialize();
+
+   memset(&this->fontData, 0, sizeof(LOGFONT));
+          
    this->setLogFont(metrics.lfMessageFont);
 }
 
@@ -59,7 +60,7 @@ Font::setLogFont
 
 LOGFONT
 Font::getLogFont
-(void)
+(void) const
 {
    return this->fontData;
 }
@@ -73,7 +74,7 @@ Font::setHeight
 
 LONG
 Font::getHeight
-(void)
+(void) const
 {
    return this->fontData.lfHeight;
 }
@@ -87,7 +88,7 @@ Font::setWidth
 
 LONG
 Font::getWidth
-(void)
+(void) const
 {
    return this->fontData.lfWidth;
 }
@@ -120,14 +121,14 @@ Font::setFace
 
 std::wstring
 Font::getFace
-(void)
+(void) const
 {
    return std::wstring(this->fontData.lfFaceName);
 }
 
 HFONT
 Font::getHandle
-(void)
+(void) const
 {
    HFONT handle;
 
@@ -137,11 +138,4 @@ Font::getHandle
       throw FontException("CreateFontIndirect failed");
 
    return handle;
-}
-
-void
-Font::initialize
-(void)
-{
-   memset(&this->fontData, 0, sizeof(LOGFONT));
 }

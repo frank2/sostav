@@ -1,13 +1,13 @@
-#include "sostav/windows/static.hpp"
+#include "sostav/controls/static.hpp"
 
 using namespace Sostav;
 using namespace Sostav::Windows;
+using namespace Sostav::Controls;
 
-Static::Static
-(HWND parent, std::wstring caption)
-   : Window(parent, L"SvStatic")
+StaticException::StaticException
+(const char *what)
+   : Exception(what)
 {
-   this->setWindowText(caption);
 }
 
 Static::Static
@@ -15,6 +15,13 @@ Static::Static
    : Window(parent, L"SvStatic")
 {
    this->setWindowText(caption);
+}
+
+Static::Static
+(Static &window)
+   : Window(window)
+{
+   this->setWindowText(window.getWindowText());
 }
 
 Static::Static

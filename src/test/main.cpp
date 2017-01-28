@@ -1,83 +1,29 @@
 #include "main.hpp"
 
 using namespace Sostav;
-using namespace Sostav::Drawing;
 using namespace Sostav::Windows;
 
-GradientTest::GradientTest
-(HWND parent)
-   : LayeredImageWindow(parent, L"GradientTest")
-{
-   this->initialize(parent, L"GradientTest");
-}
-
-GradientTest::GradientTest
-(Window *parent)
-   : LayeredImageWindow(parent, L"GradientTest")
-{
-   this->initialize((parent == NULL) ? NULL : parent->getHWND(), L"GradientTest");
-}
-
-GradientTest::GradientTest
+WindowTest::WindowTest
 (void)
-   : LayeredImageWindow()
+   : Window(NULL, L"SvWindowTest")
 {
-   this->setClassName(L"GradientTest");
-   this->initialize(NULL, L"GradientTest");
-}
+   this->staticText.setParent(this);
+   this->button.setParent(this);
+   this->edit.setParent(this);
 
-void
-GradientTest::preCreate
-(void)
-{
-   this->setImage(this->gradient.render(this->size.cx, this->size.cy));
-}
+   this->addStyle(WS_POPUP);
+   this->setSize(500, 500);
+   this->center();
 
-void
-GradientTest::initialize
-(HWND parent, std::wstring className)
-{
-   RelativePoint pt1, pt2;
-
-   pt1.setX(0.5);
-
-   if (!(pt1 < pt2) && !(pt2 < pt1))
-      OutputDebugString(L"WTF FUCK OFF");
-
-   this->gradient.addColor(RelativePoint(0.0, 0.0)
-                           ,Color(Color::Alpha_Opaque
-                                  ,255, 0, 0));
-   this->gradient.addColor(RelativePoint(0.5, 0.0)
-                           ,Color(Color::Alpha_Opaque
-                                  ,0, 255, 0));
-   this->gradient.addColor(RelativePoint(1.0, 0.0)
-                           ,Color(Color::Alpha_Opaque
-                                  ,0, 0, 255));
-
-   this->gradient.addColor(RelativePoint(0.0, 1.0)
-                           ,Color(Color::Alpha_Opaque
-                                  ,255, 255, 0));
-   this->gradient.addColor(RelativePoint(0.33, 1.0)
-                           ,Color(Color::Alpha_Opaque
-                                  ,255, 0, 255));
-   this->gradient.addColor(RelativePoint(0.66, 1.0)
-                           ,Color(Color::Alpha_Opaque
-                                  ,0, 255, 255));
-   this->gradient.addColor(RelativePoint(1.0, 1.0)
-                           ,Color(Color::Alpha_Opaque
-                                  ,255, 255, 255));
+   this->staticText.setPosition(50, 50);
+   this->staticText.setWindowText(L"Hello, world!");
 }
 
 int CALLBACK
 wWinMain
 (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
-   GradientTest test;
-
-   test.addStyle(WS_POPUP);
-   test.setSize(500, 500);
-   test.setPosition((long)300, (long)150);
-   test.setAlpha(0xFF);
+   WindowTest test;
 
    test.show();
 

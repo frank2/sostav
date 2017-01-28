@@ -141,6 +141,8 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\include\sostav\controls.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\controls\static.hpp" />
     <ClInclude Include="..\..\src\include\sostav\drawing.hpp" />
     <ClInclude Include="..\..\src\include\sostav\drawing\color.hpp" />
     <ClInclude Include="..\..\src\include\sostav\drawing\font.hpp" />
@@ -152,14 +154,19 @@
     <ClInclude Include="..\..\src\include\sostav\math\line.hpp" />
     <ClInclude Include="..\..\src\include\sostav\math\point.hpp" />
     <ClInclude Include="..\..\src\include\sostav\sostav.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\win32.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\win32\button.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\win32\combobox.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\win32\edit.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\win32\static.hpp" />
     <ClInclude Include="..\..\src\include\sostav\windows.hpp" />
     <ClInclude Include="..\..\src\include\sostav\windows\imagewindow.hpp" />
     <ClInclude Include="..\..\src\include\sostav\windows\layeredwindow.hpp" />
-    <ClInclude Include="..\..\src\include\sostav\windows\static.hpp" />
     <ClInclude Include="..\..\src\include\sostav\windows\subclassedwindow.hpp" />
     <ClInclude Include="..\..\src\include\sostav\windows\window.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\lib\controls\static.cpp" />
     <ClCompile Include="..\..\src\lib\drawing\color.cpp" />
     <ClCompile Include="..\..\src\lib\drawing\drawingpoint.cpp" />
     <ClCompile Include="..\..\src\lib\drawing\font.cpp" />
@@ -170,7 +177,6 @@
     <ClCompile Include="..\..\src\lib\math\mathpoint.cpp" />
     <ClCompile Include="..\..\src\lib\windows\imagewindow.cpp" />
     <ClCompile Include="..\..\src\lib\windows\layeredwindow.cpp" />
-    <ClCompile Include="..\..\src\lib\windows\static.cpp" />
     <ClCompile Include="..\..\src\lib\windows\subclassedwindow.cpp" />
     <ClCompile Include="..\..\src\lib\windows\window.cpp" />
   </ItemGroup>

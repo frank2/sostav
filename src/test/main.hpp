@@ -8,19 +8,14 @@
 
 #pragma comment(lib, "sostav")
 
-class GradientTest : public Sostav::Windows::LayeredImageWindow
+class WindowTest : public Sostav::Windows::Window
 {
 protected:
-   Sostav::Drawing::Gradient gradient;
+   Sostav::Win32::Static staticText;
+   Sostav::Win32::Button button;
+   Sostav::Win32::Edit edit;
 
 public:
-   GradientTest(HWND parent);
-   GradientTest(Window *parent);
-   GradientTest();
-
-   virtual void preCreate(void);
-
-protected:
-   virtual void initialize(HWND parent, std::wstring className);
+   WindowTest();
+   ~WindowTest();
 };
-   
