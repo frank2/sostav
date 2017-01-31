@@ -1,8 +1,8 @@
 #include "sostav/controls/static.hpp"
 
 using namespace Sostav;
-using namespace Sostav::Windows;
 using namespace Sostav::Controls;
+using namespace Sostav::Windows;
 
 StaticException::StaticException
 (const char *what)
@@ -12,30 +12,28 @@ StaticException::StaticException
 
 Static::Static
 (Window *parent, std::wstring caption)
-   : Window(parent, L"SvStatic")
+   : PaintedWindow(parent, L"SvStatic")
 {
    this->setWindowText(caption);
-   this->oldMethod = true;
 }
 
 Static::Static
 (Static &window)
-   : Window(window)
+   : PaintedWindow(window)
 {
    this->setWindowText(window.getWindowText());
 }
 
 Static::Static
 (void)
-   : Window()
+   : PaintedWindow()
 {
-   this->oldMethod = true;
 }
 
 Static::~Static
 (void)
 {
-   Window::~Window();
+   PaintedWindow::~PaintedWindow();
 }
 
 void

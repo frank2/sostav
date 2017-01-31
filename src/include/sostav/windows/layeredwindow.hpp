@@ -2,7 +2,7 @@
 
 #include <windows.h>
 
-#include "sostav/windows/window.hpp"
+#include "sostav/windows/paintedwindow.hpp"
 #include "sostav/drawing/color.hpp"
 
 namespace Sostav
@@ -15,7 +15,7 @@ namespace Sostav
          LayeredWindowException(const char *what);
       };
 
-      class LayeredWindow : public Window
+      class LayeredWindow : public PaintedWindow
       {
       protected:
          HDC screenDC;

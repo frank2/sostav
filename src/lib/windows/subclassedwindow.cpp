@@ -15,6 +15,7 @@ SubclassedWindow::SubclassedWindow
 {
    this->defWndProc = DefSubclassProc;
    this->subclassID = 0;
+   this->oldMethod = false;
 }
 
 SubclassedWindow::SubclassedWindow
@@ -23,6 +24,7 @@ SubclassedWindow::SubclassedWindow
 {
    this->setDefWndProc(window.getDefWndProc());
    this->setSubclassID(window.getSubclassID());
+   this->setSubclassMethod(window.getSubclassMethod());
 }
 
 SubclassedWindow::SubclassedWindow
@@ -31,6 +33,7 @@ SubclassedWindow::SubclassedWindow
 {
    this->defWndProc = DefSubclassProc;
    this->subclassID = 0;
+   this->oldMethod = false;
 }
 
 SubclassedWindow::~SubclassedWindow
@@ -69,12 +72,7 @@ SubclassedWindow::setHWND
 (HWND window)
 {
    Window::setHWND(window);
-
-   if (!SetWindowSubclass(window
-                          ,SubclassedWindow::WndProcSubclass
-                          ,this->subclassID
-                          ,(DWORD_PTR)this))
-      throw SubclassedWindowException("SetWindowSubclass failed");
+   this->subclassWindow(window);
 }
 
 void
@@ -95,14 +93,42 @@ SubclassedWindow::getSubclassID
 }
 
 void
+SubclassedWindow::setSubclassMethod
+(bool method)
+{
+   this->oldMethod = method;
+}
+
+bool
+SubclassedWindow::getSubclassMethod
+(void) const
+{
+   return this->oldMethod;
+}
+
+void
 SubclassedWindow::create
 (void)
 {
    Window::create();
+   this->subclassWindow(this->hwnd);
+}
 
-   if (!SetWindowSubclass(this->hwnd
-                          ,SubclassedWindow::WndProcSubclass
-                          ,this->subclassID
-                          ,(DWORD_PTR)this))
+void
+SubclassedWindow::subclassWindow
+(HWND window)
+{
+   if (this->oldMethod)
+   {
+      if (SetWindowLongPtr(window
+                           ,GWLP_WNDPROC
+                           ,(UINT_PTR)Window::WndProc) == NULL)
+         throw SubclassedWindowException("SetWindowLong failed");
+      this->defWndProc = DefWindowProc;
+   }
+   else if (!this->oldMethod && !SetWindowSubclass(window
+                                                   ,SubclassedWindow::WndProcSubclass
+                                                   ,this->subclassID
+                                                   ,(DWORD_PTR)this))
       throw SubclassedWindowException("SetWindowSubclass failed");
 }

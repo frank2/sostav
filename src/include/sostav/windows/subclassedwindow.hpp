@@ -21,6 +21,7 @@ namespace Sostav
       {
       protected:
          UINT_PTR subclassID;
+         bool oldMethod;
       
       public:
          SubclassedWindow(Window *parent, std::wstring className);
@@ -40,7 +41,13 @@ namespace Sostav
          void setSubclassID(UINT_PTR id);
          UINT_PTR getSubclassID(void) const;
 
+         void setSubclassMethod(bool method);
+         bool getSubclassMethod(void) const;
+
          virtual void create(void);
+
+      protected:
+         virtual void subclassWindow(HWND window);
       };
    }
 }

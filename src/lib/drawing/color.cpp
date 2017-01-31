@@ -93,10 +93,10 @@ Color::blend
    gD = color.g - this->g;
    bD = color.b - this->b;
 
-   newColor.a = this->a + floor(aD * percentage);
-   newColor.r = this->r + floor(rD * percentage);
-   newColor.g = this->g + floor(gD * percentage);
-   newColor.b = this->b + floor(bD * percentage);
+   newColor.a = (BYTE)(this->a + floor(aD * percentage));
+   newColor.r = (BYTE)(this->r + floor(rD * percentage));
+   newColor.g = (BYTE)(this->g + floor(gD * percentage));
+   newColor.b = (BYTE)(this->b + floor(bD * percentage));
 
    return newColor;
 }

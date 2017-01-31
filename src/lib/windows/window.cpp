@@ -32,9 +32,6 @@ Window::Window
    
    this->size.cx = this->size.cy = 0;
 
-   this->paintContext = NULL;
-   memset(&this->paintStruct, 0, sizeof(this->paintStruct));
-
    this->icon = NULL;
    this->cursor = LoadCursor(NULL, IDC_ARROW);
    this->menu = NULL;
@@ -70,10 +67,6 @@ Window::Window
    this->setPosition(window.getPosition());
    this->setSize(window.getSize());
 
-   /* intentionally skip the paint context */
-   this->paintContext = NULL;
-   memset(&this->paintStruct, 0, sizeof(this->paintStruct));
-
    this->icon = window.getIcon();
    this->cursor = window.getCursor();
    this->menu = window.getMenu();
@@ -100,9 +93,6 @@ Window::Window
    this->exStyle = 0;
    this->classStyle = 0;
    this->size.cx = this->size.cy = 0;
-
-   this->paintContext = NULL;
-   memset(&this->paintStruct, 0, sizeof(this->paintStruct));
 
    this->icon = NULL;
    this->cursor = NULL;
@@ -776,7 +766,7 @@ Window::setTypeface
    this->typeface = typeface;
 
    if (this->hasHWND())
-      this->invalidate();
+      SendMessage(this->hwnd, WM_SETFONT, (WPARAM)this->typeface.getHandle(), (LPARAM)TRUE);
 }
 
 Font
@@ -949,7 +939,7 @@ void
 Window::postCreate
 (void)
 {
-   return;
+   SendMessage(this->hwnd, WM_SETFONT, (WPARAM)this->typeface.getHandle(), (LPARAM)FALSE);
 }
 
 void
@@ -1049,47 +1039,8 @@ Window::hide
 {
    std::list<Window *>::iterator iter;
    
-   if (!this->hasHWND())
-      return;
-   
-   if (!ShowWindow(this->hwnd, SW_HIDE))
+   if (this->hasHWND() && !ShowWindow(this->hwnd, SW_HIDE))
       throw WindowException("ShowWindow failed");
-}
-
-void
-Window::paint
-(HDC context)
-{
-   this->defWndProc(this->hwnd, WM_PAINT, NULL, NULL);
-}
-
-void
-Window::beginPaint
-(void)
-{
-   if (!this->hasHWND())
-      throw WindowException("can't begin paint without an hwnd");
-   
-   this->paintContext = BeginPaint(this->hwnd, &this->paintStruct);
-}
-
-void
-Window::endPaint
-(void)
-{
-   if (!this->hasHWND())
-      throw WindowException("no way to end paint on an object with no hwnd");
-
-   EndPaint(this->hwnd, &this->paintStruct);
-
-   memset(&this->paintStruct, 0, sizeof(this->paintStruct));
-   this->paintContext = NULL;
-}
-
-void
-Window::initialize
-(Window *parent, std::wstring className)
-{
 }
 
 HBRUSH
@@ -1110,22 +1061,10 @@ void
 Window::onDestroy
 (void)
 {
-   if (this->fgBrush != NULL)
-   {
-      DeleteObject(this->fgBrush);
-      this->fgBrush = NULL;
-   }
-
-   if (this->bgBrush != NULL)
-   {
-      DeleteObject(this->bgBrush);
-      this->bgBrush = NULL;
-   }
-
-   Window::UnmapWindow(this->hwnd);
-
    this->defWndProc(this->hwnd, WM_DESTROY, NULL, NULL);
    
+   Window::UnmapWindow(this->hwnd);
+
    this->hwnd = NULL;
 }
 
@@ -1140,7 +1079,5 @@ void
 Window::onPaint
 (void)
 {
-   this->beginPaint();
-   this->paint(this->paintContext);
-   this->endPaint();
+   this->defWndProc(this->hwnd, WM_PAINT, NULL, NULL);
 }

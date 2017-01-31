@@ -10,11 +10,16 @@ namespace Sostav
 {
    namespace Drawing
    {
-      typedef Exception FontException;
+      class FontException : public Exception
+      {
+      public:
+         FontException(const char *what);
+      };
 
       class Font
       {
       protected:
+         HFONT fontHandle;
          LOGFONT fontData;
 
       public:
@@ -38,7 +43,7 @@ namespace Sostav
          void setFace(std::wstring face);
          std::wstring getFace(void) const;
 
-         HFONT getHandle(void) const;
+         HFONT getHandle(void);
       };
    }
 }

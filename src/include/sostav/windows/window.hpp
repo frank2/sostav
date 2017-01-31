@@ -34,9 +34,6 @@ namespace Sostav
 
          Drawing::AbsolutePoint point;
          SIZE size;
-      
-         HDC paintContext;
-         PAINTSTRUCT paintStruct;
    
          HICON icon;
          HCURSOR cursor;
@@ -61,14 +58,14 @@ namespace Sostav
          ~Window();
 
          static void MessageLoop(void);
-         static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+         static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
          static void MapWindow(HWND hwnd, Window *window);
          static void UnmapWindow(HWND hwnd);
          static Window *FindWindow(HWND hwnd);
 
-         virtual LRESULT CALLBACK windowProc(UINT msg
-                                             ,WPARAM wParam
-                                             ,LPARAM lParam);
+         virtual LRESULT windowProc(UINT msg
+                                    ,WPARAM wParam
+                                    ,LPARAM lParam);
 
          bool hasChild(Window *child) const;
          void addChild(Window *child);
@@ -165,14 +162,8 @@ namespace Sostav
          virtual void update(void);
          virtual void show(void);
          virtual void hide(void);
-         virtual void paint(HDC context);
 
       protected:
-         virtual void beginPaint(void);
-         virtual void endPaint(void);
-
-         virtual void initialize(Window *window, std::wstring className);
-
          virtual HBRUSH onCtlColorEdit(HDC context, HWND control);
          virtual HBRUSH onCtlColorStatic(HDC context, HWND control);
          virtual void onDestroy(void);

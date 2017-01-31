@@ -3,6 +3,12 @@
 using namespace Sostav;
 using namespace Sostav::Drawing;
 
+FontException::FontException
+(const char *what)
+   : Exception(what)
+{
+}
+
 Font::Font
 (std::wstring face, LONG points)
 {
@@ -10,6 +16,8 @@ Font::Font
 
    this->setFace(face);
    this->setPointSize(points);
+
+   this->fontHandle = NULL;
 }
 
 Font::Font
@@ -20,35 +28,29 @@ Font::Font
    this->setFace(face);
    this->setHeight(height);
    this->setWidth(width);
+
+   this->fontHandle = NULL;
 }
 
 Font::Font
 (const Font &font)
 {
    this->setLogFont(font.getLogFont());
+   this->fontHandle = NULL;
 }
 
 Font::Font
 (void)
 {
-   NONCLIENTMETRICS metrics;
-
-   metrics.cbSize = sizeof(NONCLIENTMETRICS);
-
-   if (!SystemParametersInfo(SPI_GETNONCLIENTMETRICS
-                             ,sizeof(NONCLIENTMETRICS)
-                             ,(LPVOID)&metrics
-                             ,NULL))
-      throw FontException("couldn't query system metrics");
-
    memset(&this->fontData, 0, sizeof(LOGFONT));
-          
-   this->setLogFont(metrics.lfMessageFont);
+   this->fontHandle = NULL;
 }
 
 Font::~Font
 (void)
 {
+   if (this->fontHandle != NULL)
+      DeleteObject(this->fontHandle);
 }
 
 void
@@ -56,6 +58,12 @@ Font::setLogFont
 (LOGFONT logFont)
 {
    memcpy_s(&this->fontData, sizeof(LOGFONT), &logFont, sizeof(LOGFONT));
+
+   if (this->fontHandle != NULL)
+   {
+      DeleteObject(this->fontHandle);
+      this->fontHandle = NULL;
+   }
 }
 
 LOGFONT
@@ -70,6 +78,12 @@ Font::setHeight
 (LONG height)
 {
    this->fontData.lfHeight = height;
+
+   if (this->fontHandle != NULL)
+   {
+      DeleteObject(this->fontHandle);
+      this->fontHandle = NULL;
+   }
 }
 
 LONG
@@ -84,6 +98,12 @@ Font::setWidth
 (LONG width)
 {
    this->fontData.lfWidth = width;
+
+   if (this->fontHandle != NULL)
+   {
+      DeleteObject(this->fontHandle);
+      this->fontHandle = NULL;
+   }
 }
 
 LONG
@@ -106,6 +126,12 @@ Font::setPointSize
                                      ,72);
 
    ReleaseDC(NULL, screen);
+
+   if (this->fontHandle != NULL)
+   {
+      DeleteObject(this->fontHandle);
+      this->fontHandle = NULL;
+   }
 }
 
 void
@@ -117,6 +143,12 @@ Font::setFace
 
    memset(&this->fontData.lfFaceName, 0, sizeof(this->fontData.lfFaceName));
    wcscpy_s(this->fontData.lfFaceName, LF_FACESIZE, face.c_str());
+
+   if (this->fontHandle != NULL)
+   {
+      DeleteObject(this->fontHandle);
+      this->fontHandle = NULL;
+   }
 }
 
 std::wstring
@@ -128,14 +160,13 @@ Font::getFace
 
 HFONT
 Font::getHandle
-(void) const
+(void)
 {
-   HFONT handle;
+   if (this->fontHandle == NULL)
+      this->fontHandle = CreateFontIndirect(&this->fontData);
 
-   handle = CreateFontIndirect(&this->fontData);
-
-   if (handle == NULL)
+   if (this->fontHandle == NULL)
       throw FontException("CreateFontIndirect failed");
 
-   return handle;
+   return this->fontHandle;
 }

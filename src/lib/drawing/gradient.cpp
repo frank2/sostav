@@ -96,7 +96,7 @@ Gradient::formula
    Color result = this->base;
    Line diagonal(0, 1.0, 1.0, 0);
    double diagonalLength = diagonal.getLength() / 2.0;
-   std::map<RelativePoint, Color>::iterator iter;
+   std::map<RelativePoint, Color>::const_iterator iter;
    WCHAR debugString[1024];
    memset(debugString, 0, sizeof(debugString));
 

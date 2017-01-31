@@ -11,7 +11,7 @@ LayeredWindowException::LayeredWindowException
 
 LayeredWindow::LayeredWindow
 (Window *parent, std::wstring className)
-   : Window(parent, className)
+   : PaintedWindow(parent, className)
 {
    this->transparency = Drawing::Color::Transparent();
    this->screenDC = NULL;
@@ -20,20 +20,26 @@ LayeredWindow::LayeredWindow
 
 LayeredWindow::LayeredWindow
 (LayeredWindow &window)
-   : Window(window)
+   : PaintedWindow(window)
 {
    this->setTransparency(window.getTransparency());
    this->screenDC = NULL;
-   this->setUpdateFlag(window.getUpdateFlag);
+   this->setUpdateFlag(window.getUpdateFlag());
 }
 
 LayeredWindow::LayeredWindow
 (void)
-   : Window()
+   : PaintedWindow()
 {
    this->transparency = Drawing::Color::Transparent();
    this->screenDC = NULL;
    this->updateFlag = ULW_ALPHA;
+}
+
+LayeredWindow::~LayeredWindow
+(void)
+{
+   PaintedWindow::~PaintedWindow();
 }
 
 void
@@ -117,6 +123,8 @@ void
 LayeredWindow::preCreate
 (void)
 {
+   PaintedWindow::preCreate();
+   
    this->addExStyle(WS_EX_LAYERED);
 }
 
@@ -168,4 +176,7 @@ LayeredWindow::endPaint
    this->layeredUpdate(this->paintContext);
    DeleteDC(this->paintContext);
    ReleaseDC(NULL, this->screenDC);
+   
+   this->screenDC = NULL;
+   this->paintContext = NULL;
 }

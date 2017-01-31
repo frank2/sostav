@@ -117,6 +117,9 @@
     <ClInclude Include="..\..\src\include\sostav\win32.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\include\sostav\windows\paintedwindow.hpp">
+      <Filter>Header Files\windows</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\lib\exception.cpp">
@@ -155,8 +158,14 @@
     <ClCompile Include="..\..\src\lib\drawing\drawingpoint.cpp">
       <Filter>Source Files\drawing</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\lib\controls\static.cpp">
+    <ClCompile Include="..\..\src\lib\win32\win32static.cpp">
+      <Filter>Source Files\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib\controls\sostavstatic.cpp">
       <Filter>Source Files\controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib\windows\paintedwindow.cpp">
+      <Filter>Source Files\windows</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

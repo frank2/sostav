@@ -2,6 +2,8 @@
 
 #include <windows.h>
 
+#include <string>
+
 #include "sostav/exception.hpp"
 #include "sostav/windows/subclassedwindow.hpp"
 
@@ -18,10 +20,13 @@ namespace Sostav
       class Static : public Windows::SubclassedWindow
       {
       public:
-         Static(Window *parent);
+         Static(Window *parent, std::wstring caption=std::wstring());
          Static(Static &window);
          Static();
          ~Static();
+
+      protected:
+         virtual void onPaint(void);
       };
    }
 }
