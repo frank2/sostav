@@ -49,7 +49,7 @@ void
 Image::loadFromBuffer
 (size_t bufferSize, LPBYTE bufferData)
 {
-   REFCLSID formatID;
+   IID formatID;
    LPDWORD magic;
    HGLOBAL globalHandle;
    LPVOID globalData;
