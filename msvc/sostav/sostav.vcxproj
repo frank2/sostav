@@ -147,6 +147,7 @@
     <ClInclude Include="..\..\src\include\sostav\drawing\color.hpp" />
     <ClInclude Include="..\..\src\include\sostav\drawing\font.hpp" />
     <ClInclude Include="..\..\src\include\sostav\drawing\gradient.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\drawing\image.hpp" />
     <ClInclude Include="..\..\src\include\sostav\drawing\point.hpp" />
     <ClInclude Include="..\..\src\include\sostav\exception.hpp" />
     <ClInclude Include="..\..\src\include\sostav\math.hpp" />
@@ -172,6 +173,7 @@
     <ClCompile Include="..\..\src\lib\drawing\drawingpoint.cpp" />
     <ClCompile Include="..\..\src\lib\drawing\font.cpp" />
     <ClCompile Include="..\..\src\lib\drawing\gradient.cpp" />
+    <ClCompile Include="..\..\src\lib\drawing\image.cpp" />
     <ClCompile Include="..\..\src\lib\exception.cpp" />
     <ClCompile Include="..\..\src\lib\math\angle.cpp" />
     <ClCompile Include="..\..\src\lib\math\line.cpp" />
