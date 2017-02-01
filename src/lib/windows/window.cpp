@@ -36,10 +36,11 @@ Window::Window
    this->cursor = LoadCursor(NULL, IDC_ARROW);
    this->menu = NULL;
 
-   this->bgColor = Color::FromColorRef(GetSysColor(COLOR_WINDOW));
-   this->fgColor = Color::FromColorRef(GetSysColor(COLOR_WINDOWTEXT));
+   this->setDefaultColors();
    this->bgBrush = NULL;
    this->fgBrush = NULL;
+   this->borderBrush = NULL;
+   this->borderSize = 0;
 
    if (className.empty())
       throw WindowException("class name cannot be empty");
@@ -74,8 +75,11 @@ Window::Window
    this->typeface = window.getTypeface();
    this->bgColor = window.getBGColor();
    this->fgColor = window.getFGColor();
+   this->borderColor = window.getBorderColor();
    this->bgBrush = NULL;
    this->fgBrush = NULL;
+   this->borderBrush = NULL;
+   this->borderSize = window.getBorderSize();
 
    this->className.assign(window.getClassName());
    this->menuName.assign(window.getMenuName());
@@ -94,11 +98,14 @@ Window::Window
    this->classStyle = 0;
    this->size.cx = this->size.cy = 0;
 
+   this->setDefaultColors();
    this->icon = NULL;
    this->cursor = NULL;
    this->menu = NULL;
    this->bgBrush = NULL;
    this->fgBrush = NULL;
+   this->borderBrush = NULL;
+   this->borderSize = 0;
 }
 
 Window::~Window
@@ -202,6 +209,18 @@ Window::windowProc
    case WM_ERASEBKGND:
       return this->onEraseBkgnd((HDC)wParam);
 
+   case WM_KEYDOWN:
+      return this->onKeyDown((DWORD)wParam, (DWORD)lParam);
+
+   case WM_KEYUP:
+      return this->onKeyUp((DWORD)wParam, (DWORD)lParam);
+
+   case WM_NCCALCSIZE:
+      return this->onNCCalcSize((BOOL)wParam, lParam);
+      
+   case WM_NCPAINT:
+      return this->onNCPaint((HRGN)wParam);
+
    case WM_PAINT:
       this->onPaint();
       return (LRESULT)0;
@@ -290,12 +309,12 @@ Window::getHWND
 
 void
 Window::setDefWndProc
-(WindowProcedure wndProc)
+(WNDPROC wndProc)
 {
    this->defWndProc = wndProc;
 }
 
-WindowProcedure
+WNDPROC
 Window::getDefWndProc
 (void) const
 {
@@ -777,6 +796,15 @@ Window::getTypeface
 }
 
 void
+Window::setDefaultColors
+(void)
+{
+   this->setBGColor(Color::FromColorRef(GetSysColor(COLOR_WINDOW)));
+   this->setFGColor(Color::FromColorRef(GetSysColor(COLOR_WINDOWTEXT)));
+   this->setBorderColor(Color::FromColorRef(GetSysColor(COLOR_ACTIVEBORDER)));
+}
+
+void
 Window::setBGColor
 (BYTE a, BYTE r, BYTE g, BYTE b)
 {
@@ -892,6 +920,79 @@ Window::getFGBrush
 }
 
 void
+Window::setBorderColor
+(BYTE a, BYTE r, BYTE g, BYTE b)
+{
+   this->borderColor.a = a;
+   this->borderColor.r = r;
+   this->borderColor.g = g;
+   this->borderColor.b = b;
+
+   if (this->borderBrush != NULL)
+   {
+      DeleteObject(this->borderBrush);
+      this->borderBrush = NULL;
+      this->getBorderBrush();
+   }
+   
+   this->invalidate();
+}
+
+void
+Window::setBorderColor
+(DWORD hexValue)
+{
+   setBorderColor((hexValue >> 24) & 0xFF
+                  ,(hexValue >> 16) & 0xFF
+                  ,(hexValue >> 8) & 0xFF
+                  ,hexValue & 0xFF);
+}
+
+void
+Window::setBorderColor
+(Color color)
+{
+   setBorderColor(color.a, color.r, color.g, color.b);
+}
+
+Color
+Window::getBorderColor
+(void) const
+{
+   return this->borderColor;
+}
+
+HBRUSH
+Window::getBorderBrush
+(void)
+{
+   if (this->borderBrush == NULL)
+      this->borderBrush = CreateSolidBrush(this->borderColor.colorRef());
+
+   return this->borderBrush;
+}
+
+void
+Window::setBorderSize
+(BYTE size)
+{
+   this->borderSize = size;
+
+   if (this->hasHWND() && !SetWindowPos(this->hwnd
+                                        ,0, 0, 0, 0, 0
+                                        ,SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE
+                                        | SWP_NOACTIVATE | SWP_NOZORDER))
+      throw WindowException("SetWindowPos failed");
+}
+
+BYTE
+Window::getBorderSize
+(void) const
+{
+   return this->borderSize;
+}
+
+void
 Window::preCreate
 (void)
 {
@@ -947,7 +1048,7 @@ Window::registerClass
 (void)
 {
    WNDCLASSEX classInfo;
-   
+
    if (this->className.empty())
       throw WindowException("class name cannot be empty");
 
@@ -1047,14 +1148,36 @@ HBRUSH
 Window::onCtlColorEdit
 (HDC context, HWND control)
 {
-   return (HBRUSH)this->defWndProc(this->hwnd, WM_CTLCOLOREDIT, (WPARAM)context, (LPARAM)control);
+   Window *window = Window::FindWindow(control);
+
+   if (window == NULL)
+      throw WindowException("FindWindow failed");
+
+   SetTextColor(context, window->getFGColor().colorRef());
+   SetBkColor(context, window->getBGColor().colorRef());
+
+   if (window->getBGColor().isTransparent())
+      return (HBRUSH)GetStockObject(NULL_BRUSH);
+   else
+      return window->getBGBrush();
 }
 
 HBRUSH
 Window::onCtlColorStatic
 (HDC context, HWND control)
 {
-   return (HBRUSH)this->defWndProc(this->hwnd, WM_CTLCOLORSTATIC, (WPARAM)context, (LPARAM)control);
+   Window *window = Window::FindWindow(control);
+
+   if (window == NULL)
+      throw WindowException("FindWindow failed");
+
+   SetTextColor(context, window->getFGColor().colorRef());
+   SetBkColor(context, window->getBGColor().colorRef());
+   
+   if (window->getBGColor().isTransparent())
+      return (HBRUSH)GetStockObject(NULL_BRUSH);
+   else
+      return window->getBGBrush();
 }
 
 void
@@ -1062,6 +1185,24 @@ Window::onDestroy
 (void)
 {
    this->defWndProc(this->hwnd, WM_DESTROY, NULL, NULL);
+
+   if (this->bgBrush != NULL)
+   {
+      DeleteObject(this->bgBrush);
+      this->bgBrush = NULL;
+   }
+
+   if (this->fgBrush != NULL)
+   {
+      DeleteObject(this->fgBrush);
+      this->fgBrush = NULL;
+   }
+
+   if (this->borderBrush != NULL)
+   {
+      DeleteObject(this->borderBrush);
+      this->borderBrush = NULL;
+   }
    
    Window::UnmapWindow(this->hwnd);
 
@@ -1073,6 +1214,68 @@ Window::onEraseBkgnd
 (HDC context)
 {
    return this->defWndProc(this->hwnd, WM_ERASEBKGND, (WPARAM)context, (LPARAM)NULL);
+}
+
+LRESULT
+Window::onKeyDown
+(DWORD keyValue, DWORD keyFlags)
+{
+   return this->defWndProc(this->hwnd, WM_KEYDOWN, (WPARAM)keyValue, (LPARAM)keyFlags);
+}
+
+LRESULT
+Window::onKeyUp
+(DWORD keyValue, DWORD keyFlags)
+{
+   return this->defWndProc(this->hwnd, WM_KEYUP, (WPARAM)keyValue, (LPARAM)keyFlags);
+}
+
+LRESULT
+Window::onNCCalcSize
+(BOOL switchValue, LPARAM pointer)
+{
+   PRECT rect;
+
+   this->defWndProc(this->hwnd, WM_NCCALCSIZE, (WPARAM)switchValue, pointer);
+
+   if (switchValue == TRUE)
+   {
+      LPNCCALCSIZE_PARAMS params = (LPNCCALCSIZE_PARAMS)pointer;
+
+      rect = &params->rgrc[0];
+   }
+   else
+      rect = (PRECT)pointer;
+
+   InflateRect(rect, -this->borderSize, -this->borderSize);
+   
+   return 0;
+}
+
+LRESULT
+Window::onNCPaint
+(HRGN paintRegion)
+{
+   HDC paintDC;
+   RECT rect = {0, 0, this->size.cx, this->size.cy};
+   HPEN pen;
+   
+   this->defWndProc(this->hwnd, WM_NCPAINT, (WPARAM)paintRegion, NULL);
+
+   if (this->borderSize == 0)
+      return 0;
+
+   paintDC = GetWindowDC(this->hwnd);
+   pen = CreatePen(PS_SOLID, this->borderSize * 2, this->borderColor.colorRef());
+
+   SelectObject(paintDC, pen);
+   SelectObject(paintDC, GetStockObject(NULL_BRUSH));
+   Rectangle(paintDC, rect.left, rect.top, rect.right, rect.bottom);
+
+   ReleaseDC(this->hwnd, paintDC);
+   DeleteObject(pen);
+
+   return 0;
 }
 
 void

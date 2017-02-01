@@ -167,5 +167,8 @@
     <ClCompile Include="..\..\src\lib\windows\paintedwindow.cpp">
       <Filter>Source Files\windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\lib\win32\win32edit.cpp">
+      <Filter>Source Files\win32</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

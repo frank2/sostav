@@ -23,14 +23,12 @@ namespace Sostav
          WindowException(const char *what);
       };
 
-      typedef LRESULT (CALLBACK *WindowProcedure)(HWND, UINT, WPARAM, LPARAM);
-
       class Window
       {
       protected:
          Window *parent;
          HWND hwnd;
-         WindowProcedure defWndProc;
+         WNDPROC defWndProc;
 
          Drawing::AbsolutePoint point;
          SIZE size;
@@ -42,8 +40,9 @@ namespace Sostav
          DWORD style, exStyle, classStyle;
 
          Drawing::Font typeface;
-         Drawing::Color bgColor, fgColor;
-         HBRUSH bgBrush, fgBrush;
+         Drawing::Color bgColor, fgColor, borderColor;
+         HBRUSH bgBrush, fgBrush, borderBrush;
+         BYTE borderSize;
 
          std::wstring className, menuName, windowText;
          std::list<Window *> children;
@@ -79,8 +78,8 @@ namespace Sostav
          virtual void setHWND(HWND window);
          HWND getHWND(void) const;
 
-         void setDefWndProc(WindowProcedure wndProc);
-         WindowProcedure getDefWndProc(void) const;
+         void setDefWndProc(WNDPROC wndProc);
+         WNDPROC getDefWndProc(void) const;
 
          void setPosition(long x, long y);
          void setPosition(POINT position);
@@ -140,6 +139,8 @@ namespace Sostav
          void setTypeface(Drawing::Font typeface);
          Drawing::Font getTypeface(void) const;
 
+         void setDefaultColors(void);
+
          void setBGColor(BYTE a, BYTE r, BYTE g, BYTE b);
          void setBGColor(DWORD hexValue);
          void setBGColor(Drawing::Color color);
@@ -151,6 +152,15 @@ namespace Sostav
          void setFGColor(Drawing::Color color);
          Drawing::Color getFGColor(void) const;
          HBRUSH getFGBrush(void);
+
+         void setBorderColor(BYTE a, BYTE r, BYTE g, BYTE b);
+         void setBorderColor(DWORD hexValue);
+         void setBorderColor(Drawing::Color color);
+         Drawing::Color getBorderColor(void) const;
+         HBRUSH getBorderBrush(void);
+         
+         void setBorderSize(BYTE size);
+         BYTE getBorderSize(void) const;
 
          virtual void preCreate(void);
          virtual void create(void);
@@ -168,6 +178,10 @@ namespace Sostav
          virtual HBRUSH onCtlColorStatic(HDC context, HWND control);
          virtual void onDestroy(void);
          virtual LRESULT onEraseBkgnd(HDC context);
+         virtual LRESULT onKeyDown(DWORD keyValue, DWORD keyFlags);
+         virtual LRESULT onKeyUp(DWORD keyValue, DWORD keyFlags);
+         virtual LRESULT onNCCalcSize(BOOL switchValue, LPARAM pointer);
+         virtual LRESULT onNCPaint(HRGN paintRegion);
          virtual void onPaint(void);
       };
    }

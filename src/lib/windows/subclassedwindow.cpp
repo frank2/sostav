@@ -107,11 +107,18 @@ SubclassedWindow::getSubclassMethod
 }
 
 void
-SubclassedWindow::create
+SubclassedWindow::postCreate
 (void)
 {
-   Window::create();
+   Window::postCreate();
+   
    this->subclassWindow(this->hwnd);
+   
+   /* use SetWindowPos to retrigger WM_NCCALCSIZE */
+   SetWindowPos(this->hwnd
+                ,0, 0, 0, 0, 0
+                ,SWP_FRAMECHANGED| SWP_NOMOVE | SWP_NOSIZE
+                | SWP_NOACTIVATE | SWP_NOZORDER);
 }
 
 void

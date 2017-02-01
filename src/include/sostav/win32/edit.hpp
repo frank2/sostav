@@ -22,6 +22,6 @@ namespace Sostav
          Edit(Edit &window);
          Edit();
          ~Edit();
-      }
+      };
    }
 }

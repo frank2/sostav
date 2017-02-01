@@ -12,9 +12,10 @@ class WindowTest : public Sostav::Windows::Window
 {
 protected:
    Sostav::Win32::Static staticText;
+   Sostav::Win32::Edit edit;
+   
    /*
    Sostav::Win32::Button button;
-   Sostav::Win32::Edit edit;
    */
 
 public:
