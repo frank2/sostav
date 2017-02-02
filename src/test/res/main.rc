@@ -1,0 +1,4 @@
+#include <winresrc.h>
+#include "../resource.hpp"
+
+IDI_SOSTAV PNG "sostav.png"

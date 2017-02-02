@@ -151,9 +151,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\test\main.hpp" />
+    <ClInclude Include="..\..\src\test\resource.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\test\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\src\test\res\main.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

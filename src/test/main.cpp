@@ -10,7 +10,8 @@ WindowTest::WindowTest
 {
    NONCLIENTMETRICS metrics;
    Font defaultFont;
-   
+
+   this->sostavBanner.setParent(this);
    this->staticText.setParent(this);
    this->edit.setParent(this);
 
@@ -23,6 +24,12 @@ WindowTest::WindowTest
    this->addStyle(WS_CAPTION | WS_SYSMENU);
    this->setSize(500, 500);
    this->center();
+
+   this->sostavBanner.setStyle(WS_CHILD | WS_VISIBLE);
+   this->sostavBanner.setImage(Image(MAKEINTRESOURCE(IDI_SOSTAV), L"PNG"));
+   this->sostavBanner.setPosition(10, 10);
+   this->sostavBanner.setBGColor(0xFF, 0xCC, 0x99, 0xCC);
+   this->sostavBanner.centerX();
 
    memset(&metrics, 0, sizeof(NONCLIENTMETRICS));
    
@@ -69,7 +76,7 @@ wWinMain
    WindowTest test;
 
    test.show();
-
+   
    Window::MessageLoop();
 
    return 0;

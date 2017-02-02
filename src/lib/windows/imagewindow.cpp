@@ -1,6 +1,7 @@
 #include "sostav/windows/imagewindow.hpp"
 
 using namespace Sostav;
+using namespace Sostav::Drawing;
 using namespace Sostav::Windows;
 
 ImageWindowException::ImageWindowException
@@ -10,20 +11,33 @@ ImageWindowException::ImageWindowException
 }
 
 ImageWindow::ImageWindow
-(Window *window, std::wstring className, HBITMAP image)
-   : Window(window, className)
+(Window *parent, std::wstring className, Image image)
+   : PaintedWindow(parent, className)
 {
-   this->image = image;
+   this->setImage(image);
+}
+
+ImageWindow::ImageWindow
+(ImageWindow &window)
+   : PaintedWindow(window)
+{
+   this->setImage(window.getImage());
 }
 
 ImageWindow::ImageWindow
 (void)
-   : Window()
+   : PaintedWindow()
 {
-   this->image = NULL;
+   this->setClassName(L"SvImageWindow");
 }
 
-HBITMAP
+ImageWindow::~ImageWindow
+(void)
+{
+   PaintedWindow::~PaintedWindow();
+}
+
+Image
 ImageWindow::getImage
 (void) const
 {
@@ -32,12 +46,13 @@ ImageWindow::getImage
 
 void
 ImageWindow::setImage
-(HBITMAP image)
+(Image image)
 {
-   this->image = image;
+   this->image.setImageHandle(image.getImageHandle());
+   this->setSize(this->image.getImageSize());
 
    if (this->hasHWND())
-      this->update();
+      this->invalidate();
 }
 
 void
@@ -52,38 +67,52 @@ ImageWindow::drawImage
 (HDC context)
 {
    HDC imageContext;
-   HGDIOBJ oldBitmap;
-   BITMAP imageBitmap;
+   SIZE imageSize;
+   HBITMAP renderedImage;
 
    /* nothing to paint-- this is okay */
-   if (this->image == NULL)
+   if (!this->image.hasImage())
       return;
 
    imageContext = CreateCompatibleDC(context);
-   
-   oldBitmap = SelectObject(imageContext, this->image);
-   GetObject(this->image, sizeof(BITMAP), &imageBitmap);
-   BitBlt(context, 0, 0, imageBitmap.bmWidth, imageBitmap.bmHeight, imageContext, 0, 0, SRCCOPY);
 
-   SelectObject(imageContext, oldBitmap);
-   DeleteDC(imageContext);
+   renderedImage = this->image.renderTransparency(this->bgColor);
+   SelectObject(imageContext, renderedImage);
+   imageSize = this->image.getImageSize();
+   BitBlt(context, 0, 0, imageSize.cx, imageSize.cy, imageContext, 0, 0, SRCCOPY);
+
+   ReleaseDC(NULL, imageContext);
+   DeleteObject(renderedImage);
 }
 
 LayeredImageWindow::LayeredImageWindow
-(Window *window, std::wstring className, HBITMAP image)
-   : LayeredWindow(window, className)
+(Window *parent, std::wstring className, Image image)
+   : LayeredWindow(parent, className)
 {
-   this->image = image;
+   this->setImage(image);
+}
+
+LayeredImageWindow::LayeredImageWindow
+(LayeredImageWindow &window)
+   : LayeredWindow(window)
+{
+   this->setImage(window.getImage());
 }
 
 LayeredImageWindow::LayeredImageWindow
 (void)
    : LayeredWindow()
 {
-   this->image = NULL;
+   this->setClassName(L"SvLayeredImageWindow");
 }
 
-HBITMAP
+LayeredImageWindow::~LayeredImageWindow
+(void)
+{
+   LayeredWindow::~LayeredWindow();
+}
+
+Image
 LayeredImageWindow::getImage
 (void) const
 {
@@ -92,9 +121,13 @@ LayeredImageWindow::getImage
 
 void
 LayeredImageWindow::setImage
-(HBITMAP image)
+(Image image)
 {
-   this->image = image;
+   this->image.setImageHandle(image.getImageHandle());
+   this->setSize(this->image.getImageSize());
+
+   if (this->hasHWND())
+      this->invalidate();
 }
 
 void
@@ -108,5 +141,6 @@ void
 LayeredImageWindow::drawImage
 (HDC context)
 {
-   SelectObject(context, this->image);
+   if (this->image.hasImage())
+      SelectObject(context, this->image.getImageHandle());
 }

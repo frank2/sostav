@@ -4,9 +4,10 @@
 
 #include <string>
 
-#include "sostav/exception.hpp"
-#include "sostav/windows/layeredwindow.hpp"
-#include "sostav/windows/window.hpp"
+#include <sostav/exception.hpp>
+#include <sostav/drawing/image.hpp>
+#include <sostav/windows/layeredwindow.hpp>
+#include <sostav/windows/paintedwindow.hpp>
 
 namespace Sostav
 {
@@ -18,19 +19,21 @@ namespace Sostav
          ImageWindowException(const char *what);
       };
 
-      class ImageWindow : public Window
+      class ImageWindow : public PaintedWindow
       {
       protected:
-         HBITMAP image;
+         Drawing::Image image;
          
       public:
-         ImageWindow(Window *window, std::wstring className=L"SvImageWindow", HBITMAP image=NULL);
+         ImageWindow(Window *parent
+                     ,std::wstring className=L"SvImageWindow"
+                     ,Drawing::Image image=Drawing::Image());
          ImageWindow(ImageWindow &window);
          ImageWindow();
          ~ImageWindow();
 
-         HBITMAP getImage(void) const;
-         void setImage(HBITMAP image);
+         void setImage(Drawing::Image image);
+         Drawing::Image getImage(void) const;
 
          virtual void paint(HDC context);
          virtual void drawImage(HDC context);
@@ -39,15 +42,18 @@ namespace Sostav
       class LayeredImageWindow : public LayeredWindow
       {
       protected:
-         HBITMAP image;
+         Drawing::Image image;
          
       public:
-         LayeredImageWindow(Window *window, std::wstring className=L"SvLayeredImageWindow", HBITMAP image=NULL);
+         LayeredImageWindow(Window *parent
+                            ,std::wstring className=L"SvLayeredImageWindow"
+                            ,Drawing::Image image=Drawing::Image());
          LayeredImageWindow(LayeredImageWindow &window);
          LayeredImageWindow();
+         ~LayeredImageWindow();
 
-         HBITMAP getImage(void) const;
-         void setImage(HBITMAP image);
+         void setImage(Drawing::Image image);
+         Drawing::Image getImage(void) const;
 
          virtual void paint(HDC context);
          virtual void drawImage(HDC context);

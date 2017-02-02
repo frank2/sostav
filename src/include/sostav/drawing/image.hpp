@@ -6,6 +6,7 @@
 #include <string>
 
 #include <sostav/exception.hpp>
+#include <sostav/drawing/color.hpp>
 
 #pragma comment(lib, "windowscodecs")
 
@@ -22,6 +23,9 @@ namespace Sostav
       class Image
       {
       protected:
+         SIZE imageSize;
+         size_t dibSize;
+         Color *dibBuffer;
          HBITMAP imageHandle;
          
       public:
@@ -31,13 +35,21 @@ namespace Sostav
          Image();
          ~Image();
 
+         SIZE getImageSize(void) const;
+         size_t getDIBSize(void) const;
+         Color *getDIBBuffer(void) const;
+         
+         void setImageHandle(HBITMAP image);
+         HBITMAP getImageHandle(void) const;
+
+         bool hasImage(void) const;
+
          void loadFromBuffer(size_t bufferSize, LPBYTE bufferData);
          void loadResource(LPCWSTR name, std::wstring type);
          void loadFile(std::wstring filename);
 
-         void setImageHandle(HBITMAP image);
-         HBITMAP getImageHandle(void) const;
-
+         HBITMAP renderTransparency(Color bgColor);
+         
       protected:
          void initializeCOM(void);
       };
