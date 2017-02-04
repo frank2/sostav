@@ -35,7 +35,7 @@ namespace Sostav
          bool isOpaque(void) const;
          bool isTransparent(void) const;
          bool isTranslucent(void) const;
-         Color blend(Color color, double percentage);
+         Color blend(Color color, double percentage) const;
       };
    }
 }

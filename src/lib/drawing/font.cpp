@@ -53,6 +53,87 @@ Font::~Font
       DeleteObject(this->fontHandle);
 }
 
+Font
+Font::CaptionFont
+(void)
+{
+   return Font::DefaultFont(Font::SystemFont::SF_CAPTION);
+}
+
+Font
+Font::SmallCaptionFont
+(void)
+{
+   return Font::DefaultFont(Font::SystemFont::SF_SMCAPTION);
+}
+
+Font
+Font::MenuFont
+(void)
+{
+   return Font::DefaultFont(Font::SystemFont::SF_MENU);
+}
+
+Font
+Font::StatusFont
+(void)
+{
+   return Font::DefaultFont(Font::SystemFont::SF_STATUS);
+}
+
+Font
+Font::MessageFont
+(void)
+{
+   return Font::DefaultFont(Font::SystemFont::SF_MESSAGE);
+}
+
+Font
+Font::DefaultFont
+(Font::SystemFont fontName)
+{
+   NONCLIENTMETRICS metrics;
+   Font result;
+
+   ZeroMemory(&metrics, sizeof(NONCLIENTMETRICS));
+
+   metrics.cbSize = sizeof(NONCLIENTMETRICS);
+
+   if (!SystemParametersInfo(SPI_GETNONCLIENTMETRICS
+                             ,sizeof(NONCLIENTMETRICS)
+                             ,(LPVOID)&metrics
+                             ,NULL))
+      throw FontException("SystemParametersInfo failed");
+
+   switch(fontName)
+   {
+   case Font::SystemFont::SF_CAPTION:
+      result.setLogFont(metrics.lfCaptionFont);
+      break;
+      
+   case Font::SystemFont::SF_SMCAPTION:
+      result.setLogFont(metrics.lfSmCaptionFont);
+      break;
+      
+   case Font::SystemFont::SF_MENU:
+      result.setLogFont(metrics.lfMenuFont);
+      break;
+      
+   case Font::SystemFont::SF_STATUS:
+      result.setLogFont(metrics.lfStatusFont);
+      break;
+      
+   case Font::SystemFont::SF_MESSAGE:
+      result.setLogFont(metrics.lfMessageFont);
+      break;
+
+   default:
+      throw FontException("no such default font found");
+   }
+
+   return result;
+}
+
 void
 Font::setLogFont
 (LOGFONT logFont)
@@ -156,6 +237,19 @@ Font::getFace
 (void) const
 {
    return std::wstring(this->fontData.lfFaceName);
+}
+
+void
+Font::setHandle
+(HFONT font)
+{
+   LOGFONT logFont;
+
+   if (!GetObject(font, sizeof(LOGFONT), (LPVOID)&logFont))
+      throw FontException("GetObject failed");
+
+   this->setLogFont(logFont);
+   this->fontHandle = font;
 }
 
 HFONT

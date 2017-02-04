@@ -113,6 +113,9 @@ SubclassedWindow::postCreate
    Window::postCreate();
    
    this->subclassWindow(this->hwnd);
+
+   /* set this after subclassing to prevent a race condition */
+   Window::MapWindow(this->hwnd, this);
    
    /* use SetWindowPos to retrigger WM_NCCALCSIZE */
    SetWindowPos(this->hwnd

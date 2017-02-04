@@ -76,7 +76,7 @@ ImageWindow::drawImage
 
    imageContext = CreateCompatibleDC(context);
 
-   renderedImage = this->image.renderTransparency(this->bgColor);
+   renderedImage = this->image.renderTransparency(this->getBGColor());
    SelectObject(imageContext, renderedImage);
    imageSize = this->image.getImageSize();
    BitBlt(context, 0, 0, imageSize.cx, imageSize.cy, imageContext, 0, 0, SRCCOPY);

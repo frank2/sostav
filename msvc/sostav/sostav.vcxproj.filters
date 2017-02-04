@@ -176,5 +176,8 @@
     <ClCompile Include="..\..\src\lib\drawing\image.cpp">
       <Filter>Source Files\drawing</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\lib\win32\win32button.cpp">
+      <Filter>Source Files\win32</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

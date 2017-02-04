@@ -29,6 +29,7 @@ namespace Sostav
          Window *parent;
          HWND hwnd;
          WNDPROC defWndProc;
+         bool enabled;
 
          Drawing::AbsolutePoint point;
          SIZE size;
@@ -172,11 +173,16 @@ namespace Sostav
          virtual void update(void);
          virtual void show(void);
          virtual void hide(void);
+         virtual void enable(void);
+         virtual void disable(void);
 
       protected:
          virtual HBRUSH onCtlColorEdit(HDC context, HWND control);
          virtual HBRUSH onCtlColorStatic(HDC context, HWND control);
-         virtual void onDestroy(void);
+         virtual HBRUSH onCtlColorBtn(HDC context, HWND control);
+         virtual LRESULT onCreate(LPCREATESTRUCT creationData);
+         virtual LRESULT onDestroy(void);
+         virtual LRESULT onEnable(BOOL enabled);
          virtual LRESULT onEraseBkgnd(HDC context);
          virtual LRESULT onKeyDown(DWORD keyValue, DWORD keyFlags);
          virtual LRESULT onKeyUp(DWORD keyValue, DWORD keyFlags);

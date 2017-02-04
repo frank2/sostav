@@ -14,12 +14,11 @@ class WindowTest : public Sostav::Windows::Window
 {
 protected:
    Sostav::Windows::ImageWindow sostavBanner;
-   Sostav::Win32::Static staticText;
-   Sostav::Win32::Edit edit;
-   
-   /*
-   Sostav::Win32::Button button;
-   */
+   Sostav::Win32::Static enabledStatic, disabledStatic;
+   Sostav::Win32::Edit enabledEdit, disabledEdit;
+   Sostav::Win32::Button enabledPushButton, disabledPushButton;
+   Sostav::Win32::Button enabledRadioButton, disabledRadioButton;
+   Sostav::Win32::Button enabledCheckButton, disabledCheckButton;
 
 public:
    WindowTest();

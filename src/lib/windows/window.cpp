@@ -19,6 +19,7 @@ Window::Window
    this->parent = parent;
    this->hwnd = NULL;
    this->setDefWndProc(DefWindowProc);
+   this->enabled = true;
    
    this->style = WS_VISIBLE;
    this->exStyle = 0;
@@ -54,6 +55,7 @@ Window::Window
    this->parent = window.getParent();
    this->hwnd = NULL; /* intentionally do not copy the hwnd */
    this->setDefWndProc(window.getDefWndProc());
+   this->enabled = true;
 
    this->style = window.getStyle();
    this->exStyle = window.getExStyle();
@@ -92,6 +94,7 @@ Window::Window
    this->parent = NULL;
    this->hwnd = NULL;
    this->setDefWndProc(DefWindowProc);
+   this->enabled = true;
    
    this->style = 0;
    this->exStyle = 0;
@@ -201,10 +204,18 @@ Window::windowProc
    
    case WM_CTLCOLORSTATIC:
       return (LRESULT)this->onCtlColorStatic((HDC)wParam, (HWND)lParam);
+
+   case WM_CTLCOLORBTN:
+      return (LRESULT)this->onCtlColorBtn((HDC)wParam, (HWND)lParam);
+
+   case WM_CREATE:
+      return this->onCreate((LPCREATESTRUCT)lParam);
       
    case WM_DESTROY:
-      this->onDestroy();
-      return (LRESULT)0;
+      return this->onDestroy();
+
+   case WM_ENABLE:
+      return this->onEnable((BOOL)wParam);
 
    case WM_ERASEBKGND:
       return this->onEraseBkgnd((HDC)wParam);
@@ -853,7 +864,18 @@ Color
 Window::getBGColor
 (void) const
 {
-   return this->bgColor;
+   if (this->parent == NULL)
+      return this->bgColor;
+   else
+   {
+      if (this->bgColor.isTransparent())
+         return this->parent->getBGColor();
+      else if (this->bgColor.isTranslucent())
+         return this->bgColor.blend(this->parent->getBGColor()
+                                    ,(255 - this->bgColor.a) / 255.0);
+      else
+         return this->bgColor;
+   }
 }
 
 HBRUSH
@@ -861,7 +883,7 @@ Window::getBGBrush
 (void)
 {
    if (this->bgBrush == NULL)
-      this->bgBrush = CreateSolidBrush(this->bgColor.colorRef());
+      this->bgBrush = CreateSolidBrush(this->getBGColor().colorRef());
 
    return this->bgBrush;
 }
@@ -1025,6 +1047,9 @@ Window::create
    if (this->hwnd == NULL)
       throw WindowException("CreateWindowEx failed");
 
+   /* be explicitly redundant about this to prevent race conditions */
+   Window::MapWindow(this->hwnd, this);
+
    for (iter=this->children.begin(); iter!=this->children.end(); ++iter)
    {
       Window *child = *iter;
@@ -1041,6 +1066,7 @@ Window::postCreate
 (void)
 {
    SendMessage(this->hwnd, WM_SETFONT, (WPARAM)this->typeface.getHandle(), (LPARAM)FALSE);
+   EnableWindow(this->hwnd, (BOOL)this->enabled);
 }
 
 void
@@ -1138,10 +1164,28 @@ void
 Window::hide
 (void)
 {
-   std::list<Window *>::iterator iter;
-   
    if (this->hasHWND() && !ShowWindow(this->hwnd, SW_HIDE))
       throw WindowException("ShowWindow failed");
+}
+
+void
+Window::enable
+(void)
+{
+   this->enabled = true;
+
+   if (this->hasHWND() && !EnableWindow(this->hwnd, TRUE))
+      throw WindowException("EnableWindow failed");
+}
+
+void
+Window::disable
+(void)
+{
+   this->enabled = false;
+
+   if (this->hasHWND() && !EnableWindow(this->hwnd, FALSE))
+      throw WindowException("EnableWindow failed");
 }
 
 HBRUSH
@@ -1180,7 +1224,32 @@ Window::onCtlColorStatic
       return window->getBGBrush();
 }
 
-void
+HBRUSH
+Window::onCtlColorBtn
+(HDC context, HWND control)
+{
+   Window *window = Window::FindWindow(control);
+
+   if (window == NULL)
+      throw WindowException("FindWindow failed");
+
+   SetTextColor(context, window->getFGColor().colorRef());
+   SetBkColor(context, window->getBGColor().colorRef());
+   
+   if (window->getBGColor().isTransparent())
+      return (HBRUSH)GetStockObject(NULL_BRUSH);
+   else
+      return window->getBGBrush();
+}
+
+LRESULT
+Window::onCreate
+(LPCREATESTRUCT creationData)
+{
+   return this->defWndProc(this->hwnd, WM_CREATE, NULL, (LPARAM)creationData);
+}
+
+LRESULT
 Window::onDestroy
 (void)
 {
@@ -1207,6 +1276,17 @@ Window::onDestroy
    Window::UnmapWindow(this->hwnd);
 
    this->hwnd = NULL;
+
+   return 0;
+}
+
+LRESULT
+Window::onEnable
+(BOOL enabled)
+{
+   this->enabled = enabled;
+
+   return this->defWndProc(this->hwnd, WM_ENABLE, (WPARAM)enabled, NULL);
 }
 
 LRESULT

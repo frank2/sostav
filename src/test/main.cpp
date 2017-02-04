@@ -8,19 +8,21 @@ WindowTest::WindowTest
 (void)
    : Window(NULL, L"SvWindowTest")
 {
-   NONCLIENTMETRICS metrics;
-   Font defaultFont;
+   Font defaultFont = Font::MessageFont();
 
    this->sostavBanner.setParent(this);
-   this->staticText.setParent(this);
-   this->edit.setParent(this);
+   this->enabledStatic.setParent(this);
+   this->disabledStatic.setParent(this);
+   this->enabledEdit.setParent(this);
+   this->disabledEdit.setParent(this);
+   this->enabledPushButton.setParent(this);
+   this->disabledPushButton.setParent(this);
+   this->enabledRadioButton.setParent(this);
+   this->disabledRadioButton.setParent(this);
+   this->enabledCheckButton.setParent(this);
+   this->disabledCheckButton.setParent(this);
 
-   /*
-   this->button.setParent(this);
-   this->edit.setParent(this);
-   */
-
-   this->setBGColor(0xFF, 0xCC, 0x99, 0xCC);
+   this->setBGColor(0xFF, 0x3A, 0x1A, 0x3A);
    this->addStyle(WS_CAPTION | WS_SYSMENU);
    this->setSize(500, 500);
    this->center();
@@ -28,39 +30,110 @@ WindowTest::WindowTest
    this->sostavBanner.setStyle(WS_CHILD | WS_VISIBLE);
    this->sostavBanner.setImage(Image(MAKEINTRESOURCE(IDI_SOSTAV), L"PNG"));
    this->sostavBanner.setPosition(10, 10);
-   this->sostavBanner.setBGColor(0xFF, 0xCC, 0x99, 0xCC);
+   this->sostavBanner.setBGColor(Color::Transparent());
    this->sostavBanner.centerX();
 
-   memset(&metrics, 0, sizeof(NONCLIENTMETRICS));
-   
-   metrics.cbSize = sizeof(NONCLIENTMETRICS);
+   this->enabledStatic.setStyle(WS_CHILD | WS_VISIBLE);
+   this->enabledStatic.setPosition(100, 100);
+   this->enabledStatic.setSize(100, 25);
+   this->enabledStatic.setBGColor(0xFF, 0x7A, 0x0B, 0x7A);
+   this->enabledStatic.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
+   this->enabledStatic.setWindowText(L"Enabled static");
+   this->enabledStatic.setTypeface(defaultFont);
 
-   if (!SystemParametersInfo(SPI_GETNONCLIENTMETRICS
-                             ,sizeof(NONCLIENTMETRICS)
-                             ,(LPVOID)&metrics
-                             ,NULL))
-      throw WindowException("SystemParametersInfo failed");
+   this->disabledStatic.setStyle(WS_CHILD | WS_VISIBLE);
+   this->disabledStatic.setPosition(300, 100);
+   this->disabledStatic.setSize(100, 25);
+   this->disabledStatic.setBGColor(0xFF, 0x7A, 0x0B, 0x7A);
+   this->disabledStatic.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
+   this->disabledStatic.setWindowText(L"Disabled static");
+   this->disabledStatic.setTypeface(defaultFont);
+   this->disabledStatic.disable();
 
-   defaultFont.setLogFont(metrics.lfMessageFont);
+   this->enabledEdit.setStyle(WS_CHILD | WS_VISIBLE);
+   this->enabledEdit.setPosition(100, 150);
+   this->enabledEdit.setSize(100, 25);
+   this->enabledEdit.setBorderSize(2);
+   this->enabledEdit.setBGColor(0xFF, 0x7A, 0x0B, 0x7A);
+   this->enabledEdit.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
+   this->enabledEdit.setBorderColor(0xFF, 0x61, 0x00, 0x61);
+   this->enabledEdit.setCueText(L"Enabled edit");
+   this->enabledEdit.setTypeface(defaultFont);
+   this->enabledEdit.setShowCueOnFocus(true);
 
-   this->staticText.setTypeface(defaultFont);
-   this->staticText.setStyle(WS_CHILD | WS_VISIBLE);
-   this->staticText.setSize(100, 100);
-   this->staticText.setRelativePosition(0.1, 0.1);
-   this->staticText.setWindowText(L"Hello, world!");
-   this->staticText.setBorderSize(2);
-   this->staticText.setBGColor(Color::Transparent());
-   this->staticText.setFGColor(0xFF, 0xFF, 0xFF, 0);
+   this->disabledEdit.setStyle(WS_CHILD | WS_VISIBLE);
+   this->disabledEdit.setPosition(300, 150);
+   this->disabledEdit.setSize(100, 25);
+   this->disabledEdit.setBorderSize(2);
+   this->disabledEdit.setBGColor(0xFF, 0x7A, 0x0B, 0x7A);
+   this->disabledEdit.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
+   this->disabledEdit.setBorderColor(0xFF, 0x61, 0x00, 0x61);
+   this->disabledEdit.setWindowText(L"Disabled edit");
+   this->disabledEdit.setTypeface(defaultFont);
+   this->disabledEdit.disable();
 
-   this->edit.setRelativePosition(0.1, 0.3);
-   this->edit.setTypeface(defaultFont);
-   this->edit.setStyle(WS_CHILD | WS_VISIBLE);
-   this->edit.setSize(200, 200);
-   this->edit.setWindowText(L"I'm an edit box! \\o/");
-   this->edit.setBorderSize(2);
-   this->edit.setBorderColor(0xFF, 0x99, 0xCC, 0xCC);
-   this->edit.setBGColor(0xFF, 0x33, 0x99, 0x99);
-   this->edit.setFGColor(0xFF, 0xFF, 0xFF, 0xFF);
+   this->enabledPushButton.setStyle(WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON);
+   this->enabledPushButton.setPosition(50, 200);
+   this->enabledPushButton.setSize(200, 25);
+   this->enabledPushButton.setBorderSize(2);
+   this->enabledPushButton.setBGColor(0xFF, 0x7A, 0x0B, 0x7A);
+   this->enabledPushButton.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
+   this->enabledPushButton.setBorderColor(0xFF, 0x61, 0x00, 0x61);
+   this->enabledPushButton.setWindowText(L"Enabled push button");
+   this->enabledPushButton.setTypeface(defaultFont);
+
+   this->disabledPushButton.setStyle(WS_CHILD | WS_VISIBLE);
+   this->disabledPushButton.setPosition(250, 200);
+   this->disabledPushButton.setSize(200, 25);
+   this->disabledPushButton.setBorderSize(2);
+   this->disabledPushButton.setBGColor(0xFF, 0x7A, 0x0B, 0x7A);
+   this->disabledPushButton.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
+   this->disabledPushButton.setBorderColor(0xFF, 0x61, 0x00, 0x61);
+   this->disabledPushButton.setWindowText(L"Disabled push button");
+   this->disabledPushButton.setTypeface(defaultFont);
+   this->disabledPushButton.disable();
+
+   this->enabledRadioButton.setStyle(WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON);
+   this->enabledRadioButton.setPosition(50, 250);
+   this->enabledRadioButton.setSize(200, 25);
+   this->enabledRadioButton.setBorderSize(2);
+   this->enabledRadioButton.setBGColor(0xFF, 0x7A, 0x0B, 0x7A);
+   this->enabledRadioButton.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
+   this->enabledRadioButton.setBorderColor(0xFF, 0x61, 0x00, 0x61);
+   this->enabledRadioButton.setWindowText(L"Enabled radio button");
+   this->enabledRadioButton.setTypeface(defaultFont);
+
+   this->disabledRadioButton.setStyle(WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON);
+   this->disabledRadioButton.setPosition(250, 250);
+   this->disabledRadioButton.setSize(200, 25);
+   this->disabledRadioButton.setBorderSize(2);
+   this->disabledRadioButton.setBGColor(0xFF, 0x7A, 0x0B, 0x7A);
+   this->disabledRadioButton.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
+   this->disabledRadioButton.setBorderColor(0xFF, 0x61, 0x00, 0x61);
+   this->disabledRadioButton.setWindowText(L"Disabled radio button");
+   this->disabledRadioButton.setTypeface(defaultFont);
+   this->disabledRadioButton.disable();
+
+   this->enabledCheckButton.setStyle(WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX);
+   this->enabledCheckButton.setPosition(50, 300);
+   this->enabledCheckButton.setSize(200, 25);
+   this->enabledCheckButton.setBorderSize(2);
+   this->enabledCheckButton.setBGColor(0xFF, 0x7A, 0x0B, 0x7A);
+   this->enabledCheckButton.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
+   this->enabledCheckButton.setBorderColor(0xFF, 0x61, 0x00, 0x61);
+   this->enabledCheckButton.setWindowText(L"Enabled check box");
+   this->enabledCheckButton.setTypeface(defaultFont);
+
+   this->disabledCheckButton.setStyle(WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX);
+   this->disabledCheckButton.setPosition(250, 300);
+   this->disabledCheckButton.setSize(200, 25);
+   this->disabledCheckButton.setBorderSize(2);
+   this->disabledCheckButton.setBGColor(0xFF, 0x7A, 0x0B, 0x7A);
+   this->disabledCheckButton.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
+   this->disabledCheckButton.setBorderColor(0xFF, 0x61, 0x00, 0x61);
+   this->disabledCheckButton.setWindowText(L"Disabled check box");
+   this->disabledCheckButton.setTypeface(defaultFont);
+   this->disabledCheckButton.disable();
 }
 
 WindowTest::~WindowTest

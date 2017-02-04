@@ -83,7 +83,7 @@ Color::isTranslucent
 
 Color
 Color::blend
-(Color color, double percentage)
+(Color color, double percentage) const
 {
    LONG aD, rD, gD, bD;
    Color newColor;

@@ -178,6 +178,7 @@
     <ClCompile Include="..\..\src\lib\math\angle.cpp" />
     <ClCompile Include="..\..\src\lib\math\line.cpp" />
     <ClCompile Include="..\..\src\lib\math\mathpoint.cpp" />
+    <ClCompile Include="..\..\src\lib\win32\win32button.cpp" />
     <ClCompile Include="..\..\src\lib\win32\win32edit.cpp" />
     <ClCompile Include="..\..\src\lib\win32\win32static.cpp" />
     <ClCompile Include="..\..\src\lib\windows\imagewindow.cpp" />
