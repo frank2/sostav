@@ -16,7 +16,7 @@ namespace Sostav
       class ImageWindowException : public Exception
       {
       public:
-         ImageWindowException(const char *what);
+         ImageWindowException(const WCHAR *what);
       };
 
       class ImageWindow : public PaintedWindow
@@ -30,7 +30,6 @@ namespace Sostav
                      ,Drawing::Image image=Drawing::Image());
          ImageWindow(ImageWindow &window);
          ImageWindow();
-         ~ImageWindow();
 
          void setImage(Drawing::Image image);
          Drawing::Image getImage(void) const;
@@ -50,7 +49,6 @@ namespace Sostav
                             ,Drawing::Image image=Drawing::Image());
          LayeredImageWindow(LayeredImageWindow &window);
          LayeredImageWindow();
-         ~LayeredImageWindow();
 
          void setImage(Drawing::Image image);
          Drawing::Image getImage(void) const;

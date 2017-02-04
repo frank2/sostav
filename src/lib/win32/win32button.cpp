@@ -5,7 +5,7 @@ using namespace Sostav::Win32;
 using namespace Sostav::Windows;
 
 ButtonException::ButtonException
-(const char *what)
+(const WCHAR *what)
    : Exception(what)
 {
 }
@@ -27,10 +27,4 @@ Button::Button
    : SubclassedWindow()
 {
    this->setClassName(L"BUTTON");
-}
-
-Button::~Button
-(void)
-{
-   SubclassedWindow::~SubclassedWindow();
 }

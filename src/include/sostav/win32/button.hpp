@@ -12,7 +12,7 @@ namespace Sostav
       class ButtonException : public Exception
       {
       public:
-         ButtonException(const char *what);
+         ButtonException(const WCHAR *what);
       };
 
       class Button : public Windows::SubclassedWindow
@@ -21,7 +21,6 @@ namespace Sostav
          Button(Windows::Window *parent);
          Button(Button &window);
          Button();
-         ~Button();
       };
    }
 }

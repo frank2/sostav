@@ -25,7 +25,7 @@ namespace Sostav
       class EditException : public Exception
       {
       public:
-         EditException(const char *what);
+         EditException(const WCHAR *what);
       };
 
       class Edit : public Windows::SubclassedWindow
@@ -38,7 +38,6 @@ namespace Sostav
          Edit(Windows::Window *parent);
          Edit(Edit &window);
          Edit();
-         ~Edit();
 
          void setCueText(std::wstring cueText);
          std::wstring getCueText(void);

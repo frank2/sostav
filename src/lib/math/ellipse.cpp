@@ -4,7 +4,7 @@ using namespace Sostav;
 using namespace Sostav::Math;
 
 EllipseException::EllipseException
-(const char *what)
+(const WCHAR *what)
    : Exception(what)
 {
 }
@@ -108,7 +108,7 @@ std::pair<double, double>
 Ellipse::fX
 (double x)
 {
-   throw EllipseException("function not implemented yet");
+   throw EllipseException(L"function not implemented yet");
    /*
      ((x - h)/M)^2 + ((y - k)/m)^2 = 1
      ((y - k)/m)^2 = 1 - ((x - h)/M)^2
@@ -123,7 +123,7 @@ std::pair<double, double>
 Ellipse::fY
 (double y)
 {
-   throw EllipseException("function not implemented yet");
+   throw EllipseException(L"function not implemented yet");
    
    /*
      ((x - h)/M)^2 + ((y - k)/m)^2 = 1
@@ -139,7 +139,7 @@ std::pair<Point, Point>
 Ellipse::lineIntersection
 (Line line)
 {
-   throw EllipseException("function not implemented yet");
+   throw EllipseException(L"function not implemented yet");
 
    /* ((x - h)/a)^2 + ((y - k)/b)^2 = 1
       ((x - h)/a)^2 + ((sx + i - k)/b)^2 = 1

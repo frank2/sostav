@@ -4,7 +4,7 @@ using namespace Sostav;
 using namespace Sostav::Drawing;
 
 ImageException::ImageException
-(const char *what)
+(const WCHAR *what)
    : Exception(what)
 {
 }
@@ -44,11 +44,6 @@ Image::~Image
 {
    if (this->imageHandle != NULL)
       DeleteObject(this->imageHandle);
-   
-   this->imageSize = {0,0};
-   this->dibSize = 0;
-   this->dibBuffer = NULL;
-   this->imageHandle = NULL;
 }
 
 SIZE
@@ -155,19 +150,19 @@ Image::loadFromBuffer
    if (*magic == 0x474e5089) /* PNG */
       formatID = CLSID_WICPngDecoder;
    else
-      throw ImageException("image buffer is an unsupported format");
+      throw ImageException(L"image buffer is an unsupported format");
 
    globalHandle = GlobalAlloc(GMEM_MOVEABLE, bufferSize);
 
    if (globalHandle == NULL)
-      throw ImageException("GlobalAlloc failed");
+      throw ImageException(L"GlobalAlloc failed");
 
    globalData = GlobalLock(globalHandle);
 
    if (globalData == NULL)
    {
       GlobalFree(globalHandle);
-      throw ImageException("GlobalLock failed");
+      throw ImageException(L"GlobalLock failed");
    }
 
    CopyMemory((LPVOID)globalData, bufferData, bufferSize);
@@ -176,7 +171,7 @@ Image::loadFromBuffer
    if (FAILED(CreateStreamOnHGlobal(globalHandle, TRUE, &dataStream)))
    {
       GlobalFree(globalHandle);
-      throw ImageException("CreateStreamOnHGlobal failed");
+      throw ImageException(L"CreateStreamOnHGlobal failed");
    }
 
    if (FAILED(CoCreateInstance(formatID
@@ -187,14 +182,14 @@ Image::loadFromBuffer
    {
       GlobalFree(globalHandle);
       dataStream->Release();
-      throw ImageException("CoCreateInstance failed");
+      throw ImageException(L"CoCreateInstance failed");
    }
 
    if (FAILED(wicDecoder->Initialize(dataStream, WICDecodeMetadataCacheOnLoad)))
    {
       GlobalFree(globalHandle);
       dataStream->Release();
-      throw ImageException("Initialize failed");
+      throw ImageException(L"Initialize failed");
    }
 
    frameCount = 0;
@@ -204,7 +199,7 @@ Image::loadFromBuffer
       GlobalFree(globalHandle);
       wicDecoder->Release();
       dataStream->Release();
-      throw ImageException("GetFrameCount failed");
+      throw ImageException(L"GetFrameCount failed");
    }
 
    if (frameCount != 1)
@@ -212,7 +207,7 @@ Image::loadFromBuffer
       GlobalFree(globalHandle);
       wicDecoder->Release();
       dataStream->Release();
-      throw ImageException("image has an unsupported amount of frames");
+      throw ImageException(L"image has an unsupported amount of frames");
    }
 
    if (FAILED(wicDecoder->GetFrame(0, &wicFrameDecoder)))
@@ -220,7 +215,7 @@ Image::loadFromBuffer
       GlobalFree(globalHandle);
       wicDecoder->Release();
       dataStream->Release();
-      throw ImageException("GetFrame failed");
+      throw ImageException(L"GetFrame failed");
    }
 
    
@@ -231,7 +226,7 @@ Image::loadFromBuffer
       GlobalFree(globalHandle);
       wicDecoder->Release();
       dataStream->Release();
-      throw ImageException("WICConvertBitmapSource failed");
+      throw ImageException(L"WICConvertBitmapSource failed");
    }
    
    wicFrameDecoder->Release();
@@ -242,7 +237,7 @@ Image::loadFromBuffer
       GlobalFree(globalHandle);
       wicBitmap->Release();
       dataStream->Release();
-      throw ImageException("GetSize failed");
+      throw ImageException(L"GetSize failed");
    }
 
    if (this->imageSize.cx == 0 || this->imageSize.cy == 0)
@@ -250,7 +245,7 @@ Image::loadFromBuffer
       GlobalFree(globalHandle);
       wicBitmap->Release();
       dataStream->Release();
-      throw ImageException("image has a null width or height");
+      throw ImageException(L"image has a null width or height");
    }
 
    ZeroMemory(&bitmapInfo, sizeof(BITMAPINFO));
@@ -276,7 +271,7 @@ Image::loadFromBuffer
       GlobalFree(globalHandle);
       wicBitmap->Release();
       dataStream->Release();
-      throw ImageException("CreateDIBSection failed");
+      throw ImageException(L"CreateDIBSection failed");
    }
 
    stride = this->imageSize.cx * 4; /* 32-bit bitmap scanline */
@@ -290,7 +285,7 @@ Image::loadFromBuffer
       wicBitmap->Release();
       DeleteObject(this->imageHandle);
       dataStream->Release();
-      throw ImageException("CopyPixels failed");
+      throw ImageException(L"CopyPixels failed");
    }
 
    wicBitmap->Release();
@@ -310,18 +305,18 @@ Image::loadResource
    resourceHandle = FindResource(NULL, name, type.c_str());
 
    if (resourceHandle == NULL)
-      throw ImageException("FindResource failed");
+      throw ImageException(L"FindResource failed");
 
    resourceSize = SizeofResource(NULL, resourceHandle);
    loadedHandle = LoadResource(NULL, resourceHandle);
 
    if (loadedHandle == NULL)
-      throw ImageException("LoadResource failed");
+      throw ImageException(L"LoadResource failed");
 
    loadedData = (LPBYTE)LockResource(loadedHandle);
 
    if (loadedData == NULL)
-      throw ImageException("LockResource failed");
+      throw ImageException(L"LockResource failed");
 
    this->loadFromBuffer(resourceSize, loadedData);
 }
@@ -344,7 +339,7 @@ Image::loadFile
                            ,NULL);
 
    if (fileHandle == NULL)
-      throw ImageException("CreateFile failed");
+      throw ImageException(L"CreateFile failed");
 
    fileSize = GetFileSize(fileHandle, NULL);
    fileData = (LPBYTE)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, fileSize);
@@ -352,7 +347,7 @@ Image::loadFile
    if (!ReadFile(fileHandle, (LPVOID)fileData, fileSize, &bytesRead, NULL))
    {
       CloseHandle(fileHandle);
-      throw ImageException("ReadFile failed");
+      throw ImageException(L"ReadFile failed");
    }
 
    CloseHandle(fileHandle);
@@ -416,5 +411,5 @@ Image::initializeCOM
    HRESULT result = CoInitializeEx(NULL, NULL);
 
    if (result != S_OK && result != S_FALSE)
-      throw ImageException("CoInitializeEx failed");
+      throw ImageException(L"CoInitializeEx failed");
 }

@@ -12,7 +12,7 @@ namespace Sostav
    {
       class PointException : public Exception
       {
-         PointException(const char *what);
+         PointException(const WCHAR *what);
       };
 
       class Point

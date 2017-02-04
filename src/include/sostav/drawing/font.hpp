@@ -13,7 +13,7 @@ namespace Sostav
       class FontException : public Exception
       {
       public:
-         FontException(const char *what);
+         FontException(const WCHAR *what);
       };
 
       class Font

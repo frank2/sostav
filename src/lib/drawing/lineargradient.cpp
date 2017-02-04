@@ -83,7 +83,7 @@ Gradient::moveColor
 (LONG key, LONG newKey)
 {
    if (this->modes.find(key) == this->modes.end())
-      throw GradientException("could not find key in modes");
+      throw GradientException(L"could not find key in modes");
    
    this->addColor(newKey, this->modes[key]);
    this->removeColor(key);

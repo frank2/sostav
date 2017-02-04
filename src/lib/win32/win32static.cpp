@@ -5,7 +5,7 @@ using namespace Sostav::Win32;
 using namespace Sostav::Windows;
 
 StaticException::StaticException
-(const char *what)
+(const WCHAR *what)
    : Exception(what)
 {
 }
@@ -29,12 +29,6 @@ Static::Static
    : SubclassedWindow()
 {
    this->setClassName(L"STATIC");
-}
-
-Static::~Static
-(void)
-{
-   SubclassedWindow::~SubclassedWindow();
 }
 
 void

@@ -10,6 +10,8 @@ WindowTest::WindowTest
 {
    Font defaultFont = Font::MessageFont();
 
+   throw Sostav::Exception(L"состав!");
+   
    this->sostavBanner.setParent(this);
    this->enabledStatic.setParent(this);
    this->disabledStatic.setParent(this);
@@ -146,10 +148,18 @@ int CALLBACK
 wWinMain
 (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
-   WindowTest test;
+   try
+   {
+      WindowTest test;
+      
+      test.show();
+   }
+   catch (Sostav::Exception &exception)
+   {
+      MessageBoxA(NULL, exception.what(), "Exception", MB_OK);
+      return 0;
+   }
 
-   test.show();
-   
    Window::MessageLoop();
 
    return 0;

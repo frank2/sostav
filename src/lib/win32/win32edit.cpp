@@ -5,7 +5,7 @@ using namespace Sostav::Win32;
 using namespace Sostav::Windows;
 
 EditException::EditException
-(const char *what)
+(const WCHAR *what)
    : Exception(what)
 {
 }
@@ -32,12 +32,6 @@ Edit::Edit
    this->showCueOnFocus = false;
 }
 
-Edit::~Edit
-(void)
-{
-   SubclassedWindow::~SubclassedWindow();
-}
-
 void
 Edit::setCueText
 (std::wstring cueText)
@@ -48,7 +42,7 @@ Edit::setCueText
                                             ,EM_SETCUEBANNER
                                             ,(WPARAM)this->showCueOnFocus
                                             ,(LPARAM)this->cueText.c_str()) == FALSE)
-      throw WindowException("SendMessage failed");
+      throw WindowException(L"SendMessage failed");
 }
 
 std::wstring
@@ -85,7 +79,7 @@ Edit::getCueText
       }
 
       if (!succeeded)
-         throw EditException("failed to get cue banner");
+         throw EditException(L"failed to get cue banner");
 
       this->cueText.assign(cueText);
 

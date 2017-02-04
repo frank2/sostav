@@ -15,7 +15,7 @@ namespace Sostav
    {
       class LineException : public Exception
       {
-         LineException(const char *what);
+         LineException(const WCHAR *what);
       };
 
       class Line

@@ -20,7 +20,7 @@ namespace Sostav
       class GradientException : public Exception
       {
       public:
-         GradientException(const char *what);
+         GradientException(const WCHAR *what);
       };
          
       class Gradient

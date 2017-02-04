@@ -17,7 +17,7 @@ namespace Sostav
       class ImageException : public Exception
       {
       public:
-         ImageException(const char *what);
+         ImageException(const WCHAR *what);
       };
 
       class Image

@@ -5,7 +5,7 @@ using namespace Sostav::Drawing;
 using namespace Sostav::Math;
 
 GradientException::GradientException
-(const char *what)
+(const WCHAR *what)
    : Exception(what)
 {
 }
@@ -82,7 +82,7 @@ Gradient::moveColor
    iter = this->modes.find(key);
 
    if (iter == this->modes.end())
-      throw GradientException("key not found in modes");
+      throw GradientException(L"key not found in modes");
 
    color = this->modes[key];
    this->modes.erase(key);
@@ -200,7 +200,7 @@ Gradient::render
                                  ,NULL, 0);
 
    if (dibSection == NULL)
-      throw GradientException("failed to create DIB section");
+      throw GradientException(L"failed to create DIB section");
    
    quadData = (RGBQUAD *)malloc(width * height * sizeof(RGBQUAD));
    quadPointer = quadData;
@@ -221,7 +221,7 @@ Gradient::render
    }
 
    if (!SetDIBits(screen, dibSection, 0, height, quadData, &info, DIB_RGB_COLORS))
-      throw GradientException("SetDIBits failed");
+      throw GradientException(L"SetDIBits failed");
 
    ReleaseDC(NULL, screen);
 
