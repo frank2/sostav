@@ -39,10 +39,10 @@ namespace Sostav
 
          virtual void show(void);
          virtual void update(void);
-         virtual void preCreate(void);
          virtual void layeredUpdate(HDC context);
          
       protected:
+         virtual void preCreate(void);
          virtual void beginPaint(void);
          virtual void endPaint(void);
       };

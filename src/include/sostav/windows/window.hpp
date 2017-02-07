@@ -163,9 +163,7 @@ namespace Sostav
          void setBorderSize(BYTE size);
          BYTE getBorderSize(void) const;
 
-         virtual void preCreate(void);
          virtual void create(void);
-         virtual void postCreate(void);
 
          virtual void registerClass(void);
          virtual void destroy(void);
@@ -177,6 +175,9 @@ namespace Sostav
          virtual void disable(void);
 
       protected:
+         virtual void preCreate(void);
+         virtual void postCreate(void);
+         
          virtual HBRUSH onCtlColorEdit(HDC context, HWND control);
          virtual HBRUSH onCtlColorStatic(HDC context, HWND control);
          virtual HBRUSH onCtlColorBtn(HDC context, HWND control);
