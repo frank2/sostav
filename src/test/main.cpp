@@ -9,8 +9,6 @@ WindowTest::WindowTest
    : Window(NULL, L"SvWindowTest")
 {
    Font defaultFont = Font::MessageFont();
-
-   throw Sostav::Exception(L"состав!");
    
    this->sostavBanner.setParent(this);
    this->enabledStatic.setParent(this);

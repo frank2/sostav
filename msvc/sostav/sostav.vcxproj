@@ -159,6 +159,7 @@
     <ClInclude Include="..\..\src\include\sostav\win32\button.hpp" />
     <ClInclude Include="..\..\src\include\sostav\win32\combobox.hpp" />
     <ClInclude Include="..\..\src\include\sostav\win32\edit.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\win32\notifyicon.hpp" />
     <ClInclude Include="..\..\src\include\sostav\win32\static.hpp" />
     <ClInclude Include="..\..\src\include\sostav\windows.hpp" />
     <ClInclude Include="..\..\src\include\sostav\windows\imagewindow.hpp" />
@@ -178,6 +179,7 @@
     <ClCompile Include="..\..\src\lib\math\angle.cpp" />
     <ClCompile Include="..\..\src\lib\math\line.cpp" />
     <ClCompile Include="..\..\src\lib\math\mathpoint.cpp" />
+    <ClCompile Include="..\..\src\lib\win32\notifyicon.cpp" />
     <ClCompile Include="..\..\src\lib\win32\win32button.cpp" />
     <ClCompile Include="..\..\src\lib\win32\win32edit.cpp" />
     <ClCompile Include="..\..\src\lib\win32\win32static.cpp" />
