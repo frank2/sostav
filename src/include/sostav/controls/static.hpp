@@ -14,7 +14,7 @@ namespace Sostav
       class StaticException : public Exception
       {
       public:
-         StaticException(const char *what);
+         StaticException(const WCHAR *what);
       };
 
       class Static : public Windows::PaintedWindow
@@ -23,7 +23,6 @@ namespace Sostav
          Static(Windows::Window *parent, std::wstring caption=std::wstring());
          Static(Static &window);
          Static();
-         ~Static();
 
          virtual void paint(HDC context);
       };

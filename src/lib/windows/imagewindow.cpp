@@ -5,7 +5,7 @@ using namespace Sostav::Drawing;
 using namespace Sostav::Windows;
 
 ImageWindowException::ImageWindowException
-(const char *what)
+(const WCHAR *what)
    : Exception(what)
 {
 }
@@ -29,12 +29,6 @@ ImageWindow::ImageWindow
    : PaintedWindow()
 {
    this->setClassName(L"SvImageWindow");
-}
-
-ImageWindow::~ImageWindow
-(void)
-{
-   PaintedWindow::~PaintedWindow();
 }
 
 Image
@@ -104,12 +98,6 @@ LayeredImageWindow::LayeredImageWindow
    : LayeredWindow()
 {
    this->setClassName(L"SvLayeredImageWindow");
-}
-
-LayeredImageWindow::~LayeredImageWindow
-(void)
-{
-   LayeredWindow::~LayeredWindow();
 }
 
 Image

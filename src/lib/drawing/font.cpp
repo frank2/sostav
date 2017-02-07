@@ -4,7 +4,7 @@ using namespace Sostav;
 using namespace Sostav::Drawing;
 
 FontException::FontException
-(const char *what)
+(const WCHAR *what)
    : Exception(what)
 {
 }
@@ -103,7 +103,7 @@ Font::DefaultFont
                              ,sizeof(NONCLIENTMETRICS)
                              ,(LPVOID)&metrics
                              ,NULL))
-      throw FontException("SystemParametersInfo failed");
+      throw FontException(L"SystemParametersInfo failed");
 
    switch(fontName)
    {
@@ -128,7 +128,7 @@ Font::DefaultFont
       break;
 
    default:
-      throw FontException("no such default font found");
+      throw FontException(L"no such default font found");
    }
 
    return result;
@@ -220,7 +220,7 @@ Font::setFace
 (std::wstring face)
 {
    if (face.size() >= LF_FACESIZE)
-      throw FontException("font face too large for font structure");
+      throw FontException(L"font face too large for font structure");
 
    memset(&this->fontData.lfFaceName, 0, sizeof(this->fontData.lfFaceName));
    wcscpy_s(this->fontData.lfFaceName, LF_FACESIZE, face.c_str());
@@ -246,7 +246,7 @@ Font::setHandle
    LOGFONT logFont;
 
    if (!GetObject(font, sizeof(LOGFONT), (LPVOID)&logFont))
-      throw FontException("GetObject failed");
+      throw FontException(L"GetObject failed");
 
    this->setLogFont(logFont);
    this->fontHandle = font;
@@ -260,7 +260,7 @@ Font::getHandle
       this->fontHandle = CreateFontIndirect(&this->fontData);
 
    if (this->fontHandle == NULL)
-      throw FontException("CreateFontIndirect failed");
+      throw FontException(L"CreateFontIndirect failed");
 
    return this->fontHandle;
 }

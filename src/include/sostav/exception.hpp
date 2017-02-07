@@ -1,15 +1,22 @@
 #pragma once
 
+#include <windows.h>
+
 #include <exception>
 
 namespace Sostav
 {
    class Exception : public std::exception
    {
+   protected:
+      char *whatVal;
+
    public:
-      const char *whatVal;
+      DWORD error;
       
-      Exception(const char *what);
+      Exception(const WCHAR *what);
+      ~Exception();
+      
       virtual const char *what(void) const noexcept;
    };
 }

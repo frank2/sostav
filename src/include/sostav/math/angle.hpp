@@ -13,7 +13,7 @@ namespace Sostav
       class AngleException : public Exception
       {
       public:
-         AngleException(const char *what);
+         AngleException(const WCHAR *what);
       };
 
       class Angle

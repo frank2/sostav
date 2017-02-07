@@ -5,7 +5,7 @@ using namespace Sostav::Controls;
 using namespace Sostav::Windows;
 
 StaticException::StaticException
-(const char *what)
+(const WCHAR *what)
    : Exception(what)
 {
 }
@@ -30,12 +30,6 @@ Static::Static
 {
 }
 
-Static::~Static
-(void)
-{
-   PaintedWindow::~PaintedWindow();
-}
-
 void
 Static::paint
 (HDC context)
@@ -48,7 +42,7 @@ Static::paint
    oldFont = SelectObject(context, fontHandle);
 
    if (this->bgColor.isTranslucent())
-      throw StaticException("static controls can't be translucent");
+      throw StaticException(L"static controls can't be translucent");
    else if (this->bgColor.isTransparent())
       SetBkMode(this->paintContext, TRANSPARENT);
    else
@@ -63,7 +57,7 @@ Static::paint
    }
 
    if (!this->fgColor.isOpaque())
-      throw StaticException("foreground color must be opaque");
+      throw StaticException(L"foreground color must be opaque");
 
    SetTextColor(context, this->fgColor.colorRef());
 
@@ -72,7 +66,7 @@ Static::paint
                 ,0
                 ,this->windowText.c_str()
                 ,this->windowText.size()))
-      throw StaticException("TextOut failed");
+      throw StaticException(L"TextOut failed");
 
    fontHandle = (HFONT)SelectObject(context, oldFont);
 

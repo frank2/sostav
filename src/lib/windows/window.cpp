@@ -8,7 +8,7 @@ std::map<HWND, Window *> Window::WindowPool;
 Window *Window::LastWindow;
 
 WindowException::WindowException
-(const char *what)
+(const WCHAR *what)
    : Exception(what)
 {
 }
@@ -44,7 +44,7 @@ Window::Window
    this->borderSize = 0;
 
    if (className.empty())
-      throw WindowException("class name cannot be empty");
+      throw WindowException(L"class name cannot be empty");
    
    this->className.assign(className);
 }
@@ -114,11 +114,26 @@ Window::Window
 Window::~Window
 ()
 {
+   std::list<Window *>::iterator childIter, beginIter, endIter;
+   
    if (this->parent != NULL)
       this->parent->removeChild(this);
 
    if (this->hasHWND())
       this->destroy();
+
+   beginIter = this->children.begin();
+   endIter = this->children.end();
+
+   for (childIter=this->children.begin(); childIter!=this->children.end(); ++childIter)
+   {
+      Window *child = *childIter;
+
+      if (child->hasHWND())
+         child->destroy();
+   }
+
+   this->children.clear();
 }
 
 void
@@ -156,7 +171,7 @@ Window::WndProc
    }
 
    if (window == NULL)
-      throw WindowException("couldn't find window by hwnd for callback");
+      throw WindowException(L"couldn't find window by hwnd for callback");
 
    return window->windowProc(msg, wParam, lParam);
 }
@@ -261,7 +276,7 @@ Window::removeChild
 (Window *child)
 {
    if (!this->hasChild(child))
-      throw WindowException("couldn't find child window");
+      throw WindowException(L"couldn't find child window");
 
    this->children.erase(std::find(this->children.begin(), this->children.end(), child));
 }
@@ -344,7 +359,7 @@ Window::setPosition
                                         ,0
                                         ,SWP_NOACTIVATE | SWP_NOOWNERZORDER
                                         | SWP_NOZORDER | SWP_NOSIZE))
-      throw WindowException("SetWindowPos failed");
+      throw WindowException(L"SetWindowPos failed");
 
    this->point.setX(x);
    this->point.setY(y);
@@ -436,7 +451,7 @@ Window::setSize
                                         ,cy
                                         ,SWP_NOACTIVATE | SWP_NOOWNERZORDER
                                         | SWP_NOZORDER | SWP_NOMOVE))
-      throw WindowException("SetWindowPos failed");
+      throw WindowException(L"SetWindowPos failed");
 
    this->size.cx = cx;
    this->size.cy = cy;
@@ -469,7 +484,7 @@ Window::getParentSize
       SIZE size;
 
       if (!GetWindowRect(desktop, &rect))
-         throw WindowException("GetWindowRect failed");
+         throw WindowException(L"GetWindowRect failed");
       
       size.cx = rect.right - rect.left;
       size.cy = rect.bottom - rect.top;
@@ -490,7 +505,7 @@ Window::setRect
                                         ,bottom - top
                                         ,SWP_NOACTIVATE | SWP_NOOWNERZORDER
                                         | SWP_NOZORDER))
-      throw WindowException("SetWindowPos failed");
+      throw WindowException(L"SetWindowPos failed");
 
    this->point.setX(left);
    this->point.setY(top);
@@ -526,7 +541,7 @@ Window::setIcon
    if (this->hasHWND() && SetClassLongPtr(this->hwnd
                                           ,GCLP_HICON
                                           ,(LONG_PTR)icon) == 0)
-      throw WindowException("SetClassLong failed");
+      throw WindowException(L"SetClassLong failed");
 
    this->icon = icon;
 }
@@ -545,7 +560,7 @@ Window::setCursor
    if (this->hasHWND() && SetClassLongPtr(this->hwnd
                                           ,GCLP_HCURSOR
                                           ,(LONG_PTR)cursor) == 0)
-      throw WindowException("SetClassLong failed");
+      throw WindowException(L"SetClassLong failed");
 
    this->cursor = cursor;
 }
@@ -562,7 +577,7 @@ Window::setMenu
 (HMENU menu)
 {
    if (this->hasHWND() && !SetMenu(this->hwnd, menu))
-      throw WindowException("SetMenu failed");
+      throw WindowException(L"SetMenu failed");
 
    this->menu = menu;
 }
@@ -581,7 +596,7 @@ Window::setStyle
    if (this->hasHWND() && SetWindowLongPtr(this->hwnd
                                            ,GWL_STYLE
                                            ,style) == 0)
-      throw WindowException("SetWindowLongPtr failed");
+      throw WindowException(L"SetWindowLongPtr failed");
 
    this->style = style;
 }
@@ -598,7 +613,7 @@ Window::getStyle
                                          ,GWL_STYLE);
 
       if (wndStyle == 0)
-         throw WindowException("GetWindowLongPtr failed");
+         throw WindowException(L"GetWindowLongPtr failed");
 
       this->style = wndStyle;
    }
@@ -627,7 +642,7 @@ Window::setExStyle
    if (this->hasHWND() && SetWindowLongPtr(this->hwnd
                                            ,GWL_EXSTYLE
                                            ,exStyle) == 0)
-      throw WindowException("SetWindowLongPtr failed");
+      throw WindowException(L"SetWindowLongPtr failed");
 
    this->exStyle = exStyle;
 }
@@ -644,7 +659,7 @@ Window::getExStyle
                                            ,GWL_EXSTYLE);
 
       if (wndExStyle == 0)
-         throw WindowException("GetWindowLongPtr failed");
+         throw WindowException(L"GetWindowLongPtr failed");
 
       this->exStyle = wndExStyle;
    }
@@ -673,7 +688,7 @@ Window::setClassStyle
    if (this->hasHWND() && SetClassLongPtr(this->hwnd
                                           ,GCL_STYLE
                                           ,(LONG_PTR)classStyle) == 0)
-      throw WindowException("SetClassLong failed");
+      throw WindowException(L"SetClassLong failed");
 
    this->classStyle = classStyle;
 }
@@ -690,7 +705,7 @@ Window::getClassStyle
                                          ,GCL_STYLE);
 
       if (wndClassStyle == 0)
-         throw WindowException("GetClassLongPtr failed");
+         throw WindowException(L"GetClassLongPtr failed");
 
       this->classStyle = wndClassStyle;
    }
@@ -717,7 +732,7 @@ Window::setClassName
 (std::wstring className)
 {
    if (this->hasHWND())
-      throw WindowException("class already registered, window has been created");
+      throw WindowException(L"class already registered, window has been created");
 
    this->className.assign(className);
 }
@@ -736,7 +751,7 @@ Window::setMenuName
    if (this->hasHWND() && SetClassLongPtr(this->hwnd
                                           ,GCLP_MENUNAME
                                           ,(LONG_PTR)menuName.c_str()) == 0)
-      throw WindowException("SetClassLong failed");
+      throw WindowException(L"SetClassLong failed");
 
    this->menuName.assign(menuName);
 }
@@ -753,7 +768,7 @@ Window::setWindowText
 (std::wstring windowText)
 {
    if (this->hasHWND() && !SetWindowText(this->hwnd, windowText.c_str()))
-      throw WindowException("SetWindowText failed");
+      throw WindowException(L"SetWindowText failed");
 
    this->windowText.assign(windowText);
 }
@@ -778,7 +793,7 @@ Window::getWindowText
          memset(windowText, 0, sizeof(WCHAR) * (textLength+1));
 
          if (GetWindowText(this->hwnd, windowText, textLength+1) == 0)
-            throw WindowException("GetWindowText failed");
+            throw WindowException(L"GetWindowText failed");
 
          this->windowText.assign(windowText);
 
@@ -837,7 +852,7 @@ Window::setBGColor
       if (SetClassLongPtr(this->hwnd
                           ,GCLP_HBRBACKGROUND
                           ,(LONG_PTR)brush) == 0)
-         throw WindowException("SetClassLongPtr failed");
+         throw WindowException(L"SetClassLongPtr failed");
    }
 
    this->invalidate();
@@ -1004,7 +1019,7 @@ Window::setBorderSize
                                         ,0, 0, 0, 0, 0
                                         ,SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE
                                         | SWP_NOACTIVATE | SWP_NOZORDER))
-      throw WindowException("SetWindowPos failed");
+      throw WindowException(L"SetWindowPos failed");
 }
 
 BYTE
@@ -1045,7 +1060,7 @@ Window::create
                                ,NULL);
 
    if (this->hwnd == NULL)
-      throw WindowException("CreateWindowEx failed");
+      throw WindowException(L"CreateWindowEx failed");
 
    /* be explicitly redundant about this to prevent race conditions */
    Window::MapWindow(this->hwnd, this);
@@ -1076,7 +1091,7 @@ Window::registerClass
    WNDCLASSEX classInfo;
 
    if (this->className.empty())
-      throw WindowException("class name cannot be empty");
+      throw WindowException(L"class name cannot be empty");
 
    /* if the class exists already, bail. */
    if (GetClassInfoEx(GetModuleHandle(NULL)
@@ -1101,7 +1116,7 @@ Window::registerClass
    classInfo.hIconSm = this->icon;
 
    if (RegisterClassEx(&classInfo) == 0)
-      throw WindowException("failed to register window class");
+      throw WindowException(L"failed to register window class");
 }
 
 void
@@ -1138,7 +1153,7 @@ Window::update
       return;
    
    if (!UpdateWindow(this->hwnd))
-      throw WindowException("UpdateWindow failed");
+      throw WindowException(L"UpdateWindow failed");
 }
 
 void
@@ -1165,7 +1180,7 @@ Window::hide
 (void)
 {
    if (this->hasHWND() && !ShowWindow(this->hwnd, SW_HIDE))
-      throw WindowException("ShowWindow failed");
+      throw WindowException(L"ShowWindow failed");
 }
 
 void
@@ -1175,7 +1190,7 @@ Window::enable
    this->enabled = true;
 
    if (this->hasHWND() && !EnableWindow(this->hwnd, TRUE))
-      throw WindowException("EnableWindow failed");
+      throw WindowException(L"EnableWindow failed");
 }
 
 void
@@ -1185,7 +1200,7 @@ Window::disable
    this->enabled = false;
 
    if (this->hasHWND() && !EnableWindow(this->hwnd, FALSE))
-      throw WindowException("EnableWindow failed");
+      throw WindowException(L"EnableWindow failed");
 }
 
 HBRUSH
@@ -1195,7 +1210,7 @@ Window::onCtlColorEdit
    Window *window = Window::FindWindow(control);
 
    if (window == NULL)
-      throw WindowException("FindWindow failed");
+      throw WindowException(L"FindWindow failed");
 
    SetTextColor(context, window->getFGColor().colorRef());
    SetBkColor(context, window->getBGColor().colorRef());
@@ -1213,7 +1228,7 @@ Window::onCtlColorStatic
    Window *window = Window::FindWindow(control);
 
    if (window == NULL)
-      throw WindowException("FindWindow failed");
+      throw WindowException(L"FindWindow failed");
 
    SetTextColor(context, window->getFGColor().colorRef());
    SetBkColor(context, window->getBGColor().colorRef());
@@ -1231,7 +1246,7 @@ Window::onCtlColorBtn
    Window *window = Window::FindWindow(control);
 
    if (window == NULL)
-      throw WindowException("FindWindow failed");
+      throw WindowException(L"FindWindow failed");
 
    SetTextColor(context, window->getFGColor().colorRef());
    SetBkColor(context, window->getBGColor().colorRef());

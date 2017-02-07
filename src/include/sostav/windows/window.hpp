@@ -20,7 +20,7 @@ namespace Sostav
       class WindowException : public Exception
       {
       public:
-         WindowException(const char *what);
+         WindowException(const WCHAR *what);
       };
 
       class Window

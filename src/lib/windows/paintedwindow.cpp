@@ -4,7 +4,7 @@ using namespace Sostav;
 using namespace Sostav::Windows;
 
 PaintedWindowException::PaintedWindowException
-(const char *what)
+(const WCHAR *what)
    : Exception(what)
 {
 }
@@ -33,12 +33,6 @@ PaintedWindow::PaintedWindow
    memset(&this->paintStruct, 0, sizeof(PAINTSTRUCT));
 }
 
-PaintedWindow::~PaintedWindow
-(void)
-{
-   Window::~Window();
-}
-
 void
 PaintedWindow::paint
 (HDC context)
@@ -52,7 +46,7 @@ PaintedWindow::beginPaint
 (void)
 {
    if (!this->hasHWND())
-      throw PaintedWindowException("can't begin paint on window with no hwnd");
+      throw PaintedWindowException(L"can't begin paint on window with no hwnd");
    
    this->paintContext = BeginPaint(this->hwnd, &this->paintStruct);
 }
@@ -62,7 +56,7 @@ PaintedWindow::endPaint
 (void)
 {
    if (!this->hasHWND())
-      throw PaintedWindowException("can't end paint on window with no hwnd");
+      throw PaintedWindowException(L"can't end paint on window with no hwnd");
 
    EndPaint(this->hwnd, &this->paintStruct);
 

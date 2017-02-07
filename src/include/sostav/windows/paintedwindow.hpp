@@ -14,7 +14,7 @@ namespace Sostav
       class PaintedWindowException : public Exception
       {
       public:
-         PaintedWindowException(const char *what);
+         PaintedWindowException(const WCHAR *what);
       };
 
       class PaintedWindow : public Window
@@ -27,7 +27,6 @@ namespace Sostav
          PaintedWindow(Window *window, std::wstring className=L"SvPaintedWindow");
          PaintedWindow(PaintedWindow &window);
          PaintedWindow();
-         ~PaintedWindow();
 
          virtual void paint(HDC context);
 

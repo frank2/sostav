@@ -12,7 +12,7 @@ namespace Sostav
       class LayeredWindowException : public Exception
       {
       public:
-         LayeredWindowException(const char *what);
+         LayeredWindowException(const WCHAR *what);
       };
 
       class LayeredWindow : public PaintedWindow
@@ -26,7 +26,6 @@ namespace Sostav
          LayeredWindow(Window *parent, std::wstring className=L"SvLayeredWindow");
          LayeredWindow(LayeredWindow &window);
          LayeredWindow();
-         ~LayeredWindow();
 
          void setTransparency(Drawing::Color color);
          Drawing::Color getTransparency(void) const;

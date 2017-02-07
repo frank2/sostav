@@ -4,7 +4,7 @@ using namespace Sostav;
 using namespace Sostav::Math;
 
 LineException::LineException
-(const char *what)
+(const WCHAR *what)
    : Exception(what)
 {
 }

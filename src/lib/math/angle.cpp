@@ -4,7 +4,7 @@ using namespace Sostav;
 using namespace Sostav::Math;
 
 AngleException::AngleException
-(const char *what)
+(const WCHAR *what)
    : Exception(what)
 {
 }

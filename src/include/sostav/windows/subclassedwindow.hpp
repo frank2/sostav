@@ -14,7 +14,7 @@ namespace Sostav
       class SubclassedWindowException : public Exception
       {
       public:
-         SubclassedWindowException(const char *what);
+         SubclassedWindowException(const WCHAR *what);
       };
 
       class SubclassedWindow : public Window
@@ -27,7 +27,6 @@ namespace Sostav
          SubclassedWindow(Window *parent, std::wstring className);
          SubclassedWindow(SubclassedWindow &window);
          SubclassedWindow();
-         ~SubclassedWindow();
 
          static LRESULT CALLBACK WndProcSubclass(HWND hwnd
                                                  ,UINT msg

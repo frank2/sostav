@@ -4,7 +4,7 @@ using namespace Sostav;
 using namespace Sostav::Windows;
 
 LayeredWindowException::LayeredWindowException
-(const char *what)
+(const WCHAR *what)
    : Exception(what)
 {
 }
@@ -34,12 +34,6 @@ LayeredWindow::LayeredWindow
    this->transparency = Drawing::Color::Transparent();
    this->screenDC = NULL;
    this->updateFlag = ULW_ALPHA;
-}
-
-LayeredWindow::~LayeredWindow
-(void)
-{
-   PaintedWindow::~PaintedWindow();
 }
 
 void
@@ -137,7 +131,7 @@ LayeredWindow::layeredUpdate
    POINT position;
    
    if (!this->hasHWND())
-      throw LayeredWindowException("can't update window without an hwnd");
+      throw LayeredWindowException(L"can't update window without an hwnd");
 
    blender.BlendOp = AC_SRC_OVER;
    blender.BlendFlags = 0;
@@ -155,7 +149,7 @@ LayeredWindow::layeredUpdate
                             ,this->transparency.colorRef()
                             ,&blender
                             ,this->updateFlag))
-      throw LayeredWindowException("UpdateLayeredWindow failed");
+      throw LayeredWindowException(L"UpdateLayeredWindow failed");
 }
 
 void
@@ -171,7 +165,7 @@ LayeredWindow::endPaint
 (void)
 {
    if (!this->hasHWND())
-      throw LayeredWindowException("can't end paint with no hwnd present");
+      throw LayeredWindowException(L"can't end paint with no hwnd present");
    
    this->layeredUpdate(this->paintContext);
    DeleteDC(this->paintContext);
