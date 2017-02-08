@@ -21,7 +21,9 @@ WindowTest::WindowTest
    this->disabledRadioButton.setParent(this);
    this->enabledCheckButton.setParent(this);
    this->disabledCheckButton.setParent(this);
+   this->trayIcon.setParent(this);
 
+   this->setIcon(Icon::MainIcon());
    this->setBGColor(0xFF, 0x3A, 0x1A, 0x3A);
    this->addStyle(WS_CAPTION | WS_SYSMENU);
    this->setSize(500, 500);
@@ -134,29 +136,31 @@ WindowTest::WindowTest
    this->disabledCheckButton.setWindowText(L"Disabled check box");
    this->disabledCheckButton.setTypeface(defaultFont);
    this->disabledCheckButton.disable();
+
+   this->trayIcon.setIcon(Icon::MainIcon());
+   this->trayIcon.setInfoTitle(L"Sostav window test launched!");
+   this->trayIcon.setInfo(L"This demonstrates the use of a tray icon and an info balloon.");
+   this->trayIcon.setInfoFlags(NIIF_INFO);
 }
 
-WindowTest::~WindowTest
+LRESULT
+WindowTest::onDestroy
 (void)
 {
-   Window::~Window();
+   Window::onDestroy();
+
+   ExitProcess(0);
+
+   return (LRESULT)0;
 }
 
 int CALLBACK
 wWinMain
 (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
-   try
-   {
-      WindowTest test;
+   WindowTest test;
       
-      test.show();
-   }
-   catch (Sostav::Exception &exception)
-   {
-      MessageBoxA(NULL, exception.what(), "Exception", MB_OK);
-      return 0;
-   }
+   test.show();
 
    Window::MessageLoop();
 

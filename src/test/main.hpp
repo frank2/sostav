@@ -2,8 +2,6 @@
 
 #include <windows.h>
 
-#include <algorithm>
-
 #include <sostav/sostav.hpp>
 
 #include "resource.hpp"
@@ -19,8 +17,12 @@ protected:
    Sostav::Win32::Button enabledPushButton, disabledPushButton;
    Sostav::Win32::Button enabledRadioButton, disabledRadioButton;
    Sostav::Win32::Button enabledCheckButton, disabledCheckButton;
+   
+   Sostav::Win32::NotifyIcon trayIcon;
 
 public:
    WindowTest();
-   ~WindowTest();
+
+protected:
+   virtual LRESULT onDestroy(void);
 };
