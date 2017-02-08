@@ -98,7 +98,7 @@ WindowTest::WindowTest
    this->disabledPushButton.setTypeface(defaultFont);
    this->disabledPushButton.disable();
 
-   this->enabledRadioButton.setStyle(WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON);
+   this->enabledRadioButton.setStyle(WS_CHILD | WS_VISIBLE | WS_GROUP | BS_AUTORADIOBUTTON);
    this->enabledRadioButton.setPosition(50, 250);
    this->enabledRadioButton.setSize(200, 25);
    this->enabledRadioButton.setBorderSize(2);
@@ -108,7 +108,7 @@ WindowTest::WindowTest
    this->enabledRadioButton.setWindowText(L"Enabled radio button");
    this->enabledRadioButton.setTypeface(defaultFont);
 
-   this->disabledRadioButton.setStyle(WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON);
+   this->disabledRadioButton.setStyle(WS_CHILD | WS_VISIBLE | WS_GROUP | BS_AUTORADIOBUTTON);
    this->disabledRadioButton.setPosition(250, 250);
    this->disabledRadioButton.setSize(200, 25);
    this->disabledRadioButton.setBorderSize(2);
