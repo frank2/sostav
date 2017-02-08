@@ -1209,8 +1209,12 @@ Window::onCtlColorEdit
 {
    Window *window = Window::FindWindow(control);
 
+   /* window is unmanaged when event fires, return default proc */
    if (window == NULL)
-      throw WindowException(L"FindWindow failed");
+      return (HBRUSH)this->defWndProc(this->hwnd
+                                      ,WM_CTLCOLOREDIT
+                                      ,(WPARAM)context
+                                      ,(LPARAM)control);
 
    SetTextColor(context, window->getFGColor().colorRef());
    SetBkColor(context, window->getBGColor().colorRef());
@@ -1227,8 +1231,12 @@ Window::onCtlColorStatic
 {
    Window *window = Window::FindWindow(control);
 
+   /* window is unmanaged when event fires, return default proc */
    if (window == NULL)
-      throw WindowException(L"FindWindow failed");
+      return (HBRUSH)this->defWndProc(this->hwnd
+                                      ,WM_CTLCOLORSTATIC
+                                      ,(WPARAM)context
+                                      ,(LPARAM)control);
 
    SetTextColor(context, window->getFGColor().colorRef());
    SetBkColor(context, window->getBGColor().colorRef());
@@ -1245,8 +1253,12 @@ Window::onCtlColorBtn
 {
    Window *window = Window::FindWindow(control);
 
+   /* window is unmanaged when event fires, return default proc */
    if (window == NULL)
-      throw WindowException(L"FindWindow failed");
+      return (HBRUSH)this->defWndProc(this->hwnd,
+                                      WM_CTLCOLORBTN
+                                      ,(WPARAM)context
+                                      ,(LPARAM)control);
 
    SetTextColor(context, window->getFGColor().colorRef());
    SetBkColor(context, window->getBGColor().colorRef());

@@ -9,8 +9,6 @@ WindowTest::WindowTest
    : Window(NULL, L"SvWindowTest")
 {
    Font defaultFont = Font::MessageFont();
-
-   throw Sostav::Exception(L"состав!");
    
    this->sostavBanner.setParent(this);
    this->enabledStatic.setParent(this);
@@ -23,6 +21,7 @@ WindowTest::WindowTest
    this->disabledRadioButton.setParent(this);
    this->enabledCheckButton.setParent(this);
    this->disabledCheckButton.setParent(this);
+   this->sysLink.setParent(this);
 
    this->setBGColor(0xFF, 0x3A, 0x1A, 0x3A);
    this->addStyle(WS_CAPTION | WS_SYSMENU);
@@ -136,6 +135,16 @@ WindowTest::WindowTest
    this->disabledCheckButton.setWindowText(L"Disabled check box");
    this->disabledCheckButton.setTypeface(defaultFont);
    this->disabledCheckButton.disable();
+
+   this->sysLink.setStyle(WS_CHILD | WS_VISIBLE);
+   this->sysLink.setPosition(50, 350);
+   this->sysLink.setSize(400, 100);
+   this->sysLink.setBorderSize(2);
+   this->sysLink.setBGColor(0xFF, 0x7A, 0x0B, 0x7A);
+   this->sysLink.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
+   this->sysLink.setBorderColor(0xFF, 0x61, 0x00, 0x61);
+   this->sysLink.setWindowText(L"Some links: <ul><li><a href=\"http://github.com\">Github</a></li><li><a href=\"http://google.com\">Google</a></li></ul>");
+   this->sysLink.setTypeface(defaultFont);
 }
 
 WindowTest::~WindowTest
@@ -148,17 +157,9 @@ int CALLBACK
 wWinMain
 (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
-   try
-   {
-      WindowTest test;
+   WindowTest test;
       
-      test.show();
-   }
-   catch (Sostav::Exception &exception)
-   {
-      MessageBoxA(NULL, exception.what(), "Exception", MB_OK);
-      return 0;
-   }
+   test.show();
 
    Window::MessageLoop();
 

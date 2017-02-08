@@ -12,16 +12,15 @@ namespace Sostav
       class SysLinkException : public Exception
       {
       public:
-         SysLinkException(const char *what);
+         SysLinkException(const WCHAR *what);
       };
 
-      class SysLink : public SubclassedWindow
+      class SysLink : public Windows::SubclassedWindow
       {
       public:
          SysLink(Windows::Window *parent);
          SysLink(SysLink &window);
          SysLink();
-         ~SysLink();
       };
    }
 }

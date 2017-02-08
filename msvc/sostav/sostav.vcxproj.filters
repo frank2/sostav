@@ -123,6 +123,9 @@
     <ClInclude Include="..\..\src\include\sostav\drawing\image.hpp">
       <Filter>Header Files\drawing</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\include\sostav\win32\syslink.hpp">
+      <Filter>Header Files\win32</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\lib\exception.cpp">
@@ -177,6 +180,9 @@
       <Filter>Source Files\drawing</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\lib\win32\win32button.cpp">
+      <Filter>Source Files\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib\win32\win32syslink.cpp">
       <Filter>Source Files\win32</Filter>
     </ClCompile>
   </ItemGroup>

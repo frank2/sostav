@@ -160,6 +160,7 @@
     <ClInclude Include="..\..\src\include\sostav\win32\combobox.hpp" />
     <ClInclude Include="..\..\src\include\sostav\win32\edit.hpp" />
     <ClInclude Include="..\..\src\include\sostav\win32\static.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\win32\syslink.hpp" />
     <ClInclude Include="..\..\src\include\sostav\windows.hpp" />
     <ClInclude Include="..\..\src\include\sostav\windows\imagewindow.hpp" />
     <ClInclude Include="..\..\src\include\sostav\windows\layeredwindow.hpp" />
@@ -181,6 +182,7 @@
     <ClCompile Include="..\..\src\lib\win32\win32button.cpp" />
     <ClCompile Include="..\..\src\lib\win32\win32edit.cpp" />
     <ClCompile Include="..\..\src\lib\win32\win32static.cpp" />
+    <ClCompile Include="..\..\src\lib\win32\win32syslink.cpp" />
     <ClCompile Include="..\..\src\lib\windows\imagewindow.cpp" />
     <ClCompile Include="..\..\src\lib\windows\layeredwindow.cpp" />
     <ClCompile Include="..\..\src\lib\windows\paintedwindow.cpp" />

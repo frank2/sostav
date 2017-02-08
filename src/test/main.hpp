@@ -19,6 +19,7 @@ protected:
    Sostav::Win32::Button enabledPushButton, disabledPushButton;
    Sostav::Win32::Button enabledRadioButton, disabledRadioButton;
    Sostav::Win32::Button enabledCheckButton, disabledCheckButton;
+   Sostav::Win32::SysLink sysLink;
 
 public:
    WindowTest();
