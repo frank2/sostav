@@ -1,6 +1,7 @@
 #include "sostav/win32/notifyicon.hpp"
 
 using namespace Sostav;
+using namespace Sostav::Drawing;
 using namespace Sostav::Win32;
 using namespace Sostav::Windows;
 
@@ -11,12 +12,12 @@ NotifyIconException::NotifyIconException
 }
 
 NotifyIcon::NotifyIcon
-(Window *parent, HICON icon)
+(Window *parent, Icon icon)
    : Window(parent, L"SvNotifyIcon")
 {
    ZeroMemory(&this->iconData, sizeof(NOTIFYICONDATA));
    this->iconData.cbSize = sizeof(NOTIFYICONDATA);
-   
+
    this->setIcon(icon);
 }
 
@@ -27,7 +28,7 @@ NotifyIcon::NotifyIcon
    ZeroMemory(&this->iconData, sizeof(NOTIFYICONDATA));
    this->iconData.cbSize = sizeof(NOTIFYICONDATA);
    
-   this->setNotifyIconData(window.getNotifyIconData);
+   this->setNotifyIconData(window.getNotifyIconData());
 }
 
 NotifyIcon::NotifyIcon
@@ -47,10 +48,7 @@ NotifyIcon::windowProc
    switch(msg)
    {
    case NotifyIcon::Callback:
-      this->onCallback(LOWORD(lParam)
-                       ,HIWORD(lParam)
-                       ,GET_X_LPARAM(wParam)
-                       ,GET_Y_LPARAM(wParam));
+      this->onCallback((UINT)lParam);
       return (LRESULT)0;
 
    default:
@@ -87,22 +85,17 @@ NotifyIcon::getID
 }
 
 void
-NotifyIcon::setNotifyIcon
-(HICON icon)
+NotifyIcon::setIcon
+(Icon icon)
 {
-   this->iconData.hIcon = icon;
+   Window::setIcon(icon);
 
-   if (icon == NULL)
+   this->iconData.hIcon = this->icon.getHandle();
+
+   if (!icon.hasHandle())
       this->iconData.uFlags &= ~NIF_ICON;
    else
       this->iconData.uFlags |= NIF_ICON;
-}
-
-HICON
-NotifyIcon::getNotifyIcon
-(void) const
-{
-   return this->iconData.hIcon;
 }
 
 void
@@ -307,17 +300,17 @@ NotifyIcon::preCreate
 {
    this->iconData.uVersion = NOTIFYICON_VERSION_4;
    this->iconData.uCallbackMessage = NotifyIcon::Callback;
+   this->iconData.uFlags |= NIF_MESSAGE;
 
    if (this->iconData.hIcon == NULL && this->parent != NULL)
-      this->iconData.hIcon = this->parent->getIcon();
+      this->iconData.hIcon = this->parent->getIcon().getHandle();
 }
 
 void
 NotifyIcon::postCreate
 (void)
 {
-   /* the hwnd is mostly a facilitator for the callback message, so don't worry about
-      the parent function */
+   Window::postCreate();
 
    this->iconData.hWnd = this->hwnd;
 
@@ -327,7 +320,7 @@ NotifyIcon::postCreate
 
 void
 NotifyIcon::onCallback
-(UINT event, UINT iconID, DWORD x, DWORD y)
+(UINT message)
 {
    return;
 }

@@ -33,7 +33,6 @@ Window::Window
    
    this->size.cx = this->size.cy = 0;
 
-   this->icon = NULL;
    this->cursor = LoadCursor(NULL, IDC_ARROW);
    this->menu = NULL;
 
@@ -70,7 +69,7 @@ Window::Window
    this->setPosition(window.getPosition());
    this->setSize(window.getSize());
 
-   this->icon = window.getIcon();
+   this->setIcon(window.getIcon());
    this->cursor = window.getCursor();
    this->menu = window.getMenu();
 
@@ -102,7 +101,6 @@ Window::Window
    this->size.cx = this->size.cy = 0;
 
    this->setDefaultColors();
-   this->icon = NULL;
    this->cursor = NULL;
    this->menu = NULL;
    this->bgBrush = NULL;
@@ -536,17 +534,17 @@ Window::getRect
 
 void
 Window::setIcon
-(HICON icon)
+(Drawing::Icon icon)
 {
+   this->icon.setHandle(icon.getHandle());
+   
    if (this->hasHWND() && SetClassLongPtr(this->hwnd
                                           ,GCLP_HICON
-                                          ,(LONG_PTR)icon) == 0)
+                                          ,(LONG_PTR)this->icon.getHandle()) == 0)
       throw WindowException(L"SetClassLong failed");
-
-   this->icon = icon;
 }
 
-HICON
+Drawing::Icon
 Window::getIcon
 (void) const
 {
@@ -1105,7 +1103,7 @@ Window::registerClass
    classInfo.style = this->classStyle;
    classInfo.lpfnWndProc = Window::WndProc;
    classInfo.hInstance = GetModuleHandle(NULL);
-   classInfo.hIcon = this->icon;
+   classInfo.hIcon = this->icon.getHandle();
    classInfo.hCursor = this->cursor;
    classInfo.hbrBackground = this->getBGBrush();
 
@@ -1113,7 +1111,7 @@ Window::registerClass
       classInfo.lpszMenuName = this->menuName.c_str();
 
    classInfo.lpszClassName = this->className.c_str();
-   classInfo.hIconSm = this->icon;
+   classInfo.hIconSm = this->icon.getHandle();
 
    if (RegisterClassEx(&classInfo) == 0)
       throw WindowException(L"failed to register window class");

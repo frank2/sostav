@@ -11,6 +11,7 @@
 #include "sostav/exception.hpp"
 #include "sostav/drawing/color.hpp"
 #include "sostav/drawing/font.hpp"
+#include "sostav/drawing/icon.hpp"
 #include "sostav/drawing/point.hpp"
 
 namespace Sostav
@@ -34,7 +35,7 @@ namespace Sostav
          Drawing::AbsolutePoint point;
          SIZE size;
    
-         HICON icon;
+         Drawing::Icon icon;
          HCURSOR cursor;
          HMENU menu;
       
@@ -104,8 +105,8 @@ namespace Sostav
          void setRect(RECT rect);
          RECT getRect(void) const;
 
-         void setIcon(HICON icon);
-         HICON getIcon(void) const;
+         virtual void setIcon(Drawing::Icon icon);
+         Drawing::Icon getIcon(void) const;
 
          void setCursor(HCURSOR cursor);
          HCURSOR getCursor(void) const;

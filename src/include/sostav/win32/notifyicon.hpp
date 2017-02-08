@@ -6,6 +6,7 @@
 #include <string>
 
 #include <sostav/exception.hpp>
+#include <sostav/drawing/icon.hpp>
 #include <sostav/windows/window.hpp>
 
 namespace Sostav
@@ -26,7 +27,7 @@ namespace Sostav
       public:
          const static UINT Callback = WM_APP+1000;
          
-         NotifyIcon(Window *parent, HICON icon);
+         NotifyIcon(Window *parent, Drawing::Icon icon);
          NotifyIcon(NotifyIcon &window);
          NotifyIcon();
 
@@ -38,8 +39,7 @@ namespace Sostav
          void setID(UINT id);
          UINT getID(void) const;
 
-         void setIcon(HICON icon);
-         HICON getIcon(void) const;
+         virtual void setIcon(Drawing::Icon icon);
 
          void setToolTip(std::wstring toolTip);
          std::wstring getToolTip(void) const;
@@ -75,7 +75,7 @@ namespace Sostav
       protected:
          virtual void preCreate(void);
          virtual void postCreate(void);
-         virtual void onCallback(UINT event, UINT iconID, DWORD x, DWORD y);
+         virtual void onCallback(UINT message);
          virtual LRESULT onDestroy(void);
       };
    }
