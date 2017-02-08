@@ -11,6 +11,8 @@
 class WindowTest : public Sostav::Windows::Window
 {
 protected:
+   bool firstLaunch;
+   
    Sostav::Windows::ImageWindow sostavBanner;
    Sostav::Win32::Static enabledStatic, disabledStatic;
    Sostav::Win32::Edit enabledEdit, disabledEdit;
@@ -24,5 +26,6 @@ public:
    WindowTest();
 
 protected:
+   virtual LRESULT onShowWindow(BOOL show, WORD status);
    virtual LRESULT onDestroy(void);
 };

@@ -9,6 +9,8 @@ WindowTest::WindowTest
    : Window(NULL, L"SvWindowTest")
 {
    Font defaultFont = Font::MessageFont();
+
+   this->firstLaunch = true;
    
    this->sostavBanner.setParent(this);
    this->enabledStatic.setParent(this);
@@ -141,6 +143,43 @@ WindowTest::WindowTest
    this->trayIcon.setInfoTitle(L"Sostav window test launched!");
    this->trayIcon.setInfo(L"This demonstrates the use of a tray icon and an info balloon.");
    this->trayIcon.setInfoFlags(NIIF_INFO);
+}
+
+LRESULT
+WindowTest::onShowWindow
+(BOOL show, WORD status)
+{
+   if (this->firstLaunch && show == TRUE)
+   {
+      LayeredImageWindow splashWindow;
+
+      splashWindow.setStyle(WS_VISIBLE | WS_POPUP);
+      splashWindow.setImage(Image(MAKEINTRESOURCE(IDI_SPLASH), L"PNG"));
+      splashWindow.setBGColor(Color::Transparent());
+      splashWindow.setAlpha(0xFF);
+      splashWindow.setIcon(Icon::MainIcon());
+      splashWindow.center();
+
+      splashWindow.show();
+
+      Sleep(3000);
+
+      this->defWndProc(this->hwnd, WM_SHOWWINDOW, (WPARAM)show, (LPARAM)status);
+
+      for (int i=255; i>0; i-=10)
+      {
+         splashWindow.setAlpha((BYTE)i);
+         Sleep(10);
+      }
+
+      splashWindow.destroy();
+      
+      this->firstLaunch = false;
+
+      return (LRESULT)0;
+   }
+   else
+      return this->defWndProc(this->hwnd, WM_SHOWWINDOW, (WPARAM)show, (LPARAM)status);
 }
 
 LRESULT

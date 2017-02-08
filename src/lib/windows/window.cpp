@@ -248,6 +248,9 @@ Window::windowProc
    case WM_PAINT:
       this->onPaint();
       return (LRESULT)0;
+
+   case WM_SHOWWINDOW:
+      return this->onShowWindow((BOOL)wParam, (WORD)lParam);
       
    default:
       return this->defWndProc(this->hwnd, msg, wParam, lParam);
@@ -1376,4 +1379,11 @@ Window::onPaint
 (void)
 {
    this->defWndProc(this->hwnd, WM_PAINT, NULL, NULL);
+}
+
+LRESULT
+Window::onShowWindow
+(BOOL shown, WORD status)
+{
+   return this->defWndProc(this->hwnd, WM_SHOWWINDOW, (WPARAM)shown, (LPARAM)status);
 }

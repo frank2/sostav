@@ -191,6 +191,7 @@ namespace Sostav
          virtual LRESULT onNCCalcSize(BOOL switchValue, LPARAM pointer);
          virtual LRESULT onNCPaint(HRGN paintRegion);
          virtual void onPaint(void);
+         virtual LRESULT onShowWindow(BOOL shown, WORD status);
       };
    }
 }
