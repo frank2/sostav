@@ -43,9 +43,9 @@ namespace Sostav
          void setSubclassMethod(bool method);
          bool getSubclassMethod(void) const;
 
-         virtual void postCreate(void);
-
       protected:
+         virtual void postCreate(void);
+         
          virtual void subclassWindow(HWND window);
       };
    }

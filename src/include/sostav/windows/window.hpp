@@ -11,6 +11,7 @@
 #include "sostav/exception.hpp"
 #include "sostav/drawing/color.hpp"
 #include "sostav/drawing/font.hpp"
+#include "sostav/drawing/icon.hpp"
 #include "sostav/drawing/point.hpp"
 
 namespace Sostav
@@ -34,7 +35,7 @@ namespace Sostav
          Drawing::AbsolutePoint point;
          SIZE size;
    
-         HICON icon;
+         Drawing::Icon icon;
          HCURSOR cursor;
          HMENU menu;
       
@@ -104,8 +105,8 @@ namespace Sostav
          void setRect(RECT rect);
          RECT getRect(void) const;
 
-         void setIcon(HICON icon);
-         HICON getIcon(void) const;
+         virtual void setIcon(Drawing::Icon icon);
+         Drawing::Icon getIcon(void) const;
 
          void setCursor(HCURSOR cursor);
          HCURSOR getCursor(void) const;
@@ -163,9 +164,7 @@ namespace Sostav
          void setBorderSize(BYTE size);
          BYTE getBorderSize(void) const;
 
-         virtual void preCreate(void);
          virtual void create(void);
-         virtual void postCreate(void);
 
          virtual void registerClass(void);
          virtual void destroy(void);
@@ -177,6 +176,9 @@ namespace Sostav
          virtual void disable(void);
 
       protected:
+         virtual void preCreate(void);
+         virtual void postCreate(void);
+         
          virtual HBRUSH onCtlColorEdit(HDC context, HWND control);
          virtual HBRUSH onCtlColorStatic(HDC context, HWND control);
          virtual HBRUSH onCtlColorBtn(HDC context, HWND control);
@@ -189,6 +191,7 @@ namespace Sostav
          virtual LRESULT onNCCalcSize(BOOL switchValue, LPARAM pointer);
          virtual LRESULT onNCPaint(HRGN paintRegion);
          virtual void onPaint(void);
+         virtual LRESULT onShowWindow(BOOL shown, WORD status);
       };
    }
 }

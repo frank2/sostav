@@ -9,6 +9,8 @@ WindowTest::WindowTest
    : Window(NULL, L"SvWindowTest")
 {
    Font defaultFont = Font::MessageFont();
+
+   this->firstLaunch = true;
    
    this->sostavBanner.setParent(this);
    this->enabledStatic.setParent(this);
@@ -22,7 +24,9 @@ WindowTest::WindowTest
    this->enabledCheckButton.setParent(this);
    this->disabledCheckButton.setParent(this);
    this->sysLink.setParent(this);
+   this->trayIcon.setParent(this);
 
+   this->setIcon(Icon::MainIcon());
    this->setBGColor(0xFF, 0x3A, 0x1A, 0x3A);
    this->addStyle(WS_CAPTION | WS_SYSMENU);
    this->setSize(500, 500);
@@ -144,13 +148,60 @@ WindowTest::WindowTest
    this->sysLink.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
    this->sysLink.setBorderColor(0xFF, 0x61, 0x00, 0x61);
    this->sysLink.setWindowText(L"Some links: <ul><li><a href=\"http://github.com\">Github</a></li><li><a href=\"http://google.com\">Google</a></li></ul>");
+
    this->sysLink.setTypeface(defaultFont);
+   this->trayIcon.setIcon(Icon::MainIcon());
+   this->trayIcon.setInfoTitle(L"Sostav window test launched!");
+   this->trayIcon.setInfo(L"This demonstrates the use of a tray icon and an info balloon.");
+   this->trayIcon.setInfoFlags(NIIF_INFO);
 }
 
-WindowTest::~WindowTest
+LRESULT
+WindowTest::onShowWindow
+(BOOL show, WORD status)
+{
+   if (this->firstLaunch && show == TRUE)
+   {
+      LayeredImageWindow splashWindow;
+
+      splashWindow.setStyle(WS_VISIBLE | WS_POPUP);
+      splashWindow.setImage(Image(MAKEINTRESOURCE(IDI_SPLASH), L"PNG"));
+      splashWindow.setBGColor(Color::Transparent());
+      splashWindow.setAlpha(0xFF);
+      splashWindow.setIcon(Icon::MainIcon());
+      splashWindow.center();
+
+      splashWindow.show();
+
+      Sleep(3000);
+
+      this->defWndProc(this->hwnd, WM_SHOWWINDOW, (WPARAM)show, (LPARAM)status);
+
+      for (int i=255; i>0; i-=10)
+      {
+         splashWindow.setAlpha((BYTE)i);
+         Sleep(10);
+      }
+
+      splashWindow.destroy();
+      
+      this->firstLaunch = false;
+
+      return (LRESULT)0;
+   }
+   else
+      return this->defWndProc(this->hwnd, WM_SHOWWINDOW, (WPARAM)show, (LPARAM)status);
+}
+
+LRESULT
+WindowTest::onDestroy
 (void)
 {
-   Window::~Window();
+   Window::onDestroy();
+
+   ExitProcess(0);
+
+   return (LRESULT)0;
 }
 
 int CALLBACK
