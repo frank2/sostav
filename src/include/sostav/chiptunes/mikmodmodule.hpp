@@ -18,34 +18,27 @@ namespace Sostav
 
       class MikModModule
       {
-      public:
-         MREADER callbacks;
-
       protected:
-         MDRIVER driver;
          MLOADER loader;
-         size_t bufferSize;
-         LPBYTE bufferData;
-         long bufferPosition;
          HANDLE playThread;
          HANDLE stopEvent;
          MODULE *loadedModule;
 
       public:
-         MikModModule(MDRIVER driver, MLOADER loader);
+         MikModModule(MLOADER loader);
          MikModModule(MikModModule &module);
          MikModModule();
          ~MikModModule();
 
          const static WCHAR *PlayMutexName = L"Local\\MikModModule(PlayThread)";
-         static HANDLE PlayMutexHandle;
+         static int Instances;
          
-         static BOOL EOF(MREADER *reader);
-         static BOOL Read(MREADER *reader, void *buffer, size_t size);
-         static int Get(MREADER *reader);
-         static int Seek(MREADER *reader, long offset, int whence);
-         static long Tell(MREADER *reader);
          static DWORD WINAPI PlayThread(LPVOID mikModModule);
+
+         void setLoader(MLOADER loader);
+         MLOADER getLoader(void) const;
+
+         HANDLE getStopEvent(void) const;
 
          void loadResource(LPWSTR resourceName, std::wstring resourceType);
          void loadFilename(std::wstring filename);
@@ -57,3 +50,7 @@ namespace Sostav
 
          void play(void);
          void stop(void);
+         void pause(void);
+      };
+   }
+}
