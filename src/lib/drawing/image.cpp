@@ -347,6 +347,7 @@ Image::loadFile
    if (!ReadFile(fileHandle, (LPVOID)fileData, fileSize, &bytesRead, NULL))
    {
       CloseHandle(fileHandle);
+      HeapFree(GetProcessHeap(), NULL, fileData);
       throw ImageException(L"ReadFile failed");
    }
 

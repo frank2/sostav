@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -42,6 +42,12 @@
     </Filter>
     <Filter Include="Source Files\win32">
       <UniqueIdentifier>{3c07e6f5-f593-45e5-99bb-21f72d629587}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\chiptunes">
+      <UniqueIdentifier>{e1da540e-f780-48f2-81ab-300f1a77b69e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\chiptunes">
+      <UniqueIdentifier>{ac8efde2-a76b-471b-a9c3-da1f7f19a94e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -132,6 +138,15 @@
     <ClInclude Include="..\..\src\include\sostav\drawing\icon.hpp">
       <Filter>Header Files\drawing</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\include\sostav\chiptunes\mikmoddriver.hpp">
+      <Filter>Header Files\chiptunes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\include\sostav\chiptunes\mikmodloader.hpp">
+      <Filter>Header Files\chiptunes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\include\sostav\chiptunes\mikmodmodule.hpp">
+      <Filter>Header Files\chiptunes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\lib\exception.cpp">
@@ -196,6 +211,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\lib\drawing\icon.cpp">
       <Filter>Source Files\drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib\chiptunes\mikmoddriver.cpp">
+      <Filter>Source Files\chiptunes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib\chiptunes\mikmodloader.cpp">
+      <Filter>Source Files\chiptunes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib\chiptunes\mikmodmodule.cpp">
+      <Filter>Source Files\chiptunes</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

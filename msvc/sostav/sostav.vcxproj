@@ -103,7 +103,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;MIKMOD_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -145,6 +145,9 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\include\sostav\chiptunes\mikmoddriver.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\chiptunes\mikmodloader.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\chiptunes\mikmodmodule.hpp" />
     <ClInclude Include="..\..\src\include\sostav\controls.hpp" />
     <ClInclude Include="..\..\src\include\sostav\controls\static.hpp" />
     <ClInclude Include="..\..\src\include\sostav\drawing.hpp" />
@@ -175,6 +178,9 @@
     <ClInclude Include="..\..\src\include\sostav\windows\window.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\lib\chiptunes\mikmoddriver.cpp" />
+    <ClCompile Include="..\..\src\lib\chiptunes\mikmodloader.cpp" />
+    <ClCompile Include="..\..\src\lib\chiptunes\mikmodmodule.cpp" />
     <ClCompile Include="..\..\src\lib\controls\sostavstatic.cpp" />
     <ClCompile Include="..\..\src\lib\drawing\color.cpp" />
     <ClCompile Include="..\..\src\lib\drawing\drawingpoint.cpp" />

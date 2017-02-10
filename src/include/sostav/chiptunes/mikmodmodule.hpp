@@ -5,6 +5,10 @@
 #include <mikmod.h>
 
 #include <sostav/exception.hpp>
+#include <sostav/chiptunes/mikmoddriver.hpp>
+#include <sostav/chiptunes/mikmodloader.hpp>
+
+#pragma comment(lib, "libmikmod")
 
 namespace Sostav
 {
@@ -19,30 +23,27 @@ namespace Sostav
       class MikModModule
       {
       protected:
-         MLOADER loader;
+         size_t bufferSize;
+         LPBYTE bufferData;
          HANDLE playThread;
          HANDLE stopEvent;
-         MODULE *loadedModule;
 
       public:
-         MikModModule(MLOADER loader);
+         MikModModule(LPWSTR resourceName, std::wstring resourceType);
+         MikModModule(std::wstring filename);
+         MikModModule(LPBYTE bufferData, size_t bufferSize);
          MikModModule(MikModModule &module);
          MikModModule();
          ~MikModModule();
-
-         const static WCHAR *PlayMutexName = L"Local\\MikModModule(PlayThread)";
-         static int Instances;
          
          static DWORD WINAPI PlayThread(LPVOID mikModModule);
 
-         void setLoader(MLOADER loader);
-         MLOADER getLoader(void) const;
-
-         HANDLE getStopEvent(void) const;
-
+         void setBuffer(LPBYTE bufferData, size_t bufferSize);
+         LPBYTE getBuffer(void) const;
+         size_t getBufferSize(void) const;
+         
          void loadResource(LPWSTR resourceName, std::wstring resourceType);
          void loadFilename(std::wstring filename);
-         void loadData(LPBYTE bufferData, size_t bufferSize);
 
          bool isPlaying(void) const;
          bool shouldStop(void) const;

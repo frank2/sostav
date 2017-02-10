@@ -20,8 +20,9 @@ protected:
    Sostav::Win32::Button enabledRadioButton, disabledRadioButton;
    Sostav::Win32::Button enabledCheckButton, disabledCheckButton;
    Sostav::Win32::SysLink sysLink;
-   
    Sostav::Win32::NotifyIcon trayIcon;
+
+   Sostav::Chiptunes::MikModModule music;
 
 public:
    WindowTest();

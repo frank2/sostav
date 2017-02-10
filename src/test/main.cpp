@@ -1,6 +1,7 @@
 #include "main.hpp"
 
 using namespace Sostav;
+using namespace Sostav::Chiptunes;
 using namespace Sostav::Drawing;
 using namespace Sostav::Windows;
 
@@ -154,6 +155,10 @@ WindowTest::WindowTest
    this->trayIcon.setInfoTitle(L"Sostav window test launched!");
    this->trayIcon.setInfo(L"This demonstrates the use of a tray icon and an info balloon.");
    this->trayIcon.setInfoFlags(NIIF_INFO);
+
+   MikModDriver::Load(MikModDriver::DirectSound());
+   MikModLoader::Load(MikModLoader::FastTracker2());
+   this->music.loadResource(MAKEINTRESOURCE(IDI_DEADLOCK), L"XMMOD");
 }
 
 LRESULT
@@ -184,6 +189,8 @@ WindowTest::onShowWindow
       }
 
       splashWindow.destroy();
+
+      this->music.play();
       
       this->firstLaunch = false;
 
@@ -199,6 +206,8 @@ WindowTest::onDestroy
 {
    Window::onDestroy();
 
+   this->music.stop();
+   
    ExitProcess(0);
 
    return (LRESULT)0;

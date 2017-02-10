@@ -1,5 +1,6 @@
 #pragma once
 
+#include <sostav/chiptunes.hpp>
 #include <sostav/controls.hpp>
 #include <sostav/drawing.hpp>
 #include <sostav/math.hpp>
