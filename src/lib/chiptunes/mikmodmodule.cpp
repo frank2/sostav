@@ -3,6 +3,8 @@
 using namespace Sostav;
 using namespace Sostav::Chiptunes;
 
+int MikModModule::Instances = 0;
+
 MikModModuleException::MikModModuleException
 (const WCHAR *what)
    : Exception(what)
@@ -12,51 +14,68 @@ MikModModuleException::MikModModuleException
 MikModModule::MikModModule
 (LPWSTR resourceName, std::wstring resourceType)
 {
-   this->bufferSize = 0;
+   MikModModule::Instances++;
+
    this->bufferData = NULL;
+   this->bufferSize = 0;
    this->playThread = NULL;
    this->stopEvent = NULL;
+   this->module = NULL;
    
-   this->loadResource(resourceName, resourceType);
+   this->setBufferFromResource(resourceName, resourceType);
 }
 
 MikModModule::MikModModule
 (std::wstring filename)
 {
-   this->bufferSize = 0;
+   MikModModule::Instances++;
+
    this->bufferData = NULL;
+   this->bufferSize = 0;
    this->playThread = NULL;
    this->stopEvent = NULL;
+   this->module = NULL;
 
-   this->loadFilename(filename);
+   this->setBufferFromFilename(filename);
 }
 
 MikModModule::MikModModule
 (LPBYTE bufferData, size_t bufferSize)
 {
-   this->bufferSize = 0;
+   MikModModule::Instances++;
+
    this->bufferData = NULL;
+   this->bufferSize = 0;
    this->playThread = NULL;
    this->stopEvent = NULL;
+   this->module = NULL;
 
    this->setBuffer(bufferData, bufferSize);
 }
 
 MikModModule::MikModModule
-(MikModModule &module)
+(const MikModModule &module)
 {
+   MikModModule::Instances++;
+
+   this->bufferData = NULL;
+   this->bufferSize = 0;
    this->playThread = NULL;
    this->stopEvent = NULL;
+   
    this->setBuffer(module.getBuffer(), module.getBufferSize());
 }
 
 MikModModule::MikModModule
 (void)
 {
-   this->bufferSize = 0;
+   MikModModule::Instances++;
+
    this->bufferData = NULL;
+   this->bufferSize = 0;
    this->playThread = NULL;
    this->stopEvent = NULL;
+   this->module = NULL;
 }
 
 MikModModule::~MikModModule
@@ -65,18 +84,25 @@ MikModModule::~MikModModule
    if (this->isPlaying())
       this->stop();
 
+   if (this->module != NULL)
+      Player_Free(this->module);
+
    if (this->bufferData != NULL)
       HeapFree(GetProcessHeap(), NULL, this->bufferData);
+
+   MikModModule::Instances--;
+
+   if (MikModModule::Instances == 0)
+      this->shutdown();
 }
 
 DWORD WINAPI
 MikModModule::PlayThread
 (LPVOID mikModModule)
 {
-   MikModModule *sostovModule = (MikModModule *)mikModModule;
+   MikModModule *sostavModule = (MikModModule *)mikModModule;
    HANDLE mutex;
    DWORD mutexResult;
-   MODULE *module;
 
    mutex = CreateMutex(NULL, FALSE, L"Sostav::Chiptunes::MikModModule::PlayThread");
    mutexResult = WaitForSingleObject(mutex, 0);
@@ -84,30 +110,14 @@ MikModModule::PlayThread
    if (mutexResult != WAIT_OBJECT_0 && mutexResult != WAIT_ABANDONED)
       return 0;
 
-   MikMod_InitThreads();
-   MikModDriver::Register();
-   MikModLoader::Register();
-
-   md_mode |= DMODE_SOFT_MUSIC | DMODE_NOISEREDUCTION | DMODE_HQMIXER;
-
-   if (MikMod_Init(""))
-      throw MikModModuleException(L"MikMod_Init failed");
-
-   module = Player_LoadMem((const char *)sostovModule->getBuffer()
-                           ,sostovModule->getBufferSize()
-                           ,64
-                           ,0);
-
-   if (module == NULL)
-      throw MikModModuleException(L"Player_LoadMem failed");
-
-   Player_Start(module);
+   if (!sostavModule->isLoaded())
+      sostavModule->load();
+      
+   Player_Start(sostavModule->getModule());
 
    while (Player_Active())
    {
-      DWORD eventResult;
-
-      if (sostovModule->shouldStop())
+      if (sostavModule->shouldStop())
          break;
 
       MikMod_Update();
@@ -115,44 +125,13 @@ MikModModule::PlayThread
 
    Player_Stop();
 
-   Player_Free(module);
-
-   MikMod_Exit();
+   ReleaseMutex(mutex);
 
    return 0;
 }
 
 void
-MikModModule::setBuffer
-(LPBYTE bufferData, size_t bufferSize)
-{
-   if (this->bufferData != NULL)
-   {
-      HeapFree(GetProcessHeap(), NULL, this->bufferData);
-      this->bufferData = NULL;
-   }
-
-   this->bufferSize = bufferSize;
-   this->bufferData = (LPBYTE)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, bufferSize);
-   CopyMemory(this->bufferData, bufferData, bufferSize);
-}
-
-LPBYTE
-MikModModule::getBuffer
-(void) const
-{
-   return this->bufferData;
-}
-
-size_t
-MikModModule::getBufferSize
-(void) const
-{
-   return this->bufferSize;
-}
-
-void
-MikModModule::loadResource
+MikModModule::setBufferFromResource
 (LPWSTR resourceName, std::wstring resourceType)
 {
    HRSRC resourceHandle;
@@ -180,7 +159,7 @@ MikModModule::loadResource
 }
 
 void
-MikModModule::loadFilename
+MikModModule::setBufferFromFilename
 (std::wstring filename)
 {
    HANDLE fileHandle;
@@ -214,6 +193,90 @@ MikModModule::loadFilename
    this->setBuffer(fileData, fileSize);
 
    HeapFree(GetProcessHeap(), NULL, fileData);
+}
+
+void
+MikModModule::setBuffer
+(LPBYTE bufferData, size_t bufferSize)
+{
+   if (this->bufferData != NULL)
+   {
+      HeapFree(GetProcessHeap(), NULL, bufferData);
+      this->bufferData = NULL;
+   }
+
+   if (this->module != NULL)
+   {
+      Player_Free(this->module);
+      this->module = NULL;
+   }
+
+   this->bufferData = (LPBYTE)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, bufferSize);
+   CopyMemory(this->bufferData, bufferData, bufferSize);
+
+   this->bufferSize = bufferSize;
+}
+
+LPBYTE
+MikModModule::getBuffer
+(void) const
+{
+   return this->bufferData;
+}
+
+size_t
+MikModModule::getBufferSize
+(void) const
+{
+   return this->bufferSize;
+}
+
+MODULE *
+MikModModule::getModule
+(void) const
+{
+   return this->module;
+}
+
+bool
+MikModModule::isLoaded
+(void) const
+{
+   return this->module != NULL;
+}
+
+void
+MikModModule::load
+(void)
+{
+   if (MikModModule::Instances == 1)
+      this->init();
+
+   this->module = Player_LoadMem((const char *)this->bufferData
+                                 ,this->bufferSize
+                                 ,64
+                                 ,0);
+
+   if (this->module != NULL)
+      throw MikModModuleException(L"Player_LoadMem failed");
+}
+
+std::wstring
+MikModModule::getSongName
+(void) const
+{
+   std::wstring_convert<std::codecvt_utf8_utf16<wchar_t> > converter;
+
+   if (this->isLoaded())
+      return converter.from_bytes(this->module->songname);
+   else if (this->bufferData != NULL)
+   {
+      char *title = Player_LoadTitleMem((const char *)this->bufferData, this->bufferSize);
+
+      return converter.from_bytes(title);
+   }
+   else
+      throw MikModModuleException(L"no means to acquire title from module");
 }
 
 bool
@@ -254,6 +317,11 @@ MikModModule::play
 
    if (this->playThread == NULL)
       throw MikModModuleException(L"CreateThread failed");
+
+   Sleep(100);
+
+   if (!this->isPlaying())
+      throw MikModModuleException(L"play thread failed, is another song already playing?");
 }
 
 void
@@ -279,4 +347,33 @@ MikModModule::pause
       throw MikModModuleException(L"module is not playing");
 
    Player_TogglePause();
+}
+
+void
+MikModModule::init
+(void)
+{
+   MikMod_InitThreads();
+
+   if (MikModDriver::Drivers.empty())
+      MikModDriver::LoadDefault();
+   
+   MikModDriver::Register();
+
+   if (MikModLoader::Loaders.empty())
+      MikModLoader::LoadDefault();
+
+   MikModLoader::Register();
+
+   md_mode |= DMODE_SOFT_MUSIC | DMODE_NOISEREDUCTION | DMODE_HQMIXER;
+
+   if (MikMod_Init(""))
+      throw MikModModuleException(L"MikMod_Init failed");
+}
+
+void
+MikModModule::shutdown
+(void)
+{
+   MikMod_Exit();
 }

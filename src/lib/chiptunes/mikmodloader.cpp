@@ -44,13 +44,6 @@ MikModLoader::Module
 }
 
 MikModLoader
-MikModLoader::ScreamTracker2
-(void)
-{
-   return MikModLoader(&load_stm);
-}
-
-MikModLoader
 MikModLoader::ScreamTracker3
 (void)
 {
@@ -70,6 +63,16 @@ MikModLoader::Load
 {
    if (MikModLoader::Loaders.find(loader) == MikModLoader::Loaders.end())
       MikModLoader::Loaders.insert(loader);
+}
+
+void
+MikModLoader::LoadDefault
+(void)
+{
+   MikModLoader::Load(MikModLoader::ImpulseTracker());
+   MikModLoader::Load(MikModLoader::Module());
+   MikModLoader::Load(MikModLoader::ScreamTracker3());
+   MikModLoader::Load(MikModLoader::FastTracker2());
 }
 
 void

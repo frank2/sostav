@@ -239,6 +239,12 @@ Window::windowProc
    case WM_KEYUP:
       return this->onKeyUp((DWORD)wParam, (DWORD)lParam);
 
+   case WM_LBUTTONDOWN:
+      return this->onLButtonDown((WORD)wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+
+   case WM_LBUTTONUP:
+      return this->onLButtonUp((WORD)wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+
    case WM_NCCALCSIZE:
       return this->onNCCalcSize((BOOL)wParam, lParam);
       
@@ -248,6 +254,12 @@ Window::windowProc
    case WM_PAINT:
       this->onPaint();
       return (LRESULT)0;
+
+   case WM_RBUTTONDOWN:
+      return this->onRButtonDown((WORD)wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+
+   case WM_RBUTTONUP:
+      return this->onRButtonUp((WORD)wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
    case WM_SHOWWINDOW:
       return this->onShowWindow((BOOL)wParam, (WORD)lParam);
@@ -1339,6 +1351,20 @@ Window::onKeyUp
 }
 
 LRESULT
+Window::onLButtonDown
+(WORD virtualKeys, WORD x, WORD y)
+{
+   return this->defWndProc(this->hwnd, WM_LBUTTONDOWN, (WPARAM)virtualKeys, (LPARAM)((y << 16) | x));
+}
+
+LRESULT
+Window::onLButtonUp
+(WORD virtualKeys, WORD x, WORD y)
+{
+   return this->defWndProc(this->hwnd, WM_LBUTTONUP, (WPARAM)virtualKeys, (LPARAM)((y << 16) | x));
+}
+
+LRESULT
 Window::onNCCalcSize
 (BOOL switchValue, LPARAM pointer)
 {
@@ -1391,6 +1417,20 @@ Window::onPaint
 (void)
 {
    this->defWndProc(this->hwnd, WM_PAINT, NULL, NULL);
+}
+
+LRESULT
+Window::onRButtonDown
+(WORD virtualKeys, WORD x, WORD y)
+{
+   return this->defWndProc(this->hwnd, WM_RBUTTONDOWN, (WPARAM)virtualKeys, (LPARAM)((y << 16) | x));
+}
+
+LRESULT
+Window::onRButtonUp
+(WORD virtualKeys, WORD x, WORD y)
+{
+   return this->defWndProc(this->hwnd, WM_RBUTTONUP, (WPARAM)virtualKeys, (LPARAM)((y << 16) | x));
 }
 
 LRESULT

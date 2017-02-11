@@ -1,6 +1,7 @@
 #pragma once
 
 #include <windows.h>
+#include <windowsx.h>
 
 #include <algorithm>
 #include <iostream>
@@ -188,9 +189,13 @@ namespace Sostav
          virtual LRESULT onEraseBkgnd(HDC context);
          virtual LRESULT onKeyDown(DWORD keyValue, DWORD keyFlags);
          virtual LRESULT onKeyUp(DWORD keyValue, DWORD keyFlags);
+         virtual LRESULT onLButtonDown(WORD virtualKeys, WORD x, WORD y);
+         virtual LRESULT onLButtonUp(WORD virtualKeys, WORD x, WORD y);
          virtual LRESULT onNCCalcSize(BOOL switchValue, LPARAM pointer);
          virtual LRESULT onNCPaint(HRGN paintRegion);
          virtual void onPaint(void);
+         virtual LRESULT onRButtonDown(WORD virtualKeys, WORD x, WORD y);
+         virtual LRESULT onRButtonUp(WORD virtualKeys, WORD x, WORD y);
          virtual LRESULT onShowWindow(BOOL shown, WORD status);
       };
    }

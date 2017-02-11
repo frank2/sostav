@@ -87,6 +87,13 @@ MikModDriver::Load
 }
 
 void
+MikModDriver::LoadDefault
+(void)
+{
+   MikModDriver::Load(MikModDriver::DirectSound());
+}
+
+void
 MikModDriver::Unload
 (MikModDriver driver)
 {

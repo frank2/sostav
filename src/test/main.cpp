@@ -3,35 +3,177 @@
 using namespace Sostav;
 using namespace Sostav::Chiptunes;
 using namespace Sostav::Drawing;
+using namespace Sostav::Win32;
 using namespace Sostav::Windows;
 
-WindowTest::WindowTest
-(void)
-   : Window(NULL, L"SvWindowTest")
+ChiptuneButton::ChiptuneButton
+(Window *parent, MikModModule module)
+   : Button(parent)
 {
-   Font defaultFont = Font::MessageFont();
+   this->setModule(module);
+}
 
-   this->firstLaunch = true;
+ChiptuneButton::ChiptuneButton
+(void)
+   : Button()
+{
+}
+
+void
+ChiptuneButton::setModule
+(MikModModule module)
+{
+   this->module.setBuffer(module.getBuffer(), module.getBufferSize());
+}
+
+LRESULT
+ChiptuneButton::onLButtonUp
+(WORD virtualKeys, WORD x, WORD y)
+{
+   ChiptuneSelector *selector = (ChiptuneSelector *)this->parent;
+
+   selector->stop();
+
+   if (this->module.getBuffer() == NULL)
+      selector->setModule(NULL);
+   else
+      selector->setModule(&this->module);
    
-   this->sostavBanner.setParent(this);
-   this->enabledStatic.setParent(this);
-   this->disabledStatic.setParent(this);
-   this->enabledEdit.setParent(this);
-   this->disabledEdit.setParent(this);
-   this->enabledPushButton.setParent(this);
-   this->disabledPushButton.setParent(this);
-   this->enabledRadioButton.setParent(this);
-   this->disabledRadioButton.setParent(this);
-   this->enabledCheckButton.setParent(this);
-   this->disabledCheckButton.setParent(this);
-   this->sysLink.setParent(this);
-   this->trayIcon.setParent(this);
+   selector->play();
 
+   return (LRESULT)0;
+}
+
+ChiptuneSelector::ChiptuneSelector
+(Window *parent)
+   : Button(parent)
+{
+   this->module = NULL;
+}
+
+ChiptuneSelector::ChiptuneSelector
+(void)
+   : Button()
+{
+   this->module = NULL;
+}
+
+void
+ChiptuneSelector::setModule
+(MikModModule *module)
+{
+   this->module = module;
+}
+
+void
+ChiptuneSelector::play
+(void)
+{
+   if (this->module != NULL)
+   {
+      this->module->play();
+      this->songTitle.setWindowText(this->module->getSongName());
+   }
+   else
+      this->songTitle.setWindowText(L"music stopped");
+}
+
+void
+ChiptuneSelector::stop
+(void)
+{
+   if (this->module != NULL && this->module->isPlaying())
+      this->module->stop();
+}
+
+void
+ChiptuneSelector::preCreate
+(void)
+{
+   double relativeWidth, relativeHeight;
+   DWORD absoluteWidth, absoluteHeight;
+   DWORD buttonStyle = WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON;
+
+   Button::preCreate();
+   
+   this->addStyle(BS_GROUPBOX);
+
+   relativeWidth = 0.90 / 5.0;
+   relativeHeight = 0.10;
+
+   absoluteWidth = this->size.cx * relativeWidth;
+   absoluteHeight = this->size.cy * relativeHeight;
+   
+   this->impulseTracker.setParent(this);
+   this->moduleButton.setParent(this);
+   this->screamTracker3.setParent(this);
+   this->fastTracker2.setParent(this);
+   this->noMusic.setParent(this);
+   this->songTitle.setParent(this);
+
+   this->impulseTracker.setWindowText(L"IT");
+   this->impulseTracker.setTypeface(Font::MessageFont());
+   this->impulseTracker.setStyle(buttonStyle);
+   this->impulseTracker.setRelativePosition(0.05, 0.80);
+   this->impulseTracker.setSize(absoluteWidth, absoluteHeight);
+   this->impulseTracker.setModule(MikModModule(MAKEINTRESOURCE(IDI_BEYOND), L"ITMOD"));
+
+   this->moduleButton.setWindowText(L"MOD");
+   this->moduleButton.setTypeface(Font::MessageFont());
+   this->moduleButton.setStyle(buttonStyle);
+   this->moduleButton.setRelativePosition(0.05 + relativeWidth, 0.80);
+   this->moduleButton.setSize(absoluteWidth, absoluteHeight);
+   this->moduleButton.setModule(MikModModule(MAKEINTRESOURCE(IDI_SPACE), L"MOD"));
+
+   this->screamTracker3.setWindowText(L"S3M");
+   this->screamTracker3.setTypeface(Font::MessageFont());
+   this->screamTracker3.setStyle(buttonStyle);
+   this->screamTracker3.setRelativePosition(0.05 + relativeWidth * 2, 0.80);
+   this->screamTracker3.setSize(absoluteWidth, absoluteHeight);
+   this->screamTracker3.setModule(MikModModule(MAKEINTRESOURCE(IDI_UNREAL), L"S3MOD"));
+
+   this->fastTracker2.setWindowText(L"XM");
+   this->fastTracker2.setTypeface(Font::MessageFont());
+   this->fastTracker2.setStyle(buttonStyle);
+   this->fastTracker2.setRelativePosition(0.05 + relativeWidth * 3, 0.80);
+   this->fastTracker2.setSize(absoluteWidth, absoluteHeight);
+   this->fastTracker2.setModule(MikModModule(MAKEINTRESOURCE(IDI_DEADLOCK), L"XMMOD"));
+   
+   this->noMusic.setWindowText(L"stop");
+   this->noMusic.setTypeface(Font::MessageFont());
+   this->noMusic.setStyle(buttonStyle);
+   this->noMusic.setRelativePosition(0.05 + relativeWidth * 4, 0.80);
+   this->noMusic.setSize(absoluteWidth, absoluteHeight);
+
+   this->songTitle.setStyle(WS_CHILD | WS_VISIBLE | SS_CENTER);
+   this->songTitle.setTypeface(Font::MessageFont());
+   this->songTitle.setBGColor(Color::Transparent());
+   this->songTitle.setFGColor(0xFF, 0x6A, 0xCE, 0xCB);
+   this->songTitle.setRelativePosition(0.05, 0.2);
+   this->songTitle.setSize(this->size.cx * 0.90, absoluteHeight);
+}
+   
+MainWindow::MainWindow
+(void)
+   : Window()
+{
+   this->setClassName(L"SostavTestMainWindow");
+}
+
+void
+MainWindow::preCreate
+(void)
+{
+   Window::preCreate();
+   
    this->setIcon(Icon::MainIcon());
-   this->setBGColor(0xFF, 0x3A, 0x1A, 0x3A);
+   this->setBGColor(0xFF, 0x00, 0x71, 0x6D);
    this->addStyle(WS_CAPTION | WS_SYSMENU);
    this->setSize(500, 500);
    this->center();
+
+   this->sostavBanner.setParent(this);
+   this->chiptunes.setParent(this);
 
    this->sostavBanner.setStyle(WS_CHILD | WS_VISIBLE);
    this->sostavBanner.setImage(Image(MAKEINTRESOURCE(IDI_SOSTAV), L"PNG"));
@@ -39,130 +181,17 @@ WindowTest::WindowTest
    this->sostavBanner.setBGColor(Color::Transparent());
    this->sostavBanner.centerX();
 
-   this->enabledStatic.setStyle(WS_CHILD | WS_VISIBLE);
-   this->enabledStatic.setPosition(100, 100);
-   this->enabledStatic.setSize(100, 25);
-   this->enabledStatic.setBGColor(0xFF, 0x7A, 0x0B, 0x7A);
-   this->enabledStatic.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
-   this->enabledStatic.setWindowText(L"Enabled static");
-   this->enabledStatic.setTypeface(defaultFont);
-
-   this->disabledStatic.setStyle(WS_CHILD | WS_VISIBLE);
-   this->disabledStatic.setPosition(300, 100);
-   this->disabledStatic.setSize(100, 25);
-   this->disabledStatic.setBGColor(0xFF, 0x7A, 0x0B, 0x7A);
-   this->disabledStatic.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
-   this->disabledStatic.setWindowText(L"Disabled static");
-   this->disabledStatic.setTypeface(defaultFont);
-   this->disabledStatic.disable();
-
-   this->enabledEdit.setStyle(WS_CHILD | WS_VISIBLE);
-   this->enabledEdit.setPosition(100, 150);
-   this->enabledEdit.setSize(100, 25);
-   this->enabledEdit.setBorderSize(2);
-   this->enabledEdit.setBGColor(0xFF, 0x7A, 0x0B, 0x7A);
-   this->enabledEdit.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
-   this->enabledEdit.setBorderColor(0xFF, 0x61, 0x00, 0x61);
-   this->enabledEdit.setCueText(L"Enabled edit");
-   this->enabledEdit.setTypeface(defaultFont);
-   this->enabledEdit.setShowCueOnFocus(true);
-
-   this->disabledEdit.setStyle(WS_CHILD | WS_VISIBLE);
-   this->disabledEdit.setPosition(300, 150);
-   this->disabledEdit.setSize(100, 25);
-   this->disabledEdit.setBorderSize(2);
-   this->disabledEdit.setBGColor(0xFF, 0x7A, 0x0B, 0x7A);
-   this->disabledEdit.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
-   this->disabledEdit.setBorderColor(0xFF, 0x61, 0x00, 0x61);
-   this->disabledEdit.setWindowText(L"Disabled edit");
-   this->disabledEdit.setTypeface(defaultFont);
-   this->disabledEdit.disable();
-
-   this->enabledPushButton.setStyle(WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON);
-   this->enabledPushButton.setPosition(50, 200);
-   this->enabledPushButton.setSize(200, 25);
-   this->enabledPushButton.setBorderSize(2);
-   this->enabledPushButton.setBGColor(0xFF, 0x7A, 0x0B, 0x7A);
-   this->enabledPushButton.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
-   this->enabledPushButton.setBorderColor(0xFF, 0x61, 0x00, 0x61);
-   this->enabledPushButton.setWindowText(L"Enabled push button");
-   this->enabledPushButton.setTypeface(defaultFont);
-
-   this->disabledPushButton.setStyle(WS_CHILD | WS_VISIBLE);
-   this->disabledPushButton.setPosition(250, 200);
-   this->disabledPushButton.setSize(200, 25);
-   this->disabledPushButton.setBorderSize(2);
-   this->disabledPushButton.setBGColor(0xFF, 0x7A, 0x0B, 0x7A);
-   this->disabledPushButton.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
-   this->disabledPushButton.setBorderColor(0xFF, 0x61, 0x00, 0x61);
-   this->disabledPushButton.setWindowText(L"Disabled push button");
-   this->disabledPushButton.setTypeface(defaultFont);
-   this->disabledPushButton.disable();
-
-   this->enabledRadioButton.setStyle(WS_CHILD | WS_VISIBLE | WS_GROUP | BS_AUTORADIOBUTTON);
-   this->enabledRadioButton.setPosition(50, 250);
-   this->enabledRadioButton.setSize(200, 25);
-   this->enabledRadioButton.setBorderSize(2);
-   this->enabledRadioButton.setBGColor(0xFF, 0x7A, 0x0B, 0x7A);
-   this->enabledRadioButton.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
-   this->enabledRadioButton.setBorderColor(0xFF, 0x61, 0x00, 0x61);
-   this->enabledRadioButton.setWindowText(L"Enabled radio button");
-   this->enabledRadioButton.setTypeface(defaultFont);
-
-   this->disabledRadioButton.setStyle(WS_CHILD | WS_VISIBLE | WS_GROUP | BS_AUTORADIOBUTTON);
-   this->disabledRadioButton.setPosition(250, 250);
-   this->disabledRadioButton.setSize(200, 25);
-   this->disabledRadioButton.setBorderSize(2);
-   this->disabledRadioButton.setBGColor(0xFF, 0x7A, 0x0B, 0x7A);
-   this->disabledRadioButton.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
-   this->disabledRadioButton.setBorderColor(0xFF, 0x61, 0x00, 0x61);
-   this->disabledRadioButton.setWindowText(L"Disabled radio button");
-   this->disabledRadioButton.setTypeface(defaultFont);
-   this->disabledRadioButton.disable();
-
-   this->enabledCheckButton.setStyle(WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX);
-   this->enabledCheckButton.setPosition(50, 300);
-   this->enabledCheckButton.setSize(200, 25);
-   this->enabledCheckButton.setBorderSize(2);
-   this->enabledCheckButton.setBGColor(0xFF, 0x7A, 0x0B, 0x7A);
-   this->enabledCheckButton.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
-   this->enabledCheckButton.setBorderColor(0xFF, 0x61, 0x00, 0x61);
-   this->enabledCheckButton.setWindowText(L"Enabled check box");
-   this->enabledCheckButton.setTypeface(defaultFont);
-
-   this->disabledCheckButton.setStyle(WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX);
-   this->disabledCheckButton.setPosition(250, 300);
-   this->disabledCheckButton.setSize(200, 25);
-   this->disabledCheckButton.setBorderSize(2);
-   this->disabledCheckButton.setBGColor(0xFF, 0x7A, 0x0B, 0x7A);
-   this->disabledCheckButton.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
-   this->disabledCheckButton.setBorderColor(0xFF, 0x61, 0x00, 0x61);
-   this->disabledCheckButton.setWindowText(L"Disabled check box");
-   this->disabledCheckButton.setTypeface(defaultFont);
-   this->disabledCheckButton.disable();
-
-   this->sysLink.setStyle(WS_CHILD | WS_VISIBLE);
-   this->sysLink.setPosition(50, 350);
-   this->sysLink.setSize(400, 100);
-   this->sysLink.setBorderSize(2);
-   this->sysLink.setBGColor(0xFF, 0x7A, 0x0B, 0x7A);
-   this->sysLink.setFGColor(0xFF, 0xBA, 0x5C, 0xBA);
-   this->sysLink.setBorderColor(0xFF, 0x61, 0x00, 0x61);
-   this->sysLink.setWindowText(L"Some links: <ul><li><a href=\"http://github.com\">Github</a></li><li><a href=\"http://google.com\">Google</a></li></ul>");
-
-   this->sysLink.setTypeface(defaultFont);
-   this->trayIcon.setIcon(Icon::MainIcon());
-   this->trayIcon.setInfoTitle(L"Sostav window test launched!");
-   this->trayIcon.setInfo(L"This demonstrates the use of a tray icon and an info balloon.");
-   this->trayIcon.setInfoFlags(NIIF_INFO);
-
-   MikModDriver::Load(MikModDriver::DirectSound());
-   MikModLoader::Load(MikModLoader::FastTracker2());
-   this->music.loadResource(MAKEINTRESOURCE(IDI_DEADLOCK), L"XMMOD");
+   this->chiptunes.setStyle(WS_CHILD | WS_VISIBLE);
+   this->chiptunes.setTypeface(Font::MessageFont());
+   this->chiptunes.setPosition(10, 100);
+   this->chiptunes.setFGColor(0xFF, 0x6A, 0xCE, 0xCB);
+   this->chiptunes.setBGColor(Color::Transparent());
+   this->chiptunes.setSize(300, 200);
+   this->chiptunes.center();
 }
 
 LRESULT
-WindowTest::onShowWindow
+MainWindow::onShowWindow
 (BOOL show, WORD status)
 {
    if (this->firstLaunch && show == TRUE)
@@ -190,8 +219,6 @@ WindowTest::onShowWindow
 
       splashWindow.destroy();
 
-      this->music.play();
-      
       this->firstLaunch = false;
 
       return (LRESULT)0;
@@ -201,12 +228,10 @@ WindowTest::onShowWindow
 }
 
 LRESULT
-WindowTest::onDestroy
+MainWindow::onDestroy
 (void)
 {
    Window::onDestroy();
-
-   this->music.stop();
    
    ExitProcess(0);
 
@@ -217,9 +242,9 @@ int CALLBACK
 wWinMain
 (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
-   WindowTest test;
+   MainWindow mainWindow;
       
-   test.show();
+   mainWindow.show();
 
    Window::MessageLoop();
 

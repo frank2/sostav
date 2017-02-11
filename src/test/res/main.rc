@@ -4,4 +4,7 @@
 MAINICON ICON "sostav.ico"
 IDI_SOSTAV PNG "sostav.png"
 IDI_SPLASH PNG "splash.png"
+IDI_BEYOND ITMOD "beyond_the_network.it"
+IDI_SPACE MOD "spacedeb.mod"
+IDI_UNREAL S3MOD "2ND_PM.S3M"
 IDI_DEADLOCK XMMOD "deadlock.xm"

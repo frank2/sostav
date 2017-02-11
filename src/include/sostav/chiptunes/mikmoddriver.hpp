@@ -44,6 +44,7 @@ namespace Sostav
          static MikModDriver MultiMediaAPI(void);
          
          static void Load(MikModDriver driver);
+         static void LoadDefault(void);
          static void Unload(MikModDriver driver);
          static void Register(void);
 

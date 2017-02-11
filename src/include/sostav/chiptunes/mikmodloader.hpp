@@ -34,11 +34,11 @@ namespace Sostav
 
          static MikModLoader ImpulseTracker(void);
          static MikModLoader Module(void);
-         static MikModLoader ScreamTracker2(void);
          static MikModLoader ScreamTracker3(void);
          static MikModLoader FastTracker2(void);
          
          static void Load(MikModLoader loader);
+         static void LoadDefault(void);
          static void Unload(MikModLoader loader);
          static void Register(void);
 
