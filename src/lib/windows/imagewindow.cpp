@@ -42,7 +42,7 @@ void
 ImageWindow::setImage
 (Image image)
 {
-   this->image.setImageHandle(image.getImageHandle());
+   this->image.copyImage(image);
    this->setSize(this->image.getImageSize());
 
    if (this->hasHWND())
@@ -62,7 +62,7 @@ ImageWindow::drawImage
 {
    HDC imageContext;
    SIZE imageSize;
-   HBITMAP renderedImage;
+   Image renderedImage;
 
    /* nothing to paint-- this is okay */
    if (!this->image.hasImage())
@@ -71,12 +71,11 @@ ImageWindow::drawImage
    imageContext = CreateCompatibleDC(context);
 
    renderedImage = this->image.renderTransparency(this->getBGColor());
-   SelectObject(imageContext, renderedImage);
+   SelectObject(imageContext, renderedImage.getBitmapHandle());
    imageSize = this->image.getImageSize();
    BitBlt(context, 0, 0, imageSize.cx, imageSize.cy, imageContext, 0, 0, SRCCOPY);
 
    ReleaseDC(NULL, imageContext);
-   DeleteObject(renderedImage);
 }
 
 LayeredImageWindow::LayeredImageWindow
@@ -111,7 +110,7 @@ void
 LayeredImageWindow::setImage
 (Image image)
 {
-   this->image.setImageHandle(image.getImageHandle());
+   this->image.copyImage(image);
    this->setSize(this->image.getImageSize());
 
    if (this->hasHWND())
@@ -130,5 +129,5 @@ LayeredImageWindow::drawImage
 (HDC context)
 {
    if (this->image.hasImage())
-      SelectObject(context, this->image.getImageHandle());
+      SelectObject(context, this->image.getBitmapHandle());
 }

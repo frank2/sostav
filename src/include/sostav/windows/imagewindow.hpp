@@ -31,7 +31,7 @@ namespace Sostav
          ImageWindow(ImageWindow &window);
          ImageWindow();
 
-         void setImage(Drawing::Image image);
+         virtual void setImage(Drawing::Image image);
          Drawing::Image getImage(void) const;
 
          virtual void paint(HDC context);
@@ -50,7 +50,7 @@ namespace Sostav
          LayeredImageWindow(LayeredImageWindow &window);
          LayeredImageWindow();
 
-         void setImage(Drawing::Image image);
+         virtual void setImage(Drawing::Image image);
          Drawing::Image getImage(void) const;
 
          virtual void paint(HDC context);

@@ -133,7 +133,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;MIKMOD_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -171,6 +171,7 @@
     <ClInclude Include="..\..\src\include\sostav\win32\static.hpp" />
     <ClInclude Include="..\..\src\include\sostav\win32\syslink.hpp" />
     <ClInclude Include="..\..\src\include\sostav\windows.hpp" />
+    <ClInclude Include="..\..\src\include\sostav\windows\imagedialogwindow.hpp" />
     <ClInclude Include="..\..\src\include\sostav\windows\imagewindow.hpp" />
     <ClInclude Include="..\..\src\include\sostav\windows\layeredwindow.hpp" />
     <ClInclude Include="..\..\src\include\sostav\windows\paintedwindow.hpp" />
@@ -197,6 +198,7 @@
     <ClCompile Include="..\..\src\lib\win32\win32edit.cpp" />
     <ClCompile Include="..\..\src\lib\win32\win32static.cpp" />
     <ClCompile Include="..\..\src\lib\win32\win32syslink.cpp" />
+    <ClCompile Include="..\..\src\lib\windows\imagedialogwindow.cpp" />
     <ClCompile Include="..\..\src\lib\windows\imagewindow.cpp" />
     <ClCompile Include="..\..\src\lib\windows\layeredwindow.cpp" />
     <ClCompile Include="..\..\src\lib\windows\paintedwindow.cpp" />

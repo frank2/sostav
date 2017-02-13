@@ -19,7 +19,10 @@ Window::Window
    this->parent = parent;
    this->hwnd = NULL;
    this->setDefWndProc(DefWindowProc);
+
    this->enabled = true;
+   this->moving = false;
+   this->captured = false;
    
    this->style = WS_VISIBLE;
    this->exStyle = 0;
@@ -54,7 +57,10 @@ Window::Window
    this->parent = window.getParent();
    this->hwnd = NULL; /* intentionally do not copy the hwnd */
    this->setDefWndProc(window.getDefWndProc());
-   this->enabled = true;
+   
+   this->enabled = window.isEnabled();
+   this->moving = window.isMoving();
+   this->captured = window.isCaptured();
 
    this->style = window.getStyle();
    this->exStyle = window.getExStyle();
@@ -93,7 +99,10 @@ Window::Window
    this->parent = NULL;
    this->hwnd = NULL;
    this->setDefWndProc(DefWindowProc);
+   
    this->enabled = true;
+   this->moving = false;
+   this->captured = false;
    
    this->style = 0;
    this->exStyle = 0;
@@ -205,7 +214,7 @@ Window::FindWindow
    return iter->second;
 }
 
-LRESULT CALLBACK
+LRESULT
 Window::windowProc
 (UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -252,8 +261,7 @@ Window::windowProc
       return this->onNCPaint((HRGN)wParam);
 
    case WM_PAINT:
-      this->onPaint();
-      return (LRESULT)0;
+      return this->onPaint();
 
    case WM_RBUTTONDOWN:
       return this->onRButtonDown((WORD)wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
@@ -263,6 +271,12 @@ Window::windowProc
 
    case WM_SHOWWINDOW:
       return this->onShowWindow((BOOL)wParam, (WORD)lParam);
+
+   case WM_WINDOWPOSCHANGING:
+      return this->onWindowPosChanging((LPWINDOWPOS)lParam);
+
+   case WM_WINDOWPOSCHANGED:
+      return this->onWindowPosChanged((LPWINDOWPOS)lParam);
       
    default:
       return this->defWndProc(this->hwnd, msg, wParam, lParam);
@@ -294,13 +308,6 @@ Window::removeChild
    this->children.erase(std::find(this->children.begin(), this->children.end(), child));
 }
 
-bool
-Window::hasHWND
-(void) const
-{
-   return this->hwnd != NULL;
-}
-
 void
 Window::setParent
 (Window *newParent)
@@ -319,6 +326,63 @@ Window::getParent
 (void) const
 {
    return this->parent;
+}
+
+bool
+Window::hasLink
+(Window *link) const
+{
+   return (this->links.find(link) != this->links.end());
+}
+
+void
+Window::addLink
+(Window *link)
+{
+   if (!this->hasLink(link))
+      this->links.insert(link);
+
+   if (!link->hasLink(this))
+      link->addLink(this);
+}
+
+void
+Window::removeLink
+(Window *link)
+{
+   if (this->hasLink(link))
+      this->links.erase(link);
+
+   if (link->hasLink(this))
+      link->removeLink(this);
+}
+
+bool
+Window::hasHWND
+(void) const
+{
+   return this->hwnd != NULL;
+}
+
+bool
+Window::isEnabled
+(void) const
+{
+   return this->enabled;
+}
+
+bool
+Window::isMoving
+(void) const
+{
+   return this->moving;
+}
+
+bool
+Window::isCaptured
+(void) const
+{
+   return this->captured;
 }
 
 void
@@ -364,6 +428,23 @@ void
 Window::setPosition
 (long x, long y)
 {
+   this->moving = true;
+   
+   if (!this->links.empty())
+   {
+      /* also move links, but only if they don't have hwnds-- otherwise it's
+         handled by onWindowPosChanged */
+      std::set<Window *>::iterator iter;
+
+      for (iter=this->links.begin(); iter!=this->links.end(); ++iter)
+      {
+         Window *link = *iter;
+
+         if (!link->hasHWND() && !link->isMoving())
+            link->move(x - this->point.getX(), y - this->point.getY());
+      }
+   }
+
    if (this->hasHWND() && !SetWindowPos(this->hwnd
                                         ,NULL
                                         ,x
@@ -376,6 +457,8 @@ Window::setPosition
 
    this->point.setX(x);
    this->point.setY(y);
+
+   this->moving = false;
 }
 
 void
@@ -422,6 +505,47 @@ Window::getRelativePosition
 (void) const
 {
    return this->point.relative(this->size);
+}
+
+void
+Window::move
+(long x, long y)
+{
+   this->setPosition(x + this->point.getX(), y + this->point.getY());
+}
+
+void
+Window::setTopWindow
+(void)
+{
+   if (!this->hasHWND())
+      throw WindowException(L"no window handle to set");
+
+   if (!SetWindowPos(this->hwnd
+                     ,HWND_TOP
+                     ,0
+                     ,0
+                     ,0
+                     ,0
+                     ,SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOSIZE))
+      throw WindowException(L"SetWindowPos failed");
+}
+
+void
+Window::setTopmostWindow
+(void)
+{
+   if (!this->hasHWND())
+      throw WindowException(L"no window handle to set");
+
+   if (!SetWindowPos(this->hwnd
+                     ,HWND_TOPMOST
+                     ,0
+                     ,0
+                     ,0
+                     ,0
+                     ,SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOSIZE))
+      throw WindowException(L"SetWindowPos failed");
 }
 
 void
@@ -1053,7 +1177,8 @@ void
 Window::create
 (void)
 {
-   std::list<Window *>::iterator iter;
+   std::list<Window *>::iterator childIter;
+   std::set<Window *>::iterator linkIter;
 
    this->preCreate();
    
@@ -1078,12 +1203,20 @@ Window::create
    /* be explicitly redundant about this to prevent race conditions */
    Window::MapWindow(this->hwnd, this);
 
-   for (iter=this->children.begin(); iter!=this->children.end(); ++iter)
+   for (childIter=this->children.begin(); childIter!=this->children.end(); ++childIter)
    {
-      Window *child = *iter;
+      Window *child = *childIter;
 
       if (!child->hasHWND())
          child->create();
+   }
+
+   for (linkIter=this->links.begin(); linkIter!=this->links.end(); ++linkIter)
+   {
+      Window *link = *linkIter;
+
+      if (!link->hasHWND())
+         link->create();
    }
 
    this->postCreate();
@@ -1136,16 +1269,22 @@ void
 Window::destroy
 (void)
 {
-   std::list<Window *>::iterator iter;
-
-   for(iter=this->children.begin(); iter!=this->children.end(); ++iter)
-   {
-      Window *child = *iter;
-      child->destroy();
-   }
+   std::list<Window *>::iterator childIter;
+   std::set<Window *>::iterator linkIter;
    
    if (this->hasHWND())
+   {
+      HWND oldHWND;
+
+      /* make a copy of the old hwnd-- the local one gets destroyed when
+         DestroyWindow gets called, and we need to unmap the old handle. */
+      
+      oldHWND = this->hwnd;
+      
       DestroyWindow(this->hwnd);
+
+      Window::UnmapWindow(oldHWND);
+   }
 }
 
 void
@@ -1173,18 +1312,26 @@ void
 Window::show
 (void)
 {
-   std::list<Window *>::iterator iter;
+   std::list<Window *>::iterator childIter;
+   std::set<Window *>::iterator linkIter;
 
    if (!this->hasHWND())
       this->create();
 
    ShowWindow(this->hwnd, SW_SHOW);
 
-   for (iter=this->children.begin(); iter!=this->children.end(); ++iter)
+   for (childIter=this->children.begin(); childIter!=this->children.end(); ++childIter)
    {
-      Window *child = *iter;
+      Window *child = *childIter;
 
       child->show();
+   }
+
+   for (linkIter=this->links.begin(); linkIter!=this->links.end(); ++linkIter)
+   {
+      Window *link = *linkIter;
+
+      link->show();
    }
 }
 
@@ -1293,6 +1440,17 @@ LRESULT
 Window::onDestroy
 (void)
 {
+   std::list<Window *>::iterator childIter;
+   std::set<Window *>::iterator linkIter;
+   
+   for(childIter=this->children.begin(); childIter!=this->children.end(); ++childIter)
+   {
+      Window *child = *childIter;
+
+      if (child->hasHWND())
+         child->destroy();
+   }
+
    this->defWndProc(this->hwnd, WM_DESTROY, NULL, NULL);
 
    if (this->bgBrush != NULL)
@@ -1312,12 +1470,18 @@ Window::onDestroy
       DeleteObject(this->borderBrush);
       this->borderBrush = NULL;
    }
-   
-   Window::UnmapWindow(this->hwnd);
 
    this->hwnd = NULL;
 
-   return 0;
+   for (linkIter=this->links.begin(); linkIter!=this->links.end(); ++linkIter)
+   {
+      Window *link = *linkIter;
+
+      if (link->hasHWND())
+         link->destroy();
+   }
+
+   return (LRESULT)0;
 }
 
 LRESULT
@@ -1412,11 +1576,11 @@ Window::onNCPaint
    return 0;
 }
 
-void
+LRESULT
 Window::onPaint
 (void)
 {
-   this->defWndProc(this->hwnd, WM_PAINT, NULL, NULL);
+   return this->defWndProc(this->hwnd, WM_PAINT, NULL, NULL);
 }
 
 LRESULT
@@ -1438,4 +1602,48 @@ Window::onShowWindow
 (BOOL shown, WORD status)
 {
    return this->defWndProc(this->hwnd, WM_SHOWWINDOW, (WPARAM)shown, (LPARAM)status);
+}
+
+LRESULT
+Window::onWindowPosChanging
+(LPWINDOWPOS windowPos)
+{
+   this->moving = true;
+   
+   return this->defWndProc(this->hwnd, WM_WINDOWPOSCHANGING, (WPARAM)NULL, (LPARAM)windowPos);
+}
+
+LRESULT
+Window::onWindowPosChanged
+(LPWINDOWPOS windowPos)
+{
+   if ((windowPos->flags & SWP_NOMOVE) == 0)
+   {
+      std::set<Window *>::iterator iter;
+      long deltaX, deltaY;
+      
+      deltaX = windowPos->x - this->point.getX();
+      deltaY = windowPos->y - this->point.getY();
+
+      this->point.setX(windowPos->x);
+      this->point.setY(windowPos->y);
+
+      for (iter=this->links.begin(); iter!=this->links.end(); ++iter)
+      {
+         Window *link = *iter;
+         
+         if (!link->isMoving())
+            link->move(deltaX, deltaY);
+      }
+   }
+
+   if ((windowPos->flags & SWP_NOSIZE) == 0)
+   {
+      this->size.cx = windowPos->cx;
+      this->size.cy = windowPos->cy;
+   }
+
+   this->moving = false;
+
+   return this->defWndProc(this->hwnd, WM_WINDOWPOSCHANGED, (WPARAM)NULL, (LPARAM)windowPos);
 }

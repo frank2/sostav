@@ -64,11 +64,13 @@ PaintedWindow::endPaint
    this->paintContext = NULL;
 }
 
-void
+LRESULT
 PaintedWindow::onPaint
 (void)
 {
    this->beginPaint();
    this->paint(this->paintContext);
    this->endPaint();
+
+   return (LRESULT)0;
 }

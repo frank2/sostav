@@ -34,7 +34,7 @@ namespace Sostav
          virtual void beginPaint(void);
          virtual void endPaint(void);
 
-         virtual void onPaint(void);
+         virtual LRESULT onPaint(void);
       };
    }
 }

@@ -4,6 +4,7 @@ using namespace Sostav;
 using namespace Sostav::Chiptunes;
 
 int MikModModule::Instances = 0;
+bool MikModModule::Initialized = false;
 
 MikModModuleException::MikModModuleException
 (const WCHAR *what)
@@ -249,7 +250,7 @@ void
 MikModModule::load
 (void)
 {
-   if (MikModModule::Instances == 1)
+   if (!MikModModule::Initialized)
       this->init();
 
    this->module = Player_LoadMem((const char *)this->bufferData
@@ -257,7 +258,7 @@ MikModModule::load
                                  ,64
                                  ,0);
 
-   if (this->module != NULL)
+   if (this->module == NULL)
       throw MikModModuleException(L"Player_LoadMem failed");
 }
 
@@ -369,6 +370,8 @@ MikModModule::init
 
    if (MikMod_Init(""))
       throw MikModModuleException(L"MikMod_Init failed");
+
+   MikModModule::Initialized = true;
 }
 
 void
@@ -376,4 +379,6 @@ MikModModule::shutdown
 (void)
 {
    MikMod_Exit();
+
+   MikModModule::Initialized = false;
 }

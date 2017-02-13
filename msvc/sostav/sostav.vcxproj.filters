@@ -147,6 +147,9 @@
     <ClInclude Include="..\..\src\include\sostav\chiptunes\mikmodmodule.hpp">
       <Filter>Header Files\chiptunes</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\include\sostav\windows\imagedialogwindow.hpp">
+      <Filter>Header Files\windows</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\lib\exception.cpp">
@@ -220,6 +223,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\lib\chiptunes\mikmodmodule.cpp">
       <Filter>Source Files\chiptunes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib\windows\imagedialogwindow.cpp">
+      <Filter>Source Files\windows</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

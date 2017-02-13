@@ -41,6 +41,8 @@ ChiptuneButton::onLButtonUp
    
    selector->play();
 
+   this->defWndProc(this->hwnd, WM_LBUTTONUP, (WPARAM)virtualKeys, (LPARAM)((y << 16) | x));
+
    return (LRESULT)0;
 }
 
@@ -99,7 +101,7 @@ ChiptuneSelector::preCreate
    this->addStyle(BS_GROUPBOX);
 
    relativeWidth = 0.90 / 5.0;
-   relativeHeight = 0.10;
+   relativeHeight = 0.20;
 
    absoluteWidth = this->size.cx * relativeWidth;
    absoluteHeight = this->size.cy * relativeHeight;
@@ -114,35 +116,35 @@ ChiptuneSelector::preCreate
    this->impulseTracker.setWindowText(L"IT");
    this->impulseTracker.setTypeface(Font::MessageFont());
    this->impulseTracker.setStyle(buttonStyle);
-   this->impulseTracker.setRelativePosition(0.05, 0.80);
+   this->impulseTracker.setRelativePosition(0.05, 0.60);
    this->impulseTracker.setSize(absoluteWidth, absoluteHeight);
    this->impulseTracker.setModule(MikModModule(MAKEINTRESOURCE(IDI_BEYOND), L"ITMOD"));
 
    this->moduleButton.setWindowText(L"MOD");
    this->moduleButton.setTypeface(Font::MessageFont());
    this->moduleButton.setStyle(buttonStyle);
-   this->moduleButton.setRelativePosition(0.05 + relativeWidth, 0.80);
+   this->moduleButton.setRelativePosition(0.05 + relativeWidth, 0.60);
    this->moduleButton.setSize(absoluteWidth, absoluteHeight);
    this->moduleButton.setModule(MikModModule(MAKEINTRESOURCE(IDI_SPACE), L"MOD"));
 
    this->screamTracker3.setWindowText(L"S3M");
    this->screamTracker3.setTypeface(Font::MessageFont());
    this->screamTracker3.setStyle(buttonStyle);
-   this->screamTracker3.setRelativePosition(0.05 + relativeWidth * 2, 0.80);
+   this->screamTracker3.setRelativePosition(0.05 + relativeWidth * 2, 0.60);
    this->screamTracker3.setSize(absoluteWidth, absoluteHeight);
    this->screamTracker3.setModule(MikModModule(MAKEINTRESOURCE(IDI_UNREAL), L"S3MOD"));
 
    this->fastTracker2.setWindowText(L"XM");
    this->fastTracker2.setTypeface(Font::MessageFont());
    this->fastTracker2.setStyle(buttonStyle);
-   this->fastTracker2.setRelativePosition(0.05 + relativeWidth * 3, 0.80);
+   this->fastTracker2.setRelativePosition(0.05 + relativeWidth * 3, 0.60);
    this->fastTracker2.setSize(absoluteWidth, absoluteHeight);
    this->fastTracker2.setModule(MikModModule(MAKEINTRESOURCE(IDI_DEADLOCK), L"XMMOD"));
    
    this->noMusic.setWindowText(L"stop");
    this->noMusic.setTypeface(Font::MessageFont());
    this->noMusic.setStyle(buttonStyle);
-   this->noMusic.setRelativePosition(0.05 + relativeWidth * 4, 0.80);
+   this->noMusic.setRelativePosition(0.05 + relativeWidth * 4, 0.60);
    this->noMusic.setSize(absoluteWidth, absoluteHeight);
 
    this->songTitle.setStyle(WS_CHILD | WS_VISIBLE | SS_CENTER);
@@ -152,26 +154,17 @@ ChiptuneSelector::preCreate
    this->songTitle.setRelativePosition(0.05, 0.2);
    this->songTitle.setSize(this->size.cx * 0.90, absoluteHeight);
 }
-   
-MainWindow::MainWindow
+
+MainWindowPane::MainWindowPane
 (void)
-   : Window()
+   : ImageDialogWindowPane()
 {
-   this->setClassName(L"SostavTestMainWindow");
 }
 
 void
-MainWindow::preCreate
+MainWindowPane::preCreate
 (void)
 {
-   Window::preCreate();
-   
-   this->setIcon(Icon::MainIcon());
-   this->setBGColor(0xFF, 0x00, 0x71, 0x6D);
-   this->addStyle(WS_CAPTION | WS_SYSMENU);
-   this->setSize(500, 500);
-   this->center();
-
    this->sostavBanner.setParent(this);
    this->chiptunes.setParent(this);
 
@@ -182,12 +175,37 @@ MainWindow::preCreate
    this->sostavBanner.centerX();
 
    this->chiptunes.setStyle(WS_CHILD | WS_VISIBLE);
+   this->chiptunes.setWindowText(L"lol why can't this be russian is it the font");
    this->chiptunes.setTypeface(Font::MessageFont());
    this->chiptunes.setPosition(10, 100);
    this->chiptunes.setFGColor(0xFF, 0x6A, 0xCE, 0xCB);
    this->chiptunes.setBGColor(Color::Transparent());
-   this->chiptunes.setSize(300, 200);
+   this->chiptunes.setSize(300, 150);
    this->chiptunes.center();
+}
+   
+MainWindow::MainWindow
+(MainWindowPane *windowPane)
+   : ImageDialogWindowFrame()
+{
+   this->setClassName(L"SostavTestMainWindow");
+   this->setWindowPane(windowPane);
+}
+
+void
+MainWindow::preCreate
+(void)
+{
+   RECT cropPoints = { 20, 100, 480, 525 };
+
+   this->setIcon(Icon::MainIcon());
+   this->setBGColor(0xFF, 0x00, 0x71, 0x6D);
+   this->setStyle(WS_VISIBLE | WS_POPUP);
+   this->setPaneCrop(cropPoints);
+   this->setImage(Image(MAKEINTRESOURCE(IDI_BACKGROUND), L"PNG"));
+   this->center();
+
+   ImageDialogWindowFrame::preCreate();
 }
 
 LRESULT
@@ -209,7 +227,7 @@ MainWindow::onShowWindow
 
       Sleep(3000);
 
-      this->defWndProc(this->hwnd, WM_SHOWWINDOW, (WPARAM)show, (LPARAM)status);
+      ImageDialogWindowFrame::onShowWindow(show, status);
 
       for (int i=255; i>0; i-=10)
       {
@@ -224,14 +242,14 @@ MainWindow::onShowWindow
       return (LRESULT)0;
    }
    else
-      return this->defWndProc(this->hwnd, WM_SHOWWINDOW, (WPARAM)show, (LPARAM)status);
+      return ImageDialogWindowFrame::onShowWindow(show, status);
 }
 
 LRESULT
 MainWindow::onDestroy
 (void)
 {
-   Window::onDestroy();
+   ImageDialogWindowFrame::onDestroy();
    
    ExitProcess(0);
 
@@ -242,7 +260,8 @@ int CALLBACK
 wWinMain
 (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
-   MainWindow mainWindow;
+   MainWindowPane mainWindowPane;
+   MainWindow mainWindow(&mainWindowPane);
       
    mainWindow.show();
 

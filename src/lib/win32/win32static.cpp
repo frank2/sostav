@@ -31,9 +31,9 @@ Static::Static
    this->setClassName(L"STATIC");
 }
 
-void
+LRESULT
 Static::onPaint
 (void)
 {
-   this->defWndProc(this->hwnd, WM_PAINT, NULL, NULL);
+   return this->defWndProc(this->hwnd, WM_PAINT, NULL, NULL);
 }

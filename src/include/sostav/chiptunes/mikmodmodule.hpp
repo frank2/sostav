@@ -34,6 +34,7 @@ namespace Sostav
          MODULE *module;
 
          static int Instances;
+         static bool Initialized;
 
       public:
          MikModModule(LPWSTR resourceName, std::wstring resourceType);

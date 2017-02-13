@@ -42,15 +42,26 @@ protected:
    virtual void preCreate(void);
 };
 
-class MainWindow : public Sostav::Windows::Window
+class MainWindowPane : public Sostav::Windows::ImageDialogWindowPane
 {
 protected:
-   bool firstLaunch;
    Sostav::Windows::ImageWindow sostavBanner;
    ChiptuneSelector chiptunes;
 
 public:
-   MainWindow();
+   MainWindowPane();
+
+protected:
+   virtual void preCreate(void);
+};
+
+class MainWindow : public Sostav::Windows::ImageDialogWindowFrame
+{
+protected:
+   bool firstLaunch;
+
+public:
+   MainWindow(MainWindowPane *windowPane);
 
 protected:
    virtual void preCreate(void);

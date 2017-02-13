@@ -7,6 +7,7 @@
 #include <iostream>
 #include <list>
 #include <map>
+#include <set>
 #include <string>
 
 #include "sostav/exception.hpp"
@@ -31,7 +32,10 @@ namespace Sostav
          Window *parent;
          HWND hwnd;
          WNDPROC defWndProc;
+         
          bool enabled;
+         bool moving;
+         bool captured;
 
          Drawing::AbsolutePoint point;
          SIZE size;
@@ -49,6 +53,7 @@ namespace Sostav
 
          std::wstring className, menuName, windowText;
          std::list<Window *> children;
+         std::set<Window *> links;
 
       public:
          static std::map<HWND, Window *> WindowPool;
@@ -72,11 +77,19 @@ namespace Sostav
          bool hasChild(Window *child) const;
          void addChild(Window *child);
          void removeChild(Window *child);
-
-         bool hasHWND(void) const;
          
          void setParent(Window *newParent);
          Window *getParent(void) const;
+
+         bool hasLink(Window *link) const;
+         void addLink(Window *link);
+         void removeLink(Window *link);
+
+         bool hasHWND(void) const;
+
+         bool isEnabled(void) const;
+         bool isMoving(void) const;
+         bool isCaptured(void) const;
 
          virtual void setHWND(HWND window);
          HWND getHWND(void) const;
@@ -92,6 +105,11 @@ namespace Sostav
          void setRelativePosition(double x, double y);
          void setRelativePosition(Math::Point point);
          Drawing::RelativePoint getRelativePosition(void) const;
+
+         void move(long x, long y);
+
+         void setTopWindow(void);
+         void setTopmostWindow(void);
 
          void center(void);
          void centerX(void);
@@ -193,10 +211,13 @@ namespace Sostav
          virtual LRESULT onLButtonUp(WORD virtualKeys, WORD x, WORD y);
          virtual LRESULT onNCCalcSize(BOOL switchValue, LPARAM pointer);
          virtual LRESULT onNCPaint(HRGN paintRegion);
-         virtual void onPaint(void);
+         virtual LRESULT onPaint(void);
          virtual LRESULT onRButtonDown(WORD virtualKeys, WORD x, WORD y);
          virtual LRESULT onRButtonUp(WORD virtualKeys, WORD x, WORD y);
          virtual LRESULT onShowWindow(BOOL shown, WORD status);
+         virtual LRESULT onWindowPosChanging(LPWINDOWPOS windowPos);
+         virtual LRESULT onWindowPosChanged(LPWINDOWPOS windowPos);
+            
       };
    }
 }

@@ -25,7 +25,7 @@ namespace Sostav
          Static();
 
       protected:
-         virtual void onPaint(void);
+         virtual LRESULT onPaint(void);
       };
    }
 }
