@@ -37,6 +37,7 @@ namespace Sostav
          bool visible;
          bool moving;
          bool captured;
+         bool hovering;
 
          Drawing::AbsolutePoint point;
          Drawing::AbsolutePoint capturePoint;
@@ -93,6 +94,7 @@ namespace Sostav
          bool isVisible(void) const;
          bool isMoving(void) const;
          bool isCaptured(void) const;
+         bool isHovering(void) const;
 
          virtual void setHWND(HWND window);
          HWND getHWND(void) const;
@@ -214,6 +216,7 @@ namespace Sostav
          virtual LRESULT onKillFocus(HWND gainedFocus);
          virtual LRESULT onLButtonDown(WORD virtualKeys, WORD x, WORD y);
          virtual LRESULT onLButtonUp(WORD virtualKeys, WORD x, WORD y);
+         virtual LRESULT onMouseLeave(void);
          virtual LRESULT onMouseMove(WORD virtualKeys, WORD x, WORD y);
          virtual LRESULT onMove(WORD x, WORD y);
          virtual LRESULT onNCCalcSize(BOOL switchValue, LPARAM pointer);

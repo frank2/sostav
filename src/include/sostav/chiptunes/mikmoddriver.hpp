@@ -57,6 +57,8 @@ namespace Sostav
 
          void setDriver(MDRIVER *driver);
          MDRIVER *getDriver(void) const;
+
+         void commandLine(char *cmd);
       };
    }
 }

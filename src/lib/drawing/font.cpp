@@ -12,7 +12,7 @@ FontException::FontException
 Font::Font
 (std::wstring face, LONG points)
 {
-   memset(&this->fontData, 0, sizeof(LOGFONT));
+   ZeroMemory(&this->fontData, sizeof(LOGFONT));
 
    this->setFace(face);
    this->setPointSize(points);
@@ -42,7 +42,7 @@ Font::Font
 Font::Font
 (void)
 {
-   memset(&this->fontData, 0, sizeof(LOGFONT));
+   ZeroMemory(&this->fontData, sizeof(LOGFONT));
    this->fontHandle = NULL;
 }
 
@@ -192,6 +192,68 @@ Font::getWidth
 (void) const
 {
    return this->fontData.lfWidth;
+}
+
+void
+Font::setWeight
+(LONG weight)
+{
+   this->fontData.lfWeight = weight;
+
+   if (this->fontHandle != NULL)
+   {
+      DeleteObject(this->fontHandle);
+      this->fontHandle = NULL;
+   }
+}
+
+LONG
+Font::getWeight
+(void) const
+{
+   return this->fontData.lfWeight;
+}
+
+void
+Font::toggleItalic
+(void)
+{
+   this->fontData.lfItalic ^= TRUE;
+}
+
+BOOL
+Font::getItalic
+(void) const
+{
+   return this->fontData.lfItalic;
+}
+
+void
+Font::toggleUnderline
+(void)
+{
+   this->fontData.lfUnderline ^= TRUE;
+}
+
+BOOL
+Font::getUnderline
+(void) const
+{
+   return this->fontData.lfUnderline;
+}
+
+void
+Font::toggleStrikeOut
+(void)
+{
+   this->fontData.lfStrikeOut ^= TRUE;
+}
+
+BOOL
+Font::getStrikeOut
+(void) const
+{
+   return this->fontData.lfStrikeOut;
 }
 
 void

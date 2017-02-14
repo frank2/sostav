@@ -54,6 +54,18 @@ namespace Sostav
          void setWidth(LONG width);
          LONG getWidth(void) const;
 
+         void setWeight(LONG weight);
+         LONG getWeight(void) const;
+
+         void toggleItalic(void);
+         BOOL getItalic(void) const;
+         
+         void toggleUnderline(void);
+         BOOL getUnderline(void) const;
+         
+         void toggleStrikeOut(void);
+         BOOL getStrikeOut(void) const;
+
          void setPointSize(LONG points);
 
          void setFace(std::wstring face);

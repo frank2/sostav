@@ -168,3 +168,13 @@ MikModDriver::getDriver
 {
    return this->driver;
 }
+
+void
+MikModDriver::commandLine
+(char *cmd)
+{
+   if (this->driver == NULL)
+      MikModDriverException(L"can't execute commandline on a null driver");
+
+   this->driver->CommandLine(cmd);
+}

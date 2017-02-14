@@ -24,6 +24,7 @@ Window::Window
    this->visible = false;
    this->moving = false;
    this->captured = false;
+   this->hovering = false;
    
    this->style = WS_VISIBLE;
    this->exStyle = 0;
@@ -63,6 +64,7 @@ Window::Window
    this->visible = window.isVisible();
    this->moving = window.isMoving();
    this->captured = window.isCaptured();
+   this->hovering = window.isHovering();
 
    this->style = window.getStyle();
    this->exStyle = window.getExStyle();
@@ -106,6 +108,7 @@ Window::Window
    this->visible = false;
    this->moving = false;
    this->captured = false;
+   this->hovering = false;
    
    this->style = 0;
    this->exStyle = 0;
@@ -113,7 +116,7 @@ Window::Window
    this->size.cx = this->size.cy = 0;
 
    this->setDefaultColors();
-   this->cursor = NULL;
+   this->cursor = LoadCursor(NULL, IDC_ARROW);
    this->menu = NULL;
    this->bgBrush = NULL;
    this->fgBrush = NULL;
@@ -260,6 +263,9 @@ Window::windowProc
    case WM_LBUTTONUP:
       return this->onLButtonUp((WORD)wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
+   case WM_MOUSELEAVE:
+      return this->onMouseLeave();
+
    case WM_MOUSEMOVE:
       return this->onMouseMove((WORD)wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
@@ -405,6 +411,13 @@ Window::isCaptured
 (void) const
 {
    return this->captured;
+}
+
+bool
+Window::isHovering
+(void) const
+{
+   return this->hovering;
 }
 
 void
@@ -1563,6 +1576,8 @@ Window::onLButtonDown
    this->captured = true;
    this->capturePoint.setX(x);
    this->capturePoint.setY(y);
+
+   SetCapture(this->hwnd);
    
    return this->defWndProc(this->hwnd, WM_LBUTTONDOWN, (WPARAM)virtualKeys, (LPARAM)((y << 16) | x));
 }
@@ -1574,14 +1589,38 @@ Window::onLButtonUp
    this->captured = false;
    this->capturePoint.setX(0);
    this->capturePoint.setY(0);
+
+   ReleaseCapture();
    
    return this->defWndProc(this->hwnd, WM_LBUTTONUP, (WPARAM)virtualKeys, (LPARAM)((y << 16) | x));
+}
+
+LRESULT
+Window::onMouseLeave
+(void)
+{
+   this->hovering = false;
+   
+   return this->defWndProc(this->hwnd, WM_MOUSELEAVE, (WPARAM)NULL, (LPARAM)NULL);
 }
 
 LRESULT
 Window::onMouseMove
 (WORD virtualKeys, WORD x, WORD y)
 {
+   TRACKMOUSEEVENT mouseEvent;
+
+   ZeroMemory(&mouseEvent, sizeof(TRACKMOUSEEVENT));
+
+   mouseEvent.cbSize = sizeof(TRACKMOUSEEVENT);
+   mouseEvent.dwFlags = TME_LEAVE;
+   mouseEvent.hwndTrack = this->hwnd;
+   mouseEvent.dwHoverTime = HOVER_DEFAULT;
+   
+   this->hovering = true;
+
+   TrackMouseEvent(&mouseEvent);
+   
    return this->defWndProc(this->hwnd, WM_MOUSEMOVE, (WPARAM)virtualKeys, (LPARAM)((y << 16) | x));
 }
 
