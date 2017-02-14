@@ -271,7 +271,8 @@ wWinMain
 {
    MainWindowPane mainWindowPane;
    MainWindow mainWindow(&mainWindowPane);
-      
+
+   drv_ds.CommandLine("globalfocus=1");
    mainWindow.show();
 
    Window::MessageLoop();
