@@ -21,6 +21,7 @@ Window::Window
    this->setDefWndProc(DefWindowProc);
 
    this->enabled = true;
+   this->visible = false;
    this->moving = false;
    this->captured = false;
    
@@ -59,6 +60,7 @@ Window::Window
    this->setDefWndProc(window.getDefWndProc());
    
    this->enabled = window.isEnabled();
+   this->visible = window.isVisible();
    this->moving = window.isMoving();
    this->captured = window.isCaptured();
 
@@ -101,6 +103,7 @@ Window::Window
    this->setDefWndProc(DefWindowProc);
    
    this->enabled = true;
+   this->visible = false;
    this->moving = false;
    this->captured = false;
    
@@ -248,11 +251,20 @@ Window::windowProc
    case WM_KEYUP:
       return this->onKeyUp((DWORD)wParam, (DWORD)lParam);
 
+   case WM_KILLFOCUS:
+      return this->onKillFocus((HWND)wParam);
+
    case WM_LBUTTONDOWN:
       return this->onLButtonDown((WORD)wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
    case WM_LBUTTONUP:
       return this->onLButtonUp((WORD)wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+
+   case WM_MOUSEMOVE:
+      return this->onMouseMove((WORD)wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+
+   case WM_MOVE:
+      return this->onMove(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
    case WM_NCCALCSIZE:
       return this->onNCCalcSize((BOOL)wParam, lParam);
@@ -268,6 +280,9 @@ Window::windowProc
 
    case WM_RBUTTONUP:
       return this->onRButtonUp((WORD)wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+
+   case WM_SETFOCUS:
+      return this->onSetFocus((HWND)wParam);
 
    case WM_SHOWWINDOW:
       return this->onShowWindow((BOOL)wParam, (WORD)lParam);
@@ -372,6 +387,13 @@ Window::isEnabled
 }
 
 bool
+Window::isVisible
+(void) const
+{
+   return this->visible;
+}
+
+bool
 Window::isMoving
 (void) const
 {
@@ -445,6 +467,8 @@ Window::setPosition
       }
    }
 
+   this->moving = false;
+
    if (this->hasHWND() && !SetWindowPos(this->hwnd
                                         ,NULL
                                         ,x
@@ -458,6 +482,7 @@ Window::setPosition
    this->point.setX(x);
    this->point.setY(y);
 
+   /* redundantly diffuse the moving switch so that we're sure we're not moving */
    this->moving = false;
 }
 
@@ -1324,15 +1349,25 @@ Window::show
    {
       Window *child = *childIter;
 
-      child->show();
+      if ((child->getStyle() & WS_VISIBLE) && !child->isVisible())
+         child->show();
    }
 
    for (linkIter=this->links.begin(); linkIter!=this->links.end(); ++linkIter)
    {
       Window *link = *linkIter;
 
-      link->show();
+      if ((link->getStyle() & WS_VISIBLE) && !link->isVisible())
+         link->show();
    }
+}
+
+void
+Window::focus
+(void)
+{
+   if (this->hasHWND() && SetFocus(this->getHWND()) == NULL)
+      throw WindowException(L"SetFocus failed");
 }
 
 void
@@ -1515,9 +1550,20 @@ Window::onKeyUp
 }
 
 LRESULT
+Window::onKillFocus
+(HWND gainedFocus)
+{
+   return this->defWndProc(this->hwnd, WM_KILLFOCUS, (WPARAM)gainedFocus, (LPARAM)NULL);
+}
+
+LRESULT
 Window::onLButtonDown
 (WORD virtualKeys, WORD x, WORD y)
 {
+   this->captured = true;
+   this->capturePoint.setX(x);
+   this->capturePoint.setY(y);
+   
    return this->defWndProc(this->hwnd, WM_LBUTTONDOWN, (WPARAM)virtualKeys, (LPARAM)((y << 16) | x));
 }
 
@@ -1525,7 +1571,27 @@ LRESULT
 Window::onLButtonUp
 (WORD virtualKeys, WORD x, WORD y)
 {
+   this->captured = false;
+   this->capturePoint.setX(0);
+   this->capturePoint.setY(0);
+   
    return this->defWndProc(this->hwnd, WM_LBUTTONUP, (WPARAM)virtualKeys, (LPARAM)((y << 16) | x));
+}
+
+LRESULT
+Window::onMouseMove
+(WORD virtualKeys, WORD x, WORD y)
+{
+   return this->defWndProc(this->hwnd, WM_MOUSEMOVE, (WPARAM)virtualKeys, (LPARAM)((y << 16) | x));
+}
+
+LRESULT
+Window::onMove
+(WORD x, WORD y)
+{
+   this->moving = false;
+   
+   return this->defWndProc(this->hwnd, WM_MOVE, (WPARAM)NULL, (LPARAM)((y << 16) | x));
 }
 
 LRESULT
@@ -1598,9 +1664,18 @@ Window::onRButtonUp
 }
 
 LRESULT
+Window::onSetFocus
+(HWND lostFocus)
+{
+   return this->defWndProc(this->hwnd, WM_SETFOCUS, (WPARAM)lostFocus, (LPARAM)NULL);
+}
+
+LRESULT
 Window::onShowWindow
 (BOOL shown, WORD status)
 {
+   this->visible = shown;
+   
    return this->defWndProc(this->hwnd, WM_SHOWWINDOW, (WPARAM)shown, (LPARAM)status);
 }
 
@@ -1608,7 +1683,8 @@ LRESULT
 Window::onWindowPosChanging
 (LPWINDOWPOS windowPos)
 {
-   this->moving = true;
+   if ((windowPos->flags & SWP_NOMOVE) == 0)
+      this->moving = true;
    
    return this->defWndProc(this->hwnd, WM_WINDOWPOSCHANGING, (WPARAM)NULL, (LPARAM)windowPos);
 }
@@ -1617,6 +1693,12 @@ LRESULT
 Window::onWindowPosChanged
 (LPWINDOWPOS windowPos)
 {
+   if ((windowPos->flags & SWP_NOSIZE) == 0)
+   {
+      this->size.cx = windowPos->cx;
+      this->size.cy = windowPos->cy;
+   }
+
    if ((windowPos->flags & SWP_NOMOVE) == 0)
    {
       std::set<Window *>::iterator iter;
@@ -1635,15 +1717,9 @@ Window::onWindowPosChanged
          if (!link->isMoving())
             link->move(deltaX, deltaY);
       }
-   }
 
-   if ((windowPos->flags & SWP_NOSIZE) == 0)
-   {
-      this->size.cx = windowPos->cx;
-      this->size.cy = windowPos->cy;
+      this->moving = false;
    }
-
-   this->moving = false;
 
    return this->defWndProc(this->hwnd, WM_WINDOWPOSCHANGED, (WPARAM)NULL, (LPARAM)windowPos);
 }

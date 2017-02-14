@@ -165,8 +165,12 @@ void
 MainWindowPane::preCreate
 (void)
 {
+   ImageDialogWindowPane::preCreate();
+   
    this->sostavBanner.setParent(this);
    this->chiptunes.setParent(this);
+
+   this->setBGColor(0xFF, 0x29, 0x64, 0x73);
 
    this->sostavBanner.setStyle(WS_CHILD | WS_VISIBLE);
    this->sostavBanner.setImage(Image(MAKEINTRESOURCE(IDI_SOSTAV), L"PNG"));
@@ -190,6 +194,8 @@ MainWindow::MainWindow
 {
    this->setClassName(L"SostavTestMainWindow");
    this->setWindowPane(windowPane);
+   this->windowPane->setWindowFrame(this);
+   this->firstLaunch = true;
 }
 
 void
@@ -199,10 +205,10 @@ MainWindow::preCreate
    RECT cropPoints = { 20, 100, 480, 525 };
 
    this->setIcon(Icon::MainIcon());
-   this->setBGColor(0xFF, 0x00, 0x71, 0x6D);
    this->setStyle(WS_VISIBLE | WS_POPUP);
    this->setPaneCrop(cropPoints);
    this->setImage(Image(MAKEINTRESOURCE(IDI_BACKGROUND), L"PNG"));
+   this->setAlpha(0xFF);
    this->center();
 
    ImageDialogWindowFrame::preCreate();
@@ -215,6 +221,7 @@ MainWindow::onShowWindow
    if (this->firstLaunch && show == TRUE)
    {
       LayeredImageWindow splashWindow;
+      LRESULT result;
 
       splashWindow.setStyle(WS_VISIBLE | WS_POPUP);
       splashWindow.setImage(Image(MAKEINTRESOURCE(IDI_SPLASH), L"PNG"));
@@ -227,7 +234,7 @@ MainWindow::onShowWindow
 
       Sleep(3000);
 
-      ImageDialogWindowFrame::onShowWindow(show, status);
+      result = ImageDialogWindowFrame::onShowWindow(show, status);
 
       for (int i=255; i>0; i-=10)
       {
@@ -239,7 +246,9 @@ MainWindow::onShowWindow
 
       this->firstLaunch = false;
 
-      return (LRESULT)0;
+      this->windowPane->focus();
+
+      return result;
    }
    else
       return ImageDialogWindowFrame::onShowWindow(show, status);
@@ -251,7 +260,7 @@ MainWindow::onDestroy
 {
    ImageDialogWindowFrame::onDestroy();
    
-   ExitProcess(0);
+   PostQuitMessage(0);
 
    return (LRESULT)0;
 }

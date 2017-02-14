@@ -467,7 +467,7 @@ Image::crop
    croppedImage.createDIBSection(cx, cy);
 
    for (DWORD ty=0; ty<cy; ++ty)
-      for (DWORD tx=0; tx<cx; ++cx)
+      for (DWORD tx=0; tx<cx; ++tx)
          croppedImage.setPixel(tx, ty, this->getPixel(tx+x, ty+y));
 
    return croppedImage;

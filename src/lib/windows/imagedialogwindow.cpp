@@ -27,6 +27,7 @@ ImageDialogWindowFrame::setWindowPane
       this->removeLink(this->windowPane);
    
    this->windowPane = windowPane;
+   this->windowPane->setWindowFrame(this);
    this->addLink(windowPane);
 
    if (this->image.hasImage())
@@ -120,8 +121,49 @@ ImageDialogWindowFrame::preCreate
    if (!this->image.hasImage())
       throw ImageDialogWindowException(L"window has no image");
 
-   this->windowPane->addStyle(WS_VISIBLE | WS_POPUP);
    this->cropFrame();
+}
+
+LRESULT
+ImageDialogWindowFrame::onLButtonUp
+(WORD virtualKeys, WORD x, WORD y)
+{
+   LRESULT result = LayeredImageWindow::onLButtonUp(virtualKeys, x, y);
+
+   /* we don't want focus-- return it to the window pane */
+   SetFocus(this->windowPane->getHWND());
+
+   return result;
+}
+
+LRESULT
+ImageDialogWindowFrame::onMouseMove
+(WORD virtualKeys, WORD x, WORD y)
+{
+   if (this->isCaptured())
+   {
+      long deltaX = x - this->capturePoint.getX();
+      long deltaY = y - this->capturePoint.getY();
+
+      if (!this->isMoving())
+         this->move(deltaX, deltaY);
+   }
+   else
+      this->windowPane->focus(); /* we don't want focus in this case, give it back */
+
+   return LayeredImageWindow::onMouseMove(virtualKeys, x, y);
+}
+
+LRESULT
+ImageDialogWindowFrame::onSetFocus
+(HWND lostFocus)
+{
+   Window *window = Window::FindWindow(lostFocus);
+   
+   if (window != this->windowPane) /* user is not attempting to click the window pane */
+      this->windowPane->focus();
+   
+   return LayeredImageWindow::onSetFocus(lostFocus);
 }
 
 ImageDialogWindowPane::ImageDialogWindowPane
@@ -132,10 +174,67 @@ ImageDialogWindowPane::ImageDialogWindowPane
 }
 
 void
+ImageDialogWindowPane::setWindowFrame
+(ImageDialogWindowFrame *frame)
+{
+   this->frame = frame;
+}
+
+ImageDialogWindowFrame *
+ImageDialogWindowPane::getWindowFrame
+(void) const
+{
+   return this->frame;
+}
+
+void
+ImageDialogWindowPane::preCreate
+(void)
+{
+   ImageWindow::preCreate();
+
+   this->setStyle(WS_VISIBLE | WS_POPUP);
+   this->setExStyle(WS_EX_TOOLWINDOW);
+}
+
+void
 ImageDialogWindowPane::postCreate
 (void)
 {
    ImageWindow::postCreate();
    
    this->setTopWindow();
+   this->focus();
+}
+
+LRESULT
+ImageDialogWindowPane::onMouseMove
+(WORD virtualKeys, WORD x, WORD y)
+{
+   if (this->isCaptured())
+   {
+      long deltaX = x - this->capturePoint.getX();
+      long deltaY = y - this->capturePoint.getY();
+
+      if (!this->isMoving())
+         this->move(deltaX, deltaY);
+   }
+
+   return ImageWindow::onMouseMove(virtualKeys, x, y);
+}
+
+LRESULT
+ImageDialogWindowPane::onSetFocus
+(HWND lostFocus)
+{
+   if (this->frame == NULL)
+      throw ImageDialogWindowException(L"window pane has no frame");
+
+   if (lostFocus != this->hwnd)
+   {
+      this->frame->setTopWindow();
+      this->setTopWindow();
+   }
+
+   return ImageWindow::onSetFocus(lostFocus);
 }

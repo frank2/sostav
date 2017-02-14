@@ -40,15 +40,28 @@ namespace Sostav
 
       protected:
          virtual void preCreate(void);
+         virtual LRESULT onLButtonUp(WORD virtualKeys, WORD x, WORD y);
+         virtual LRESULT onMouseMove(WORD virtualKeys, WORD x, WORD y);
+         virtual LRESULT onSetFocus(HWND lostFocus);
       };
 
       class ImageDialogWindowPane : public ImageWindow
       {
+      protected:
+         ImageDialogWindowFrame *frame;
+         
       public:
          ImageDialogWindowPane();
 
+         void setWindowFrame(ImageDialogWindowFrame *frame);
+         ImageDialogWindowFrame *getWindowFrame(void) const;
+
       protected:
+         virtual void preCreate(void);
          virtual void postCreate(void);
+         virtual LRESULT onMouseMove(WORD virtualKeys, WORD x, WORD y);
+
+         virtual LRESULT onSetFocus(HWND lostFocus);
       };
    }
 }

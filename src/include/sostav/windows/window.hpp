@@ -34,10 +34,12 @@ namespace Sostav
          WNDPROC defWndProc;
          
          bool enabled;
+         bool visible;
          bool moving;
          bool captured;
 
          Drawing::AbsolutePoint point;
+         Drawing::AbsolutePoint capturePoint;
          SIZE size;
    
          Drawing::Icon icon;
@@ -88,6 +90,7 @@ namespace Sostav
          bool hasHWND(void) const;
 
          bool isEnabled(void) const;
+         bool isVisible(void) const;
          bool isMoving(void) const;
          bool isCaptured(void) const;
 
@@ -190,6 +193,7 @@ namespace Sostav
          virtual void invalidate(void);
          virtual void update(void);
          virtual void show(void);
+         virtual void focus(void);
          virtual void hide(void);
          virtual void enable(void);
          virtual void disable(void);
@@ -207,13 +211,17 @@ namespace Sostav
          virtual LRESULT onEraseBkgnd(HDC context);
          virtual LRESULT onKeyDown(DWORD keyValue, DWORD keyFlags);
          virtual LRESULT onKeyUp(DWORD keyValue, DWORD keyFlags);
+         virtual LRESULT onKillFocus(HWND gainedFocus);
          virtual LRESULT onLButtonDown(WORD virtualKeys, WORD x, WORD y);
          virtual LRESULT onLButtonUp(WORD virtualKeys, WORD x, WORD y);
+         virtual LRESULT onMouseMove(WORD virtualKeys, WORD x, WORD y);
+         virtual LRESULT onMove(WORD x, WORD y);
          virtual LRESULT onNCCalcSize(BOOL switchValue, LPARAM pointer);
          virtual LRESULT onNCPaint(HRGN paintRegion);
          virtual LRESULT onPaint(void);
          virtual LRESULT onRButtonDown(WORD virtualKeys, WORD x, WORD y);
          virtual LRESULT onRButtonUp(WORD virtualKeys, WORD x, WORD y);
+         virtual LRESULT onSetFocus(HWND lostFocus);
          virtual LRESULT onShowWindow(BOOL shown, WORD status);
          virtual LRESULT onWindowPosChanging(LPWINDOWPOS windowPos);
          virtual LRESULT onWindowPosChanged(LPWINDOWPOS windowPos);
