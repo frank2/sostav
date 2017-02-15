@@ -1,3 +1,5 @@
+﻿/* -*- coding: utf-8 -*- */
+
 #include "main.hpp"
 
 using namespace Sostav;
@@ -152,6 +154,7 @@ ChiptuneSelector::preCreate
    this->songTitle.setBGColor(Color::Transparent());
    this->songTitle.setFGColor(0xFF, 0x6A, 0xCE, 0xCB);
    this->songTitle.setRelativePosition(0.05, 0.2);
+   this->songTitle.setWindowText(L"Чиптуны!");
    this->songTitle.setSize(this->size.cx * 0.90, absoluteHeight);
 }
 
@@ -179,8 +182,8 @@ MainWindowPane::preCreate
    this->sostavBanner.centerX();
 
    this->chiptunes.setStyle(WS_CHILD | WS_VISIBLE);
-   this->chiptunes.setWindowText(L"lol why can't this be russian is it the font");
    this->chiptunes.setTypeface(Font::MessageFont());
+   this->chiptunes.setWindowText(L"Чиптуны!");
    this->chiptunes.setPosition(10, 100);
    this->chiptunes.setFGColor(0xFF, 0x6A, 0xCE, 0xCB);
    this->chiptunes.setBGColor(Color::Transparent());
@@ -272,7 +275,7 @@ wWinMain
    MainWindowPane mainWindowPane;
    MainWindow mainWindow(&mainWindowPane);
 
-   drv_ds.CommandLine("globalfocus=1");
+   MikModDriver::DirectSound().commandLine("globalfocus=1");
    mainWindow.show();
 
    Window::MessageLoop();

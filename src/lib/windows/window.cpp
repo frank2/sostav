@@ -20,6 +20,7 @@ Window::Window
    this->hwnd = NULL;
    this->setDefWndProc(DefWindowProc);
 
+   this->active = false;
    this->enabled = true;
    this->visible = false;
    this->moving = false;
@@ -59,7 +60,8 @@ Window::Window
    this->parent = window.getParent();
    this->hwnd = NULL; /* intentionally do not copy the hwnd */
    this->setDefWndProc(window.getDefWndProc());
-   
+
+   this->active = window.isActive();
    this->enabled = window.isEnabled();
    this->visible = window.isVisible();
    this->moving = window.isMoving();
@@ -103,7 +105,8 @@ Window::Window
    this->parent = NULL;
    this->hwnd = NULL;
    this->setDefWndProc(DefWindowProc);
-   
+
+   this->active = false;
    this->enabled = true;
    this->visible = false;
    this->moving = false;
@@ -227,6 +230,9 @@ Window::windowProc
    /* handle some window messages */
    switch(msg)
    {
+   case WM_ACTIVATE:
+      return this->onActivate((BYTE)wParam, (HWND)lParam);
+      
    case WM_CTLCOLOREDIT:
       return (LRESULT)this->onCtlColorEdit((HDC)wParam, (HWND)lParam);
    
@@ -383,6 +389,13 @@ Window::hasHWND
 (void) const
 {
    return this->hwnd != NULL;
+}
+
+bool
+Window::isActive
+(void) const
+{
+   return this->active;
 }
 
 bool
@@ -559,6 +572,8 @@ Window::setTopWindow
    if (!this->hasHWND())
       throw WindowException(L"no window handle to set");
 
+   this->moving = true;
+
    if (!SetWindowPos(this->hwnd
                      ,HWND_TOP
                      ,0
@@ -567,6 +582,8 @@ Window::setTopWindow
                      ,0
                      ,SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOSIZE))
       throw WindowException(L"SetWindowPos failed");
+
+   this->moving = false;
 }
 
 void
@@ -576,6 +593,8 @@ Window::setTopmostWindow
    if (!this->hasHWND())
       throw WindowException(L"no window handle to set");
 
+   this->moving = true;
+
    if (!SetWindowPos(this->hwnd
                      ,HWND_TOPMOST
                      ,0
@@ -584,6 +603,70 @@ Window::setTopmostWindow
                      ,0
                      ,SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOSIZE))
       throw WindowException(L"SetWindowPos failed");
+
+   this->moving = false;
+}
+
+void
+Window::insertAfter
+(HWND hwnd)
+{
+   if (!this->hasHWND())
+      throw WindowException(L"can't change z-order of uncreated window");
+
+   this->moving = true;
+
+   if (!SetWindowPos(this->hwnd
+                     ,hwnd
+                     ,0
+                     ,0
+                     ,0
+                     ,0
+                     ,SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOSIZE))
+      throw WindowException(L"SetWindowPos failed");
+
+   this->moving = false;
+}
+
+void
+Window::insertAfter
+(Window *window)
+{
+   if (!window->hasHWND())
+      throw WindowException(L"supplied window has no hwnd");
+
+   this->insertAfter(window->getHWND());
+}
+
+void
+Window::insertBefore
+(HWND hwnd)
+{
+   if (!this->hasHWND())
+      throw WindowException(L"can't change z-order of uncreated window");
+
+   this->moving = true;
+
+   if (!SetWindowPos(hwnd
+                     ,this->hwnd
+                     ,0
+                     ,0
+                     ,0
+                     ,0
+                     ,SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOSIZE))
+      throw WindowException(L"SetWindowPos failed");
+
+   this->moving = false;
+}
+
+void
+Window::insertBefore
+(Window *window)
+{
+   if (!window->hasHWND())
+      throw WindowException(L"supplied window has no hwnd");
+
+   this->insertBefore(window->getHWND());
 }
 
 void
@@ -1409,6 +1492,18 @@ Window::disable
 
    if (this->hasHWND() && !EnableWindow(this->hwnd, FALSE))
       throw WindowException(L"EnableWindow failed");
+}
+
+LRESULT
+Window::onActivate
+(BYTE activeState, HWND activeWindow)
+{
+   if (activeState == WA_ACTIVE || activeState == WA_CLICKACTIVE)
+      this->active = true;
+   else
+      this->active = false;
+
+   return this->defWndProc(this->hwnd, WM_ACTIVATE, (WPARAM)activeState, (LPARAM)activeWindow);
 }
 
 HBRUSH

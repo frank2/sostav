@@ -130,8 +130,9 @@ ImageDialogWindowFrame::onLButtonUp
 {
    LRESULT result = LayeredImageWindow::onLButtonUp(virtualKeys, x, y);
 
-   /* we don't want focus-- return it to the window pane */
-   SetFocus(this->windowPane->getHWND());
+   /* we no longer need to have focus, fix it */
+   this->windowPane->insertBefore(this);
+   this->windowPane->focus();
 
    return result;
 }
@@ -148,22 +149,28 @@ ImageDialogWindowFrame::onMouseMove
       if (!this->isMoving())
          this->move(deltaX, deltaY);
    }
-   else
-      this->windowPane->focus(); /* we don't want focus in this case, give it back */
 
    return LayeredImageWindow::onMouseMove(virtualKeys, x, y);
 }
 
 LRESULT
-ImageDialogWindowFrame::onSetFocus
-(HWND lostFocus)
+ImageDialogWindowFrame::onWindowPosChanged
+(LPWINDOWPOS windowPos)
 {
-   Window *window = Window::FindWindow(lostFocus);
-   
-   if (window != this->windowPane) /* user is not attempting to click the window pane */
-      this->windowPane->focus();
-   
-   return LayeredImageWindow::onSetFocus(lostFocus);
+   if ((windowPos->flags & SWP_NOZORDER) == 0)
+   {
+      HWND prevWindow;
+
+      prevWindow = GetNextWindow(this->hwnd, GW_HWNDPREV);
+
+      if (this->windowPane->hasHWND() && prevWindow != this->windowPane->getHWND() && !this->windowPane->isMoving())
+      {
+         this->windowPane->insertAfter(windowPos->hwndInsertAfter);
+         this->insertAfter(this->windowPane);
+      }
+   }
+
+   return LayeredImageWindow::onWindowPosChanged(windowPos);
 }
 
 ImageDialogWindowPane::ImageDialogWindowPane
@@ -197,16 +204,6 @@ ImageDialogWindowPane::preCreate
    this->setExStyle(WS_EX_TOOLWINDOW);
 }
 
-void
-ImageDialogWindowPane::postCreate
-(void)
-{
-   ImageWindow::postCreate();
-   
-   this->setTopWindow();
-   this->focus();
-}
-
 LRESULT
 ImageDialogWindowPane::onMouseMove
 (WORD virtualKeys, WORD x, WORD y)
@@ -224,17 +221,21 @@ ImageDialogWindowPane::onMouseMove
 }
 
 LRESULT
-ImageDialogWindowPane::onSetFocus
-(HWND lostFocus)
+ImageDialogWindowPane::onWindowPosChanged
+(LPWINDOWPOS windowPos)
 {
-   if (this->frame == NULL)
-      throw ImageDialogWindowException(L"window pane has no frame");
-
-   if (lostFocus != this->hwnd)
+   if ((windowPos->flags & SWP_NOZORDER) == 0)
    {
-      this->frame->setTopWindow();
-      this->setTopWindow();
+      HWND nextWindow;
+
+      nextWindow = GetNextWindow(this->hwnd, GW_HWNDNEXT);
+
+      if (nextWindow != this->frame->getHWND() && !this->frame->isActive() && !this->frame->isMoving())
+      {
+         this->insertAfter(windowPos->hwndInsertAfter);
+         this->frame->insertAfter(this);
+      }
    }
 
-   return ImageWindow::onSetFocus(lostFocus);
+   return ImageWindow::onWindowPosChanged(windowPos);
 }

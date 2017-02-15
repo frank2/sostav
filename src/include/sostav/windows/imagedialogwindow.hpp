@@ -42,7 +42,7 @@ namespace Sostav
          virtual void preCreate(void);
          virtual LRESULT onLButtonUp(WORD virtualKeys, WORD x, WORD y);
          virtual LRESULT onMouseMove(WORD virtualKeys, WORD x, WORD y);
-         virtual LRESULT onSetFocus(HWND lostFocus);
+         virtual LRESULT onWindowPosChanged(LPWINDOWPOS windowPos);
       };
 
       class ImageDialogWindowPane : public ImageWindow
@@ -58,10 +58,8 @@ namespace Sostav
 
       protected:
          virtual void preCreate(void);
-         virtual void postCreate(void);
          virtual LRESULT onMouseMove(WORD virtualKeys, WORD x, WORD y);
-
-         virtual LRESULT onSetFocus(HWND lostFocus);
+         virtual LRESULT onWindowPosChanged(LPWINDOWPOS windowPos);
       };
    }
 }

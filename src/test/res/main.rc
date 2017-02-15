@@ -1,6 +1,8 @@
 #include <winresrc.h>
 #include "../resource.hpp"
 
+#pragma code_page(65001)
+
 MAINICON ICON "sostav.ico"
 IDI_SOSTAV PNG "sostav.png"
 IDI_SPLASH PNG "splash.png"

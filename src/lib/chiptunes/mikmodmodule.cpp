@@ -93,7 +93,7 @@ MikModModule::~MikModModule
 
    MikModModule::Instances--;
 
-   if (MikModModule::Instances == 0)
+   if (MikModModule::Instances == 0 && MikModModule::Initialized)
       this->shutdown();
 }
 

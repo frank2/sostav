@@ -32,7 +32,8 @@ namespace Sostav
          Window *parent;
          HWND hwnd;
          WNDPROC defWndProc;
-         
+
+         bool active;
          bool enabled;
          bool visible;
          bool moving;
@@ -90,6 +91,7 @@ namespace Sostav
 
          bool hasHWND(void) const;
 
+         bool isActive(void) const;
          bool isEnabled(void) const;
          bool isVisible(void) const;
          bool isMoving(void) const;
@@ -115,6 +117,11 @@ namespace Sostav
 
          void setTopWindow(void);
          void setTopmostWindow(void);
+
+         void insertAfter(HWND hwnd);
+         void insertAfter(Window *window);
+         void insertBefore(HWND hwnd);
+         void insertBefore(Window *window);
 
          void center(void);
          void centerX(void);
@@ -203,7 +210,8 @@ namespace Sostav
       protected:
          virtual void preCreate(void);
          virtual void postCreate(void);
-         
+
+         virtual LRESULT onActivate(BYTE activeState, HWND activeWindow);
          virtual HBRUSH onCtlColorEdit(HDC context, HWND control);
          virtual HBRUSH onCtlColorStatic(HDC context, HWND control);
          virtual HBRUSH onCtlColorBtn(HDC context, HWND control);
@@ -228,7 +236,6 @@ namespace Sostav
          virtual LRESULT onShowWindow(BOOL shown, WORD status);
          virtual LRESULT onWindowPosChanging(LPWINDOWPOS windowPos);
          virtual LRESULT onWindowPosChanged(LPWINDOWPOS windowPos);
-            
       };
    }
 }
