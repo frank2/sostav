@@ -171,6 +171,9 @@ MainWindowPane::preCreate
    ImageDialogWindowPane::preCreate();
    
    this->sostavBanner.setParent(this);
+   this->jpgTest.setParent(this);
+   this->gifTest.setParent(this);
+   this->bmpTest.setParent(this);
    this->chiptunes.setParent(this);
 
    this->setBGColor(0xFF, 0x29, 0x64, 0x73);
@@ -181,6 +184,23 @@ MainWindowPane::preCreate
    this->sostavBanner.setBGColor(Color::Transparent());
    this->sostavBanner.centerX();
 
+   this->jpgTest.setStyle(WS_CHILD | WS_VISIBLE);
+   this->jpgTest.setImage(Image(MAKEINTRESOURCE(IDI_JPG), L"JPG"));
+   this->jpgTest.setPosition(10, 100);
+   this->jpgTest.centerX();
+   this->jpgTest.move(-100, 0);
+
+   this->gifTest.setStyle(WS_CHILD | WS_VISIBLE);
+   this->gifTest.setImage(Image(MAKEINTRESOURCE(IDI_GIF), L"GIF"));
+   this->gifTest.setPosition(10, 100);
+   this->gifTest.centerX();
+
+   this->bmpTest.setStyle(WS_CHILD | WS_VISIBLE);
+   this->bmpTest.setImage(Image(MAKEINTRESOURCE(IDI_BMP), L"BMP"));
+   this->bmpTest.setPosition(10, 100);
+   this->bmpTest.centerX();
+   this->bmpTest.move(100, 0);
+
    this->chiptunes.setStyle(WS_CHILD | WS_VISIBLE);
    this->chiptunes.setTypeface(Font::MessageFont());
    this->chiptunes.setWindowText(L"Чиптуны!");
@@ -189,6 +209,7 @@ MainWindowPane::preCreate
    this->chiptunes.setBGColor(Color::Transparent());
    this->chiptunes.setSize(300, 150);
    this->chiptunes.center();
+   this->chiptunes.move(0, 50);
 }
    
 MainWindow::MainWindow

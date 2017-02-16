@@ -207,6 +207,12 @@ Image::loadFromBuffer
 
    if (*magic == 0x474e5089) /* PNG */
       formatID = CLSID_WICPngDecoder;
+   else if (*((LPWORD)magic) == 0x4D42) /* BMP */
+      formatID = CLSID_WICBmpDecoder;
+   else if (*magic == 0xE0FFD8FF) /* JPG */
+      formatID = CLSID_WICJpegDecoder;
+   else if (*magic == 0x38464947) /* GIF */
+      formatID = CLSID_WICGifDecoder;
    else
       throw ImageException(L"image buffer is an unsupported format");
 

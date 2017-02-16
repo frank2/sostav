@@ -47,7 +47,7 @@ protected:
 class MainWindowPane : public Sostav::Windows::ImageDialogWindowPane
 {
 protected:
-   Sostav::Windows::ImageWindow sostavBanner;
+   Sostav::Windows::ImageWindow sostavBanner, jpgTest, gifTest, bmpTest;
    ChiptuneSelector chiptunes;
 
 public:

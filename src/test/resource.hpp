@@ -7,3 +7,6 @@
 #define IDI_UNREAL 1004
 #define IDI_DEADLOCK 1005
 #define IDI_BACKGROUND 1006
+#define IDI_JPG 1007
+#define IDI_GIF 1008
+#define IDI_BMP 1009
