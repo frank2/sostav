@@ -385,13 +385,6 @@ Window::removeLink
 }
 
 bool
-Window::hasHWND
-(void) const
-{
-   return this->hwnd != NULL;
-}
-
-bool
 Window::isActive
 (void) const
 {
@@ -447,7 +440,8 @@ Window::setHWND
    
    Window::MapWindow(hwnd, this);
 
-   if (this->parent != NULL)
+   /* don't use hasStyle here because that only checks the variable, getStyle retrieves it from the hwnd */
+   if (this->parent != NULL && (this->getStyle() & WS_CHILD) == WS_CHILD)
       SetParent(hwnd, this->parent->getHWND());
 }
 
@@ -456,6 +450,23 @@ Window::getHWND
 (void) const
 {
    return this->hwnd;
+}
+
+bool
+Window::hasHWND
+(void) const
+{
+   return this->hwnd != NULL;
+}
+
+LRESULT
+Window::sendMessage
+(UINT msg, WPARAM wParam, LPARAM lParam)
+{
+   if (!this->hasHWND())
+      throw WindowException(L"can't send message to an uncreated window");
+
+   return SendMessage(this->hwnd, msg, wParam, lParam);
 }
 
 void
@@ -733,7 +744,7 @@ SIZE
 Window::getParentSize
 (void) const
 {
-   if (this->parent != NULL)
+   if (this->parent != NULL && this->hasStyle(WS_CHILD))
       return this->parent->getSize();
    else
    {
@@ -893,6 +904,13 @@ Window::removeStyle
    this->setStyle(this->getStyle() & ~style);
 }
 
+bool
+Window::hasStyle
+(DWORD style) const
+{
+   return (this->style & style) == style;
+}
+
 void
 Window::setExStyle
 (DWORD exStyle)
@@ -939,6 +957,13 @@ Window::removeExStyle
    this->setExStyle(this->getExStyle() & ~exStyle);
 }
 
+bool
+Window::hasExStyle
+(DWORD style) const
+{
+   return (this->exStyle & style) == style;
+}
+
 void
 Window::setClassStyle
 (DWORD classStyle)
@@ -983,6 +1008,13 @@ Window::removeClassStyle
 (DWORD classStyle)
 {
    this->setClassStyle(this->classStyle & ~classStyle);
+}
+
+bool
+Window::hasClassStyle
+(DWORD style) const
+{
+   return (this->classStyle & style) == style;
 }
 
 void
@@ -1137,7 +1169,7 @@ Color
 Window::getBGColor
 (void) const
 {
-   if (this->parent == NULL)
+   if (this->parent == NULL || !this->hasStyle(WS_CHILD))
       return this->bgColor;
    else
    {
@@ -1313,7 +1345,7 @@ Window::create
                                ,this->style
                                ,this->point.getX(), this->point.getY()
                                ,this->size.cx, this->size.cy
-                               ,(this->parent == NULL) ? NULL : this->parent->getHWND()
+                               ,(this->parent == NULL || !this->hasStyle(WS_CHILD)) ? NULL : this->parent->getHWND()
                                ,this->menu
                                ,GetModuleHandle(NULL)
                                ,NULL);

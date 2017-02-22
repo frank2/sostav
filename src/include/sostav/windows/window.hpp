@@ -89,8 +89,6 @@ namespace Sostav
          void addLink(Window *link);
          void removeLink(Window *link);
 
-         bool hasHWND(void) const;
-
          bool isActive(void) const;
          bool isEnabled(void) const;
          bool isVisible(void) const;
@@ -100,6 +98,9 @@ namespace Sostav
 
          virtual void setHWND(HWND window);
          HWND getHWND(void) const;
+         bool hasHWND(void) const;
+
+         LRESULT sendMessage(UINT msg, WPARAM wParam, LPARAM lParam);
 
          void setDefWndProc(WNDPROC wndProc);
          WNDPROC getDefWndProc(void) const;
@@ -149,16 +150,19 @@ namespace Sostav
          DWORD getStyle(void);
          void addStyle(DWORD style);
          void removeStyle(DWORD style);
+         bool hasStyle(DWORD style) const;
 
          void setExStyle(DWORD exStyle);
          DWORD getExStyle(void);
          void addExStyle(DWORD exStyle);
          void removeExStyle(DWORD exStyle);
+         bool hasExStyle(DWORD exStyle) const;
 
          void setClassStyle(DWORD classStyle);
          DWORD getClassStyle(void);
          void addClassStyle(DWORD classStyle);
          void removeClassStyle(DWORD classStyle);
+         bool hasClassStyle(DWORD classStyle) const;
 
          void setClassName(std::wstring className);
          std::wstring getClassName(void) const;
