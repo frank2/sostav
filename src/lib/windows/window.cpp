@@ -335,6 +335,13 @@ Window::removeChild
    this->children.erase(std::find(this->children.begin(), this->children.end(), child));
 }
 
+std::list<Window *>
+Window::getChildren
+(void) const
+{
+   return this->children;
+}
+
 void
 Window::setParent
 (Window *newParent)
@@ -400,8 +407,11 @@ Window::isEnabled
 
 bool
 Window::isVisible
-(void) const
+(void)
 {
+   if (this->hasHWND())
+      this->visible = this->hasStyle(WS_VISIBLE);
+   
    return this->visible;
 }
 
@@ -744,7 +754,8 @@ SIZE
 Window::getParentSize
 (void) const
 {
-   if (this->parent != NULL && this->hasStyle(WS_CHILD))
+   /* this is a const, so check the style var directly */
+   if (this->parent != NULL && (this->style & WS_CHILD) == WS_CHILD)
       return this->parent->getSize();
    else
    {
@@ -906,9 +917,9 @@ Window::removeStyle
 
 bool
 Window::hasStyle
-(DWORD style) const
+(DWORD style)
 {
-   return (this->style & style) == style;
+   return (this->getStyle() & style) == style;
 }
 
 void
@@ -959,9 +970,9 @@ Window::removeExStyle
 
 bool
 Window::hasExStyle
-(DWORD style) const
+(DWORD style)
 {
-   return (this->exStyle & style) == style;
+   return (this->getExStyle() & style) == style;
 }
 
 void
@@ -1012,9 +1023,9 @@ Window::removeClassStyle
 
 bool
 Window::hasClassStyle
-(DWORD style) const
+(DWORD style)
 {
-   return (this->classStyle & style) == style;
+   return (this->getClassStyle() & style) == style;
 }
 
 void
@@ -1169,7 +1180,8 @@ Color
 Window::getBGColor
 (void) const
 {
-   if (this->parent == NULL || !this->hasStyle(WS_CHILD))
+   /* const, so check this->style directly */
+   if (this->parent == NULL || (this->style & WS_CHILD) != WS_CHILD)
       return this->bgColor;
    else
    {
@@ -1477,7 +1489,7 @@ Window::show
    {
       Window *child = *childIter;
 
-      if ((child->getStyle() & WS_VISIBLE) && !child->isVisible())
+      if (child->hasStyle(WS_VISIBLE) && !child->isVisible())
          child->show();
    }
 
@@ -1485,7 +1497,7 @@ Window::show
    {
       Window *link = *linkIter;
 
-      if ((link->getStyle() & WS_VISIBLE) && !link->isVisible())
+      if (link->hasStyle(WS_VISIBLE) && !link->isVisible())
          link->show();
    }
 }
@@ -1608,6 +1620,10 @@ LRESULT
 Window::onCreate
 (LPCREATESTRUCT creationData)
 {
+   /* windows created with WS_VISIBLE don't send WM_SHOW, so set this->visible
+      if WS_VISIBLE is present */
+   this->visible = this->hasStyle(WS_VISIBLE);
+   
    return this->defWndProc(this->hwnd, WM_CREATE, NULL, (LPARAM)creationData);
 }
 
@@ -1679,6 +1695,122 @@ LRESULT
 Window::onKeyDown
 (DWORD keyValue, DWORD keyFlags)
 {
+   switch(keyValue)
+   {
+   case VK_TAB:
+   {
+      SHORT shift = GetKeyState(VK_SHIFT);
+      bool direction = (shift & 0x8000) > 0; /* backwards if true, forwards otherwise */
+      std::list<Window *> children;
+
+      if (!this->hasStyle(WS_TABSTOP))
+      {
+         /* if this element does not have the tabstop style, look for the first child
+            that does */
+         children = this->children;
+
+         if (direction)
+         {
+            for (std::list<Window *>::reverse_iterator childIter=children.rbegin();
+                 childIter!=children.rend();
+                 childIter++)
+            {
+               Window *window = *childIter;
+               
+               if (window->hasStyle(WS_TABSTOP) && window->isEnabled() && window->isVisible())
+               {
+                  window->focus();
+                  break;
+               }
+            }
+         }
+         else
+         {
+            for (std::list<Window *>::iterator childIter=this->children.begin();
+                 childIter!=this->children.end();
+                 childIter++)
+            {
+               Window *window = *childIter;
+
+               if (window->hasStyle(WS_TABSTOP) && window->isEnabled() && window->isVisible())
+               {
+                  window->focus();
+                  break;
+               }
+            }
+         }
+
+         return (LRESULT)0;
+      }
+
+      if (this->parent == NULL)
+         throw WindowException(L"cannot tab on root window");
+
+      children = this->parent->getChildren();
+
+      if (direction)
+      {
+         std::list<Window *>::reverse_iterator childIter, originIter;
+         
+         childIter = std::find(children.rbegin(), children.rend(), this);
+         
+         if (childIter == children.rend())
+            throw WindowException(L"could not find window in children");
+
+         originIter = childIter;
+
+         do
+         {
+            Window *window;
+
+            childIter++;
+
+            if (childIter == children.rend())
+               childIter = children.rbegin();
+
+            window = *childIter;
+
+            if (!window->hasStyle(WS_TABSTOP) || !window->isEnabled() || !window->isVisible())
+               continue;
+
+            window->focus();
+            break;
+         } while (childIter != originIter);
+      }
+      else
+      {
+         std::list<Window *>::iterator childIter, originIter;
+
+         childIter = std::find(children.begin(), children.end(), this);
+         
+         if (childIter == children.end())
+            throw WindowException(L"could not find window in children");
+
+         originIter = childIter;
+
+         do
+         {
+            Window *window;
+
+            childIter++;
+
+            if (childIter == children.end())
+               childIter = children.begin();
+
+            window = *childIter;
+
+            if (!window->hasStyle(WS_TABSTOP) || !window->isEnabled() || !window->isVisible())
+               continue;
+
+            window->focus();
+            break;
+         } while (childIter != originIter);
+      }
+
+      return (LRESULT)0;
+   }
+   }
+
    return this->defWndProc(this->hwnd, WM_KEYDOWN, (WPARAM)keyValue, (LPARAM)keyFlags);
 }
 
@@ -1693,6 +1825,8 @@ LRESULT
 Window::onKillFocus
 (HWND gainedFocus)
 {
+   this->focused = false;
+   
    return this->defWndProc(this->hwnd, WM_KILLFOCUS, (WPARAM)gainedFocus, (LPARAM)NULL);
 }
 
@@ -1833,6 +1967,8 @@ LRESULT
 Window::onSetFocus
 (HWND lostFocus)
 {
+   this->focused = true;
+   
    return this->defWndProc(this->hwnd, WM_SETFOCUS, (WPARAM)lostFocus, (LPARAM)NULL);
 }
 

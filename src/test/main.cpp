@@ -43,9 +43,7 @@ ChiptuneButton::onLButtonUp
    
    selector->play();
 
-   this->defWndProc(this->hwnd, WM_LBUTTONUP, (WPARAM)virtualKeys, (LPARAM)((y << 16) | x));
-
-   return (LRESULT)0;
+   return Button::onLButtonUp(virtualKeys, x, y);
 }
 
 ChiptuneSelector::ChiptuneSelector
@@ -96,7 +94,7 @@ ChiptuneSelector::preCreate
 {
    double relativeWidth, relativeHeight;
    DWORD absoluteWidth, absoluteHeight;
-   DWORD buttonStyle = WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON;
+   DWORD buttonStyle = WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_GROUP | BS_PUSHBUTTON;
 
    Button::preCreate();
    

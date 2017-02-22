@@ -21,6 +21,9 @@ namespace Sostav
          Button(Windows::Window *parent);
          Button(Button &window);
          Button();
+
+      protected:
+         virtual LRESULT onKeyUp(DWORD keyValue, DWORD keyFlags);
       };
    }
 }

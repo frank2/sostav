@@ -28,3 +28,21 @@ Button::Button
 {
    this->setClassName(L"BUTTON");
 }
+
+LRESULT
+Button::onKeyUp
+(DWORD keyValue, DWORD keyFlags)
+{
+   switch (keyValue)
+   {
+   case VK_SPACE:
+   case VK_RETURN:
+   {
+      this->sendMessage(BM_CLICK, NULL, NULL);
+
+      return (LRESULT)0;
+   }
+   }
+
+   return SubclassedWindow::onKeyUp(keyValue, keyFlags);
+}

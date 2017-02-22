@@ -34,11 +34,12 @@ namespace Sostav
          WNDPROC defWndProc;
 
          bool active;
-         bool enabled;
-         bool visible;
-         bool moving;
          bool captured;
+         bool enabled;
+         bool focused;
          bool hovering;
+         bool moving;
+         bool visible;
 
          Drawing::AbsolutePoint point;
          Drawing::AbsolutePoint capturePoint;
@@ -81,6 +82,7 @@ namespace Sostav
          bool hasChild(Window *child) const;
          void addChild(Window *child);
          void removeChild(Window *child);
+         std::list<Window *> getChildren(void) const;
          
          void setParent(Window *newParent);
          Window *getParent(void) const;
@@ -90,11 +92,12 @@ namespace Sostav
          void removeLink(Window *link);
 
          bool isActive(void) const;
-         bool isEnabled(void) const;
-         bool isVisible(void) const;
-         bool isMoving(void) const;
          bool isCaptured(void) const;
+         bool isEnabled(void) const;
+         bool hasFocus(void) const;
          bool isHovering(void) const;
+         bool isMoving(void) const;
+         bool isVisible(void);
 
          virtual void setHWND(HWND window);
          HWND getHWND(void) const;
@@ -150,19 +153,19 @@ namespace Sostav
          DWORD getStyle(void);
          void addStyle(DWORD style);
          void removeStyle(DWORD style);
-         bool hasStyle(DWORD style) const;
+         bool hasStyle(DWORD style);
 
          void setExStyle(DWORD exStyle);
          DWORD getExStyle(void);
          void addExStyle(DWORD exStyle);
          void removeExStyle(DWORD exStyle);
-         bool hasExStyle(DWORD exStyle) const;
+         bool hasExStyle(DWORD exStyle);
 
          void setClassStyle(DWORD classStyle);
          DWORD getClassStyle(void);
          void addClassStyle(DWORD classStyle);
          void removeClassStyle(DWORD classStyle);
-         bool hasClassStyle(DWORD classStyle) const;
+         bool hasClassStyle(DWORD classStyle);
 
          void setClassName(std::wstring className);
          std::wstring getClassName(void) const;
