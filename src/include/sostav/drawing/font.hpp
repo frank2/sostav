@@ -2,6 +2,7 @@
 
 #include <windows.h>
 
+#include <list>
 #include <string>
 
 #include "sostav/exception.hpp"
@@ -73,6 +74,24 @@ namespace Sostav
 
          void setHandle(HFONT font);
          HFONT getHandle(void);
+      };
+
+      class FontResources
+      {
+      protected:
+         static FontResources instance;
+         std::list<HANDLE> resources;
+         std::list<std::pair<std::wstring,DWORD> > files;
+
+         FontResources();
+         ~FontResources();
+
+      public:
+         static FontResources *GetInstance(void);
+
+         int loadFile(std::wstring filename, DWORD flags);
+         int loadMemory(LPVOID buffer, size_t size);
+         int loadResource(LPWSTR resourceName, std::wstring resourceType);
       };
    }
 }

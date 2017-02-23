@@ -10,3 +10,4 @@
 #define IDI_JPG 1007
 #define IDI_GIF 1008
 #define IDI_BMP 1009
+#define IDI_FONT 1010

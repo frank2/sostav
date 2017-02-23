@@ -1,4 +1,4 @@
-﻿/* -*- coding: utf-8 -*- */
+﻿/* -*- coding: utf-8-with-signature -*- */
 
 #include "main.hpp"
 
@@ -95,10 +95,14 @@ ChiptuneSelector::preCreate
    double relativeWidth, relativeHeight;
    DWORD absoluteWidth, absoluteHeight;
    DWORD buttonStyle = WS_VISIBLE | WS_CHILD | WS_TABSTOP | WS_GROUP | BS_PUSHBUTTON;
+   Font typeface;
 
    Button::preCreate();
    
    this->addStyle(BS_GROUPBOX);
+
+   typeface.setFace(L"PerfoOval");
+   typeface.setPointSize(16);
 
    relativeWidth = 0.90 / 5.0;
    relativeHeight = 0.20;
@@ -148,7 +152,7 @@ ChiptuneSelector::preCreate
    this->noMusic.setSize(absoluteWidth, absoluteHeight);
 
    this->songTitle.setStyle(WS_CHILD | WS_VISIBLE | SS_CENTER);
-   this->songTitle.setTypeface(Font::MessageFont());
+   this->songTitle.setTypeface(typeface);
    this->songTitle.setBGColor(Color::Transparent());
    this->songTitle.setFGColor(0xFF, 0x6A, 0xCE, 0xCB);
    this->songTitle.setRelativePosition(0.05, 0.2);
@@ -166,6 +170,8 @@ void
 MainWindowPane::preCreate
 (void)
 {
+   Font typeface;
+   
    ImageDialogWindowPane::preCreate();
    
    this->sostavBanner.setParent(this);
@@ -173,6 +179,9 @@ MainWindowPane::preCreate
    this->gifTest.setParent(this);
    this->bmpTest.setParent(this);
    this->chiptunes.setParent(this);
+
+   typeface.setFace(L"PerfoOval");
+   typeface.setPointSize(16);
 
    this->setBGColor(0xFF, 0x29, 0x64, 0x73);
 
@@ -200,7 +209,7 @@ MainWindowPane::preCreate
    this->bmpTest.move(100, 0);
 
    this->chiptunes.setStyle(WS_CHILD | WS_VISIBLE);
-   this->chiptunes.setTypeface(Font::MessageFont());
+   this->chiptunes.setTypeface(typeface);
    this->chiptunes.setWindowText(L"Чиптуны!");
    this->chiptunes.setPosition(10, 100);
    this->chiptunes.setFGColor(0xFF, 0x6A, 0xCE, 0xCB);
@@ -295,6 +304,7 @@ wWinMain
    MainWindow mainWindow(&mainWindowPane);
 
    MikModDriver::DirectSound().commandLine("globalfocus=1");
+   FontResources::GetInstance()->loadResource(MAKEINTRESOURCE(IDI_FONT), L"TTFFONT");
    mainWindow.show();
 
    Window::MessageLoop();
