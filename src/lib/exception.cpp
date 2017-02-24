@@ -7,36 +7,17 @@ Exception::Exception
    : std::exception()
 {
    int bufferSize, result;
+   char *bufferData;
+   std::string converted;
 
    error = GetLastError();
 
-   bufferSize = WideCharToMultiByte(CP_UTF8
-                                    ,NULL
-                                    ,what
-                                    ,wcslen(what)
-                                    ,NULL
-                                    ,NULL
-                                    ,NULL
-                                    ,NULL)+1;
+   converted = Locale::WideToMultiByte(what);
+   bufferSize = converted.length()+1;
+   bufferData = (char *)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, bufferSize);
+   strcpy_s(bufferData, bufferSize, converted.c_str());
 
-   if (bufferSize == 0)
-      throw std::exception();
-
-   this->whatVal = (char *)HeapAlloc(GetProcessHeap()
-                                     ,HEAP_ZERO_MEMORY
-                                     ,bufferSize);
-
-   result = WideCharToMultiByte(CP_UTF8
-                                ,NULL
-                                ,what
-                                ,wcslen(what)
-                                ,this->whatVal
-                                ,bufferSize
-                                ,NULL
-                                ,NULL);
-
-   if (result == 0)
-      throw std::exception();
+   this->whatVal = bufferData;
 }
 
 Exception::~Exception

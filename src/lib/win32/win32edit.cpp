@@ -15,6 +15,7 @@ Edit::Edit
    : SubclassedWindow(parent, L"EDIT")
 {
    this->showCueOnFocus = false;
+   this->limit = 0;
 }
 
 Edit::Edit
@@ -38,10 +39,9 @@ Edit::setCueText
 {
    this->cueText.assign(cueText);
 
-   if (this->hasHWND() && (BOOL)SendMessage(this->hwnd
-                                            ,EM_SETCUEBANNER
-                                            ,(WPARAM)this->showCueOnFocus
-                                            ,(LPARAM)this->cueText.c_str()) == FALSE)
+   if (this->hasHWND() && (BOOL)this->sendMessage(EM_SETCUEBANNER
+                                                  ,(WPARAM)this->showCueOnFocus
+                                                  ,(LPARAM)this->cueText.c_str()) == FALSE)
       throw WindowException(L"SendMessage failed");
 }
 
@@ -107,13 +107,41 @@ Edit::getShowCueOnFocus
 }
 
 void
+Edit::setLimit
+(DWORD limit)
+{
+   if (this->hasHWND())
+      this->sendMessage(EM_SETLIMITTEXT
+                        ,(WPARAM)this->limit
+                        ,NULL);
+
+   this->limit = limit;
+}
+
+DWORD
+Edit::getLimit
+(void)
+{
+   if (this->hasHWND())
+      this->limit = (DWORD)this->sendMessage(EM_GETLIMITTEXT
+                                             ,NULL
+                                             ,NULL);
+
+   return this->limit;
+}
+
+void
 Edit::postCreate
 (void)
 {
    SubclassedWindow::postCreate();
 
-   SendMessage(this->hwnd
-               ,EM_SETCUEBANNER
-               ,(WPARAM)this->showCueOnFocus
-               ,(LPARAM)this->cueText.c_str());
+   if (this->cueText.length() > 0)
+      this->sendMessage(EM_SETCUEBANNER
+                        ,(WPARAM)this->showCueOnFocus
+                        ,(LPARAM)this->cueText.c_str());
+
+   this->sendMessage(EM_SETLIMITTEXT
+                     ,(WPARAM)this->limit
+                     ,NULL);
 }

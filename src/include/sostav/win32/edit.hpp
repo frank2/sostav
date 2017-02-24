@@ -33,6 +33,7 @@ namespace Sostav
       protected:
          std::wstring cueText;
          bool showCueOnFocus;
+         DWORD limit;
          
       public:
          Edit(Windows::Window *parent);
@@ -44,6 +45,9 @@ namespace Sostav
 
          void setShowCueOnFocus(bool show);
          bool getShowCueOnFocus(void) const;
+
+         void setLimit(DWORD limit);
+         DWORD getLimit(void);
 
          virtual void postCreate(void);
       };

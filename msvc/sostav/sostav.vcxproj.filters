@@ -150,6 +150,9 @@
     <ClInclude Include="..\..\src\include\sostav\windows\imagedialogwindow.hpp">
       <Filter>Header Files\windows</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\include\sostav\locale.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\lib\exception.cpp">
@@ -226,6 +229,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\lib\windows\imagedialogwindow.cpp">
       <Filter>Source Files\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib\locale.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

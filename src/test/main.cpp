@@ -303,11 +303,18 @@ wWinMain
    MainWindowPane mainWindowPane;
    MainWindow mainWindow(&mainWindowPane);
 
-   MikModDriver::DirectSound().commandLine("globalfocus=1");
-   FontResources::GetInstance()->loadResource(MAKEINTRESOURCE(IDI_FONT), L"TTFFONT");
-   mainWindow.show();
+   try
+   {
+      MikModDriver::DirectSound().commandLine("globalfocus=1");
+      FontResources::GetInstance()->loadResource(MAKEINTRESOURCE(IDI_FONT), L"TTFFONT");
+      mainWindow.show();
 
-   Window::MessageLoop();
+      Window::MessageLoop();
+   }
+   catch (Exception &exc)
+   {
+      MessageBoxA(NULL, exc.what(), "Error", MB_OK);
+   }
 
    return 0;
 }

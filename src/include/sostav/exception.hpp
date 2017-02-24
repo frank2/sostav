@@ -3,6 +3,10 @@
 #include <windows.h>
 
 #include <exception>
+#include <string.h>
+#include <string>
+
+#include "locale.hpp"
 
 namespace Sostav
 {

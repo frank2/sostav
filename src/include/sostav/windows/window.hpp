@@ -219,6 +219,8 @@ namespace Sostav
          virtual void postCreate(void);
 
          virtual LRESULT onActivate(BYTE activeState, HWND activeWindow);
+         virtual LRESULT onChar(DWORD keyValue, DWORD keyFlags);
+         virtual LRESULT onCommand(WORD notificationCode, WORD identifier, HWND handle);
          virtual HBRUSH onCtlColorEdit(HDC context, HWND control);
          virtual HBRUSH onCtlColorStatic(HDC context, HWND control);
          virtual HBRUSH onCtlColorBtn(HDC context, HWND control);

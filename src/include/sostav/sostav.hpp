@@ -3,6 +3,7 @@
 #include <sostav/chiptunes.hpp>
 #include <sostav/controls.hpp>
 #include <sostav/drawing.hpp>
+#include <sostav/locale.hpp>
 #include <sostav/math.hpp>
 #include <sostav/exception.hpp>
 #include <sostav/windows.hpp>

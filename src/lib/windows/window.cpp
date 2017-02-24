@@ -232,6 +232,12 @@ Window::windowProc
    {
    case WM_ACTIVATE:
       return this->onActivate((BYTE)wParam, (HWND)lParam);
+
+   case WM_CHAR:
+      return this->onChar((DWORD)wParam, (DWORD)lParam);
+
+   case WM_COMMAND:
+      return this->onCommand(HIWORD(wParam), LOWORD(wParam), (HWND)lParam);
       
    case WM_CTLCOLOREDIT:
       return (LRESULT)this->onCtlColorEdit((HDC)wParam, (HWND)lParam);
@@ -1548,6 +1554,27 @@ Window::onActivate
       this->active = false;
 
    return this->defWndProc(this->hwnd, WM_ACTIVATE, (WPARAM)activeState, (LPARAM)activeWindow);
+}
+
+LRESULT
+Window::onChar
+(DWORD keyValue, DWORD keyFlags)
+{
+   switch(keyValue)
+   {
+   case VK_TAB:
+      /* return 0 to kill dings */
+      return (LRESULT)0;
+   }
+
+   return this->defWndProc(this->hwnd, WM_CHAR, (WPARAM)keyValue, (LPARAM)keyFlags);
+}
+
+LRESULT
+Window::onCommand
+(WORD notificationCode, WORD identifier, HWND handle)
+{
+   return this->defWndProc(this->hwnd, MAKEWPARAM(identifier, notificationCode), (LPARAM)handle);
 }
 
 HBRUSH
