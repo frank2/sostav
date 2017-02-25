@@ -14,7 +14,8 @@ ImageWindow::ImageWindow
 (Window *parent, std::wstring className, Image image)
    : PaintedWindow(parent, className)
 {
-   this->setImage(image);
+   if (image.hasImage())
+      this->setImage(image);
 }
 
 ImageWindow::ImageWindow

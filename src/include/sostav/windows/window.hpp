@@ -238,6 +238,7 @@ namespace Sostav
          virtual LRESULT onMove(WORD x, WORD y);
          virtual LRESULT onNCCalcSize(BOOL switchValue, LPARAM pointer);
          virtual LRESULT onNCPaint(HRGN paintRegion);
+         virtual LRESULT onNotify(UINT identifier, NMHDR *notifyHeader);
          virtual LRESULT onPaint(void);
          virtual LRESULT onRButtonDown(WORD virtualKeys, WORD x, WORD y);
          virtual LRESULT onRButtonUp(WORD virtualKeys, WORD x, WORD y);

@@ -194,7 +194,9 @@ Locale::loadString
       if (postFormatSize == -1)
          throw LocaleException("_vscwprintf failed");
 
-      postFormatBuffer = (LPWCH)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, postFormatSize+1);
+      postFormatBuffer = (LPWCH)HeapAlloc(GetProcessHeap()
+                                          ,HEAP_ZERO_MEMORY
+                                          ,(postFormatSize+1)*sizeof(WCHAR));
 
       if (_vsnwprintf_s(postFormatBuffer
                         ,postFormatSize+1

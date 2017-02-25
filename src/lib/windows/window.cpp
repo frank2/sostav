@@ -290,6 +290,9 @@ Window::windowProc
    case WM_NCPAINT:
       return this->onNCPaint((HRGN)wParam);
 
+   case WM_NOTIFY:
+      return this->onNotify((UINT)wParam, (NMHDR *)lParam);
+
    case WM_PAINT:
       return this->onPaint();
 
@@ -1574,7 +1577,7 @@ LRESULT
 Window::onCommand
 (WORD notificationCode, WORD identifier, HWND handle)
 {
-   return this->defWndProc(this->hwnd, MAKEWPARAM(identifier, notificationCode), (LPARAM)handle);
+   return this->defWndProc(this->hwnd, WM_COMMAND, MAKEWPARAM(identifier, notificationCode), (LPARAM)handle);
 }
 
 HBRUSH
@@ -1867,7 +1870,7 @@ Window::onLButtonDown
 
    SetCapture(this->hwnd);
    
-   return this->defWndProc(this->hwnd, WM_LBUTTONDOWN, (WPARAM)virtualKeys, (LPARAM)((y << 16) | x));
+   return this->defWndProc(this->hwnd, WM_LBUTTONDOWN, (WPARAM)virtualKeys, MAKELPARAM(x, y));
 }
 
 LRESULT
@@ -1880,7 +1883,7 @@ Window::onLButtonUp
 
    ReleaseCapture();
    
-   return this->defWndProc(this->hwnd, WM_LBUTTONUP, (WPARAM)virtualKeys, (LPARAM)((y << 16) | x));
+   return this->defWndProc(this->hwnd, WM_LBUTTONUP, (WPARAM)virtualKeys, MAKELPARAM(x, y));
 }
 
 LRESULT
@@ -1967,6 +1970,13 @@ Window::onNCPaint
    DeleteObject(pen);
 
    return 0;
+}
+
+LRESULT
+Window::onNotify
+(UINT identifier, NMHDR *notifyHeader)
+{
+   return this->defWndProc(this->hwnd, WM_NOTIFY, (WPARAM)identifier, (LPARAM)notifyHeader);
 }
 
 LRESULT

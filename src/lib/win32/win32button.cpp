@@ -46,3 +46,15 @@ Button::onKeyUp
 
    return SubclassedWindow::onKeyUp(keyValue, keyFlags);
 }
+
+LRESULT
+Button::onLButtonDown
+(WORD virtualKeys, WORD x, WORD y)
+{
+   /* for some reason subclassed buttons don't send WM_COMMAND. fix this in the default behavior. */
+   if (this->hasStyle(BS_PUSHBUTTON) && this->parent != NULL)
+      this->parent->sendMessage(WM_COMMAND, MAKEWPARAM(this->menu, 0), (LPARAM)this->hwnd);
+
+   return SubclassedWindow::onLButtonUp(virtualKeys, x, y);
+}
+      
