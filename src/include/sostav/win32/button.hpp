@@ -2,6 +2,10 @@
 
 #include <windows.h>
 
+#include <algorithm>
+#include <list>
+#include <set>
+
 #include "sostav/exception.hpp"
 #include "sostav/windows/subclassedwindow.hpp"
 
@@ -21,6 +25,8 @@ namespace Sostav
          Button(Windows::Window *parent);
          Button(Button &window);
          Button();
+
+         bool checked(void);
 
       protected:
          virtual LRESULT onKeyUp(DWORD keyValue, DWORD keyFlags);

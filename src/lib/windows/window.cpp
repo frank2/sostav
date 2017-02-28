@@ -38,6 +38,7 @@ Window::Window
    }
    
    this->size.cx = this->size.cy = 0;
+   this->clientRect.top = this->clientRect.left = this->clientRect.bottom = this->clientRect.right = 0;
 
    this->cursor = LoadCursor(NULL, IDC_ARROW);
    this->menu = NULL;
@@ -80,6 +81,7 @@ Window::Window
 
    this->setPosition(window.getPosition());
    this->setSize(window.getSize());
+   this->clientRect = window.getClientRect();
 
    this->setIcon(window.getIcon());
    this->cursor = window.getCursor();
@@ -117,6 +119,7 @@ Window::Window
    this->exStyle = 0;
    this->classStyle = 0;
    this->size.cx = this->size.cy = 0;
+   this->clientRect.top = this->clientRect.left = this->clientRect.bottom = this->clientRect.right = 0;
 
    this->setDefaultColors();
    this->cursor = LoadCursor(NULL, IDC_ARROW);
@@ -415,6 +418,13 @@ Window::isEnabled
 }
 
 bool
+Window::hasFocus
+(void) const
+{
+   return this->focused;
+}
+
+bool
 Window::isVisible
 (void)
 {
@@ -459,8 +469,7 @@ Window::setHWND
    
    Window::MapWindow(hwnd, this);
 
-   /* don't use hasStyle here because that only checks the variable, getStyle retrieves it from the hwnd */
-   if (this->parent != NULL && (this->getStyle() & WS_CHILD) == WS_CHILD)
+   if (this->parent != NULL && this->hasStyle(WS_CHILD))
       SetParent(hwnd, this->parent->getHWND());
 }
 
@@ -596,6 +605,38 @@ Window::move
 }
 
 void
+Window::moveLeftOf
+(Window *window, long x, long y)
+{
+   this->setPosition(window->getPosition().getX() - this->size.cx, this->point.getY());
+   this->move(x, y);
+}
+
+void
+Window::moveRightOf
+(Window *window, long x, long y)
+{
+   this->setPosition(window->getPosition().getX() + window->getSize().cx, this->point.getY());
+   this->move(x, y);
+}
+
+void
+Window::moveAbove
+(Window *window, long x, long y)
+{
+   this->setPosition(this->point.getX(), window->getPosition().getY() - this->size.cy);
+   this->move(x, y);
+}
+
+void
+Window::moveBelow
+(Window *window, long x, long y)
+{
+   this->setPosition(this->point.getX(), window->getPosition().getY() + window->getSize().cy);
+   this->move(x, y);
+}
+
+void
 Window::setTopWindow
 (void)
 {
@@ -728,6 +769,43 @@ Window::centerY
 }
 
 void
+Window::leftJustify
+(long cx)
+{
+   this->setPosition(cx, this->point.getY());
+}
+
+void
+Window::rightJustify
+(long cx)
+{
+   SIZE clientSize = this->getClientSize();
+   SIZE parentSize = this->getParentSize();
+
+   this->setPosition(parentSize.cx - clientSize.cx + cx
+                     ,this->point.getY());
+}
+
+void
+Window::topJustify
+(long cy)
+{
+   this->setPosition(this->point.getX(), cy);
+}
+
+void
+Window::bottomJustify
+(long cy)
+{
+   SIZE clientSize = this->getClientSize();
+   SIZE parentSize = this->getParentSize();
+
+   this->setPosition(this->point.getX()
+                     ,parentSize.cy - clientSize.cy + cy);
+                     
+}
+
+void
 Window::setSize
 (long cx, long cy)
 {
@@ -743,6 +821,16 @@ Window::setSize
 
    this->size.cx = cx;
    this->size.cy = cy;
+
+   /* if the window doesn't have an hwnd, it can't calculate its client area.
+      assume the client area is equal to the window size if there is no hwnd. */
+   if (!this->hasHWND())
+   {
+      this->clientRect.left = 0;
+      this->clientRect.top = 0;
+      this->clientRect.right = cx;
+      this->clientRect.bottom = cy;
+   }
 }
 
 void
@@ -765,7 +853,7 @@ Window::getParentSize
 {
    /* this is a const, so check the style var directly */
    if (this->parent != NULL && (this->style & WS_CHILD) == WS_CHILD)
-      return this->parent->getSize();
+      return this->parent->getClientSize();
    else
    {
       HWND desktop = GetDesktopWindow();
@@ -780,6 +868,18 @@ Window::getParentSize
 
       return size;
    }
+}
+
+SIZE
+Window::getClientSize
+(void) const
+{
+   SIZE size;
+
+   size.cx = this->clientRect.right - this->clientRect.left;
+   size.cy = this->clientRect.bottom - this->clientRect.top;
+   
+   return size;
 }
 
 void
@@ -800,6 +900,14 @@ Window::setRect
    this->point.setY(top);
    this->size.cx = right - left;
    this->size.cy = bottom - top;
+
+   if (!this->hasHWND())
+   {
+      this->clientRect.left = 0;
+      this->clientRect.top = 0;
+      this->clientRect.right = this->size.cx;
+      this->clientRect.bottom = this->size.cy;
+   }
 }
 
 void
@@ -821,6 +929,14 @@ Window::getRect
    rect.bottom = rect.top + this->size.cy;
 
    return rect;
+}
+
+RECT
+Window::getClientRect
+(void) const
+{
+   /* TODO make this conform to GetClientRect() maybe? */
+   return this->clientRect;
 }
 
 void
@@ -1523,7 +1639,7 @@ void
 Window::hide
 (void)
 {
-   if (this->hasHWND() && !ShowWindow(this->hwnd, SW_HIDE))
+   if (this->hasHWND() && this->visible && !ShowWindow(this->hwnd, SW_HIDE))
       throw WindowException(L"ShowWindow failed");
 }
 
@@ -1942,6 +2058,11 @@ Window::onNCCalcSize
       rect = (PRECT)pointer;
 
    InflateRect(rect, -this->borderSize, -this->borderSize);
+
+   this->clientRect.left = rect->left - this->point.getX();
+   this->clientRect.top = rect->top - this->point.getY();
+   this->clientRect.right = rect->right - rect->left + this->clientRect.left;
+   this->clientRect.bottom = rect->bottom - rect->top + this->clientRect.top;
    
    return 0;
 }

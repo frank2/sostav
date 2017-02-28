@@ -44,6 +44,7 @@ namespace Sostav
          Drawing::AbsolutePoint point;
          Drawing::AbsolutePoint capturePoint;
          SIZE size;
+         RECT clientRect;
    
          Drawing::Icon icon;
          HCURSOR cursor;
@@ -118,6 +119,10 @@ namespace Sostav
          Drawing::RelativePoint getRelativePosition(void) const;
 
          void move(long x, long y);
+         void moveLeftOf(Window *window, long x, long y);
+         void moveRightOf(Window *window, long x, long y);
+         void moveAbove(Window *window, long x, long y);
+         void moveBelow(Window *window, long x, long y);
 
          void setTopWindow(void);
          void setTopmostWindow(void);
@@ -130,15 +135,21 @@ namespace Sostav
          void center(void);
          void centerX(void);
          void centerY(void);
+         void leftJustify(long cx);
+         void rightJustify(long cx);
+         void topJustify(long cy);
+         void bottomJustify(long cy);
 
          void setSize(long cx, long cy);
          void setSize(SIZE size);
          SIZE getSize(void) const;
          SIZE getParentSize(void) const;
+         SIZE getClientSize(void) const;
          
          void setRect(long left, long top, long right, long bottom);
          void setRect(RECT rect);
          RECT getRect(void) const;
+         RECT getClientRect(void) const;
 
          virtual void setIcon(Drawing::Icon icon);
          Drawing::Icon getIcon(void) const;
