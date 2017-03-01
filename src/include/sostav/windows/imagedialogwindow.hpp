@@ -42,6 +42,7 @@ namespace Sostav
          virtual void preCreate(void);
          virtual LRESULT onLButtonUp(WORD virtualKeys, WORD x, WORD y);
          virtual LRESULT onMouseMove(WORD virtualKeys, WORD x, WORD y);
+         virtual LRESULT onShowWindow(BOOL shown, WORD status);
          virtual LRESULT onWindowPosChanged(LPWINDOWPOS windowPos);
       };
 

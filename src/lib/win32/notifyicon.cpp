@@ -272,9 +272,14 @@ NotifyIcon::getGUID
 
 void
 NotifyIcon::setBalloonIcon
-(HICON icon)
+(Icon icon)
 {
-   this->iconData.hBalloonIcon = icon;
+   this->iconData.hBalloonIcon = icon.getHandle();
+
+   if (this->iconData.hBalloonIcon == NULL)
+      this->iconData.dwInfoFlags &= ~NIIF_USER;
+   else
+      this->iconData.dwInfoFlags |= NIIF_USER;
 }
 
 HICON
@@ -289,9 +294,22 @@ NotifyIcon::update
 (void)
 {
    /* UpdateWindow will have no effect on our hwnd, so don't worry about Window::update */
-
    if (!Shell_NotifyIcon(NIM_MODIFY, &this->iconData))
       throw NotifyIconException(L"Shell_NotifyIcon failed");
+
+   this->clear();
+}
+
+void
+NotifyIcon::clear
+(void)
+{
+   this->iconData.uFlags = NIF_MESSAGE | NIF_ICON | (this->iconData.uFlags & NIF_TIP);
+   ZeroMemory(this->iconData.szInfo, sizeof(this->iconData.szInfo));
+   this->iconData.uTimeout = 0;
+   ZeroMemory(this->iconData.szInfoTitle, sizeof(this->iconData.szInfoTitle));
+   this->iconData.dwInfoFlags = NIIF_NONE;
+   this->iconData.hBalloonIcon = NULL;
 }
 
 void

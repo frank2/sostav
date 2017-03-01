@@ -118,6 +118,8 @@ namespace Sostav
          void setRelativePosition(Math::Point point);
          Drawing::RelativePoint getRelativePosition(void) const;
 
+         Drawing::AbsolutePoint screenPoint(void) const;
+         
          void move(long x, long y);
          void moveLeftOf(Window *window, long x, long y);
          void moveRightOf(Window *window, long x, long y);

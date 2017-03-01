@@ -60,13 +60,13 @@ protected:
 class MainWindow : public Sostav::Windows::ImageDialogWindowFrame
 {
 protected:
-   bool firstLaunch;
+   Sostav::Win32::NotifyIcon trayIcon;
 
 public:
    MainWindow(MainWindowPane *windowPane);
 
 protected:
    virtual void preCreate(void);
-   virtual LRESULT onShowWindow(BOOL show, WORD status);
+   virtual void postCreate(void);
    virtual LRESULT onDestroy(void);
 };

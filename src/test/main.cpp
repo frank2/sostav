@@ -226,7 +226,6 @@ MainWindow::MainWindow
    this->setClassName(L"SostavTestMainWindow");
    this->setWindowPane(windowPane);
    this->windowPane->setWindowFrame(this);
-   this->firstLaunch = true;
 }
 
 void
@@ -236,53 +235,52 @@ MainWindow::preCreate
    RECT cropPoints = { 20, 100, 480, 525 };
 
    this->setIcon(Icon::MainIcon());
-   this->setStyle(WS_VISIBLE | WS_POPUP);
+   this->setStyle(WS_POPUP);
    this->setPaneCrop(cropPoints);
    this->setImage(Image(MAKEINTRESOURCE(IDI_BACKGROUND), L"PNG"));
    this->setAlpha(0xFF);
    this->center();
 
+   this->trayIcon.setParent(this);
+   this->trayIcon.setIcon(Icon::MainIcon());
+
    ImageDialogWindowFrame::preCreate();
 }
 
-LRESULT
-MainWindow::onShowWindow
-(BOOL show, WORD status)
+void
+MainWindow::postCreate
+(void)
 {
-   if (this->firstLaunch && show == TRUE)
+   LayeredImageWindow splashWindow;
+   LRESULT result;
+
+   splashWindow.setStyle(WS_VISIBLE | WS_POPUP);
+   splashWindow.setImage(Image(MAKEINTRESOURCE(IDI_SPLASH), L"PNG"));
+   splashWindow.setBGColor(Color::Transparent());
+   splashWindow.setAlpha(0xFF);
+   splashWindow.setIcon(Icon::MainIcon());
+   splashWindow.center();
+
+   splashWindow.show();
+
+   Sleep(3000);
+
+   for (int i=255; i>0; i-=10)
    {
-      LayeredImageWindow splashWindow;
-      LRESULT result;
-
-      splashWindow.setStyle(WS_VISIBLE | WS_POPUP);
-      splashWindow.setImage(Image(MAKEINTRESOURCE(IDI_SPLASH), L"PNG"));
-      splashWindow.setBGColor(Color::Transparent());
-      splashWindow.setAlpha(0xFF);
-      splashWindow.setIcon(Icon::MainIcon());
-      splashWindow.center();
-
-      splashWindow.show();
-
-      Sleep(3000);
-
-      result = ImageDialogWindowFrame::onShowWindow(show, status);
-
-      for (int i=255; i>0; i-=10)
-      {
-         splashWindow.setAlpha((BYTE)i);
-         Sleep(10);
-      }
-
-      splashWindow.destroy();
-
-      this->firstLaunch = false;
-
-      this->windowPane->focus();
-
-      return result;
+      splashWindow.setAlpha((BYTE)i);
+      Sleep(10);
    }
-   else
-      return ImageDialogWindowFrame::onShowWindow(show, status);
+
+   splashWindow.destroy();
+
+   ImageDialogWindowFrame::postCreate();
+
+   this->trayIcon.setToolTip(L"Состав!");
+   this->trayIcon.setInfoTitle(L"Sostav test app launched!");
+   this->trayIcon.setInfo(L"This is the Sostav test application. It tests most applications of the library. Play some chiptunes!");
+   this->trayIcon.setBalloonIcon(Icon::Asterisk());
+   this->trayIcon.setTimeout(30);
+   this->trayIcon.update();
 }
 
 LRESULT

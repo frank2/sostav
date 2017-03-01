@@ -154,6 +154,22 @@ ImageDialogWindowFrame::onMouseMove
 }
 
 LRESULT
+ImageDialogWindowFrame::onShowWindow
+(BOOL shown, WORD status)
+{
+   LRESULT result;
+   
+   result = LayeredImageWindow::onShowWindow(shown, status);
+   
+   if (shown)
+      this->windowPane->show();
+   else
+      this->windowPane->hide();
+
+   return result;
+}
+
+LRESULT
 ImageDialogWindowFrame::onWindowPosChanged
 (LPWINDOWPOS windowPos)
 {
@@ -200,7 +216,11 @@ ImageDialogWindowPane::preCreate
 {
    ImageWindow::preCreate();
 
-   this->setStyle(WS_VISIBLE | WS_POPUP);
+   this->setStyle(WS_POPUP);
+
+   if (this->frame->hasStyle(WS_VISIBLE))
+      this->addStyle(WS_VISIBLE);
+   
    this->setExStyle(WS_EX_TOOLWINDOW);
 }
 

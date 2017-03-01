@@ -26,9 +26,11 @@ Icon::Icon
       case 32518: // IDI_SHIELD
       case 32517: // IDI_WINLOGO
          this->loadOEM((UINT)iconFile);
+         break;
 
       default:
          this->loadResource(iconFile);
+         break;
       }
    }
    else if (FindResource(NULL, iconFile, RT_GROUP_ICON) != NULL)
@@ -184,7 +186,7 @@ void
 Icon::loadOEM
 (UINT resourceID)
 {
-   this->loadIcon(NULL, MAKEINTRESOURCE(resourceID), LR_DEFAULTCOLOR);
+   this->setHandle(LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(resourceID)));
 }
 
 void

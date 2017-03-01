@@ -597,6 +597,54 @@ Window::getRelativePosition
    return this->point.relative(this->size);
 }
 
+AbsolutePoint
+Window::screenPoint
+(void) const
+{
+   Window *parent = this->parent;
+   std::list<Window *> parentChain;
+   long x = 0, y = 0;
+
+   /* this window is on the screen-- return its coords */
+   if ((this->style & WS_CHILD) != WS_CHILD)
+      return this->point;
+
+   while (parent != NULL && parent->hasStyle(WS_CHILD))
+   {
+      parentChain.push_back(parent);
+      parent = parent->getParent();
+   }
+
+   if (parent != NULL) /* first parent without WS_CHILD, on the screen */
+      parentChain.push_back(parent);
+
+   for (std::list<Window *>::reverse_iterator iter=parentChain.rbegin(); iter!=parentChain.rend(); ++iter)
+   {
+      AbsolutePoint parentPoint;
+      RECT parentRect;
+      RECT parentClientRect;
+      
+      parent = *iter;
+      parentPoint = parent->getPosition();
+      parentRect = parent->getRect();
+      parentClientRect = parent->getClientRect();
+
+      x += parentPoint.getX();
+      y += parentPoint.getY();
+
+      if (parentRect.top != parentClientRect.top || parentRect.left != parentClientRect.left)
+      {
+         x += parentClientRect.left;
+         y += parentClientRect.top;
+      }
+   }
+
+   x += this->point.getX();
+   y += this->point.getY();
+
+   return AbsolutePoint(x, y);
+}
+
 void
 Window::move
 (long x, long y)
@@ -2059,8 +2107,8 @@ Window::onNCCalcSize
 
    InflateRect(rect, -this->borderSize, -this->borderSize);
 
-   this->clientRect.left = rect->left - this->point.getX();
-   this->clientRect.top = rect->top - this->point.getY();
+   this->clientRect.left = rect->left - this->screenPoint().getX();
+   this->clientRect.top = rect->top - this->screenPoint().getY();
    this->clientRect.right = rect->right - rect->left + this->clientRect.left;
    this->clientRect.bottom = rect->bottom - rect->top + this->clientRect.top;
    

@@ -67,10 +67,11 @@ namespace Sostav
          void setGUID(GUID guid);
          GUID getGUID(void) const;
 
-         void setBalloonIcon(HICON icon);
+         void setBalloonIcon(Drawing::Icon icon);
          HICON getBalloonIcon(void) const;
 
          virtual void update(void);
+         virtual void clear(void);
 
       protected:
          virtual void preCreate(void);
