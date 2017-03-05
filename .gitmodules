@@ -1,3 +1,0 @@
-[submodule "dep/libmikmod"]
-	path = dep/libmikmod
-	url = https://github.com/mistydemeo/libmikmod.git
