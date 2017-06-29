@@ -1,6 +1,3 @@
-[submodule "dep/libmikmod"]
-	path = dep/libmikmod
-	url = ssh://remote.github.frank2/frank2/libmikmod.git
 [submodule "libmikmod"]
 	path = deps/libmikmod
 	url = https://github.com/frank2/libmikmod.git
