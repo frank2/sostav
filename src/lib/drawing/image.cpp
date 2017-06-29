@@ -206,7 +206,22 @@ Image::loadFromBuffer
    magic = (LPDWORD)bufferData;
 
    if (*magic == 0x474e5089) /* PNG */
-      formatID = CLSID_WICPngDecoder;
+   {
+      OSVERSIONINFO versionInfo;
+
+      versionInfo.dwOSVersionInfoSize = sizeof(versionInfo);
+      GetVersionEx(&versionInfo);
+
+      if (versionInfo.dwMajorVersion > 6)
+         formatID = CLSID_WICPngDecoder2;
+      else if (versionInfo.dwMajorVersion == 6)
+      {
+         if (versionInfo.dwMinorVersion >= 2)
+            formatID = CLSID_WICPngDecoder2;
+         else
+            formatID = CLSID_WICPngDecoder1;
+      }
+   }
    else if (*((LPWORD)magic) == 0x4D42) /* BMP */
       formatID = CLSID_WICBmpDecoder;
    else if (*magic == 0xE0FFD8FF) /* JPG */

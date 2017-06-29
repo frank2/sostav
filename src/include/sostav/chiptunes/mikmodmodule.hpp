@@ -64,6 +64,7 @@ namespace Sostav
          bool isPaused(void) const;
 
          void play(void);
+         void blockingPlay(void);
          void stop(void);
          void pause(void);
 

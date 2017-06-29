@@ -38,9 +38,7 @@ namespace Sostav
          static MikModDriver Raw(void);
          static MikModDriver StdOut(void);
          static MikModDriver WAV(void);
-         static MikModDriver AIFF(void);
          static MikModDriver DirectSound(void);
-         static MikModDriver XAudio2(void);
          static MikModDriver MultiMediaAPI(void);
          
          static void Load(MikModDriver driver);

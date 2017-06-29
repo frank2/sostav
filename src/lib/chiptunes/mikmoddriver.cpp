@@ -51,24 +51,10 @@ MikModDriver::WAV
 }
 
 MikModDriver
-MikModDriver::AIFF
-(void)
-{
-   return MikModDriver(&drv_aiff);
-}
-
-MikModDriver
 MikModDriver::DirectSound
 (void)
 {
    return MikModDriver(&drv_ds);
-}
-
-MikModDriver
-MikModDriver::XAudio2
-(void)
-{
-   return MikModDriver(&drv_xaudio2);
 }
 
 MikModDriver

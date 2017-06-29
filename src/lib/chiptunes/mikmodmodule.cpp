@@ -326,6 +326,16 @@ MikModModule::play
 }
 
 void
+MikModModule::blockingPlay
+(void)
+{
+   this->play();
+
+   while (this->isPlaying())
+      Sleep(1000);
+}
+
+void
 MikModModule::stop
 (void)
 {
