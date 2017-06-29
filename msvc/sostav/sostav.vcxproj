@@ -70,20 +70,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)..\..\src\include;$(SolutionDir)..\..\dep\libmikmod-3.3.10\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\..\dep\libmikmod-3.3.10\win32\VS2005\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)..\..\src\include;$(SolutionDir)..\..\deps\libmikmod\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\..\deps\libmikmod\win32\VC2015\Debug;$(SolutionDir)Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)..\..\src\include;$(SolutionDir)..\..\dep\libmikmod-3.3.10\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\..\dep\libmikmod-3.3.10\win32\VS2005\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)..\..\src\include;$(SolutionDir)..\..\deps\libmikmod\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\..\deps\libmikmod\win32\VC2015\Release;$(SolutionDir)Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)..\..\src\include;$(SolutionDir)..\..\dep\libmikmod-3.3.10\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\..\dep\libmikmod-3.3.10\win32\VS2005\x64\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)..\..\src\include;$(SolutionDir)..\..\deps\libmikmod\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\..\deps\libmikmod\win32\VC2015\x64\Debug;$(SolutionDir)x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)..\..\src\include;$(SolutionDir)..\..\dep\libmikmod-3.3.10\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\..\dep\libmikmod-3.3.10\win32\VS2005\x64\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)..\..\src\include;$(SolutionDir)..\..\deps\libmikmod\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\..\deps\libmikmod\win32\VC2015\x64\Release;$(SolutionDir)x64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -91,7 +91,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;MIKMOD_STATIC;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -104,6 +105,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_LIB;MIKMOD_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -117,7 +119,9 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;MIKMOD_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <StructMemberAlignment>Default</StructMemberAlignment>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
