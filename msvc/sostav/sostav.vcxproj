@@ -78,8 +78,8 @@
     <LibraryPath>$(ProjectDir)..\..\deps\libmikmod\win32\VC2015\Release;$(SolutionDir)Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)..\..\src\include;$(SolutionDir)..\..\deps\libmikmod\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\..\deps\libmikmod\win32\VC2015\x64\Debug;$(SolutionDir)x64\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)..\..\src\include;$(ProjectDir)..\..\deps\libmikmod\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)..\..\deps\libmikmod\win32\VC2015\x64\Debug;$(SolutionDir)x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(ProjectDir)..\..\src\include;$(ProjectDir)..\..\deps\libmikmod\include;$(IncludePath)</IncludePath>
