@@ -70,20 +70,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(ProjectDir)..\..\src\include;$(SolutionDir)..\..\deps\libmikmod\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\..\deps\libmikmod\win32\VC2015\Debug;$(SolutionDir)Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)..\..\src\include;$(ProjectDir)..\..\deps\libmikmod\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)..\..\deps\libmikmod\win32\VC2015\Debug;$(SolutionDir)Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(ProjectDir)..\..\src\include;$(SolutionDir)..\..\deps\libmikmod\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\..\deps\libmikmod\win32\VC2015\Release;$(SolutionDir)Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)..\..\src\include;$(ProjectDir)..\..\deps\libmikmod\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)..\..\deps\libmikmod\win32\VC2015\Release;$(SolutionDir)Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(ProjectDir)..\..\src\include;$(SolutionDir)..\..\deps\libmikmod\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)..\..\deps\libmikmod\win32\VC2015\x64\Debug;$(SolutionDir)x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)..\..\src\include;$(SolutionDir)..\..\deps\libmikmod\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\..\deps\libmikmod\win32\VC2015\x64\Release;$(SolutionDir)x64\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)..\..\src\include;$(ProjectDir)..\..\deps\libmikmod\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)..\..\deps\libmikmod\win32\VC2015\x64\Release;$(SolutionDir)x64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
