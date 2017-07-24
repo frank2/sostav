@@ -30,7 +30,7 @@ namespace Sostav
 
       protected:
          virtual LRESULT onKeyUp(DWORD keyValue, DWORD keyFlags);
-         virtual LRESULT onLButtonDown(WORD virtualKeys, WORD x, WORD y);
+         virtual LRESULT onLButtonUp(WORD virtualKeys, WORD x, WORD y);
       };
    }
 }

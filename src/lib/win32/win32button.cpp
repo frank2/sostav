@@ -61,7 +61,7 @@ Button::onKeyUp
 }
 
 LRESULT
-Button::onLButtonDown
+Button::onLButtonUp
 (WORD virtualKeys, WORD x, WORD y)
 {
    /* subclassing a button means a lot of its features don't work correctly. reimplement them here. */
