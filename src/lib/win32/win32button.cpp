@@ -132,5 +132,5 @@ Button::onLButtonUp
    else if (this->hasStyle(BS_PUSHBUTTON) && this->parent != NULL)
       this->parent->sendMessage(WM_COMMAND, MAKEWPARAM(this->menu, 0), (LPARAM)this->hwnd);
 
-   return SubclassedWindow::onLButtonDown(virtualKeys, x, y);
+   return SubclassedWindow::onLButtonUp(virtualKeys, x, y);
 }
