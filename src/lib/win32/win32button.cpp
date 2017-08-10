@@ -117,7 +117,7 @@ Button::onLButtonUp
             if (groupIter != groupStart && windowCheck->hasStyle(BS_AUTORADIOBUTTON | WS_GROUP))
                break;
 
-            if (groupIter != groupStart && windowCheck->hasStyle(BS_AUTORADIOBUTTON))
+            if (windowCheck != this && windowCheck->hasStyle(BS_AUTORADIOBUTTON))
                windowCheck->sendMessage(BM_SETCHECK, (WPARAM)BST_UNCHECKED, NULL);
 
             groupIter++;
