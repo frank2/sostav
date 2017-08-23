@@ -1707,7 +1707,7 @@ Window::disable
 {
    this->enabled = false;
 
-   if (this->hasHWND() && !EnableWindow(this->hwnd, FALSE))
+   if (this->hasHWND() && EnableWindow(this->hwnd, FALSE))
       throw WindowException(L"EnableWindow failed");
 }
 
