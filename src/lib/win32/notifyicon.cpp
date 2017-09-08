@@ -361,7 +361,7 @@ LRESULT
 NotifyIcon::onDestroy
 (void)
 {
-   Window::onDestroy();
    this->removeFromTray();
+   Window::onDestroy();
    return (LRESULT)0;
 }
