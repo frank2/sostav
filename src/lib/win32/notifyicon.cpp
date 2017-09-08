@@ -57,6 +57,24 @@ NotifyIcon::windowProc
 }
 
 void
+NotifyIcon::addToTray
+(void)
+{
+   this->iconData.hWnd = this->hwnd;
+
+   if (!Shell_NotifyIcon(NIM_ADD, &this->iconData))
+      throw NotifyIconException(L"Shell_NotifyIcon failed");
+}
+
+void
+NotifyIcon::removeFromTray
+(void)
+{
+   if (!Shell_NotifyIcon(NIM_DELETE, &this->iconData))
+      throw NotifyIconException(L"Shell_NotifyIcon failed");
+}
+
+void
 NotifyIcon::setNotifyIconData
 (NOTIFYICONDATA data)
 {
@@ -329,11 +347,7 @@ NotifyIcon::postCreate
 (void)
 {
    Window::postCreate();
-
-   this->iconData.hWnd = this->hwnd;
-
-   if (!Shell_NotifyIcon(NIM_ADD, &this->iconData))
-      throw NotifyIconException(L"Shell_NotifyIcon failed");
+   this->addToTray();
 }
 
 void
@@ -348,9 +362,6 @@ NotifyIcon::onDestroy
 (void)
 {
    Window::onDestroy();
-   
-   if (!Shell_NotifyIcon(NIM_DELETE, &this->iconData))
-      throw NotifyIconException(L"Shell_NotifyIcon failed");
-
+   this->removeFromTray();
    return (LRESULT)0;
 }

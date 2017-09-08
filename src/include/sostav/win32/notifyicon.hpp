@@ -33,6 +33,9 @@ namespace Sostav
 
          virtual LRESULT windowProc(UINT msg, WPARAM wParam, LPARAM lParam);
 
+         void addToTray(void);
+         void removeFromTray(void);
+
          void setNotifyIconData(NOTIFYICONDATA data);
          NOTIFYICONDATA getNotifyIconData(void) const;
 
