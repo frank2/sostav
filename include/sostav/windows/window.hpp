@@ -223,6 +223,7 @@ namespace Sostav
          virtual void update(void);
          virtual void show(void);
          virtual void minimize(void);
+         virtual void restore(void);
          virtual void focus(void);
          virtual void hide(void);
          virtual void enable(void);
@@ -258,6 +259,7 @@ namespace Sostav
          virtual LRESULT onRButtonUp(WORD virtualKeys, WORD x, WORD y);
          virtual LRESULT onSetFocus(HWND lostFocus);
          virtual LRESULT onShowWindow(BOOL shown, WORD status);
+         virtual LRESULT onSysCommand(WORD command, WORD x, WORD y);
          virtual LRESULT onWindowPosChanging(LPWINDOWPOS windowPos);
          virtual LRESULT onWindowPosChanged(LPWINDOWPOS windowPos);
       };

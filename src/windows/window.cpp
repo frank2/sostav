@@ -311,6 +311,9 @@ Window::windowProc
    case WM_SHOWWINDOW:
       return this->onShowWindow((BOOL)wParam, (WORD)lParam);
 
+   case WM_SYSCOMMAND:
+      return this->onSysCommand((WORD)wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+
    case WM_WINDOWPOSCHANGING:
       return this->onWindowPosChanging((LPWINDOWPOS)lParam);
 
@@ -1686,6 +1689,16 @@ Window::minimize
 }
 
 void
+Window::restore
+(void)
+{
+   if (!this->hasHWND())
+      this->create();
+
+   ShowWindow(this->hwnd, SW_RESTORE);
+}
+
+void
 Window::focus
 (void)
 {
@@ -2195,6 +2208,34 @@ Window::onShowWindow
    this->visible = shown;
    
    return this->defWndProc(this->hwnd, WM_SHOWWINDOW, (WPARAM)shown, (LPARAM)status);
+}
+
+LRESULT
+Window::onSysCommand
+(WORD command, WORD x, WORD y)
+{
+   switch(command)
+   {
+   case SC_CLOSE:
+   {
+      PostQuitMessage(0);
+      break;
+   }
+
+   case SC_MINIMIZE:
+   {
+      this->minimize();
+      break;
+   }
+
+   case SC_RESTORE:
+   {
+      this->restore();
+      break;
+   }
+   }
+
+   return this->defWndProc(this->hwnd, WM_SYSCOMMAND, (WPARAM)command, (LPARAM)(y << 16 | x));
 }
 
 LRESULT
