@@ -1,3 +1,0 @@
-[submodule "lib/mikmod"]
-	path = lib/mikmod
-	url = https://github.com/sezero/mikmod.git
