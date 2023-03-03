@@ -4,11 +4,9 @@
 
 #include <windows.h>
 
-#include <sostav/sostav.hpp>
+#include <sostav.hpp>
 
 #include "resource.hpp"
-
-#pragma comment(lib, "sostav")
 
 class ChiptuneButton : public Sostav::Win32::Button
 {

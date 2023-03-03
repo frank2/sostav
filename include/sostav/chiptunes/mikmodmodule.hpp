@@ -12,8 +12,6 @@
 #include <sostav/chiptunes/mikmoddriver.hpp>
 #include <sostav/chiptunes/mikmodloader.hpp>
 
-#pragma comment(lib, "libmikmod")
-
 namespace Sostav
 {
    namespace Chiptunes
