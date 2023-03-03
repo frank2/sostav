@@ -222,6 +222,7 @@ namespace Sostav
          virtual void invalidate(void);
          virtual void update(void);
          virtual void show(void);
+         virtual void minimize(void);
          virtual void focus(void);
          virtual void hide(void);
          virtual void enable(void);

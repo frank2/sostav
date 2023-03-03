@@ -1676,6 +1676,16 @@ Window::show
 }
 
 void
+Window::minimize
+(void)
+{
+   if (!this->hasHWND())
+      this->create();
+
+   ShowWindow(this->hwnd, SW_SHOWMINIMIZED);
+}
+
+void
 Window::focus
 (void)
 {
