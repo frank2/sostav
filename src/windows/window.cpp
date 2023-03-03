@@ -1685,7 +1685,7 @@ Window::minimize
    if (!this->hasHWND())
       this->create();
 
-   ShowWindow(this->hwnd, SW_SHOWMINIMIZED);
+   ShowWindow(this->hwnd, SW_MINIMIZE);
 }
 
 void
