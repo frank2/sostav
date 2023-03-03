@@ -1,0 +1,3 @@
+[submodule "mikmod"]
+	path = lib/mikmod
+	url = https://github.com/frank2/mikmod.git
