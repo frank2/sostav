@@ -21,7 +21,7 @@ namespace Sostav
       {
       protected:
          HFONT fontHandle;
-         LOGFONT fontData;
+         LOGFONTW fontData;
 
       public:
          enum SystemFont
@@ -46,8 +46,8 @@ namespace Sostav
          static Font MessageFont(void);
          static Font DefaultFont(Font::SystemFont fontName);
          
-         void setLogFont(LOGFONT logFont);
-         LOGFONT getLogFont(void) const;
+         void setLogFont(LOGFONTW logFont);
+         LOGFONTW getLogFont(void) const;
 
          void setHeight(LONG height);
          LONG getHeight(void) const;

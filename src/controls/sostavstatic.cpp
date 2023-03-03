@@ -61,11 +61,11 @@ Static::paint
 
    SetTextColor(context, this->fgColor.colorRef());
 
-   if (!TextOut(context
-                ,0
-                ,0
-                ,this->windowText.c_str()
-                ,this->windowText.size()))
+   if (!TextOutW(context
+                 ,0
+                 ,0
+                 ,this->windowText.c_str()
+                 ,this->windowText.size()))
       throw StaticException(L"TextOut failed");
 
    fontHandle = (HFONT)SelectObject(context, oldFont);

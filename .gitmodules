@@ -1,4 +1,3 @@
-[submodule "libmikmod"]
-	path = deps/libmikmod
-	url = https://github.com/frank2/libmikmod.git
-	branch = static-lib
+[submodule "lib/mikmod"]
+	path = lib/mikmod
+	url = https://github.com/sezero/mikmod.git

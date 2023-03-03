@@ -94,17 +94,17 @@ Font
 Font::DefaultFont
 (Font::SystemFont fontName)
 {
-   NONCLIENTMETRICS metrics;
+   NONCLIENTMETRICSW metrics;
    Font result;
 
-   ZeroMemory(&metrics, sizeof(NONCLIENTMETRICS));
+   ZeroMemory(&metrics, sizeof(NONCLIENTMETRICSW));
 
-   metrics.cbSize = sizeof(NONCLIENTMETRICS);
+   metrics.cbSize = sizeof(NONCLIENTMETRICSW);
 
-   if (!SystemParametersInfo(SPI_GETNONCLIENTMETRICS
-                             ,sizeof(NONCLIENTMETRICS)
-                             ,(LPVOID)&metrics
-                             ,NULL))
+   if (!SystemParametersInfoW(SPI_GETNONCLIENTMETRICS
+                              ,sizeof(NONCLIENTMETRICSW)
+                              ,(LPVOID)&metrics
+                              ,NULL))
       throw FontException(L"SystemParametersInfo failed");
 
    switch(fontName)
@@ -138,9 +138,9 @@ Font::DefaultFont
 
 void
 Font::setLogFont
-(LOGFONT logFont)
+(LOGFONTW logFont)
 {
-   memcpy_s(&this->fontData, sizeof(LOGFONT), &logFont, sizeof(LOGFONT));
+   memcpy_s(&this->fontData, sizeof(LOGFONTW), &logFont, sizeof(LOGFONTW));
 
    if (this->fontHandle != NULL)
    {
@@ -149,7 +149,7 @@ Font::setLogFont
    }
 }
 
-LOGFONT
+LOGFONTW
 Font::getLogFont
 (void) const
 {
@@ -307,9 +307,9 @@ void
 Font::setHandle
 (HFONT font)
 {
-   LOGFONT logFont;
+   LOGFONTW logFont;
 
-   if (!GetObject(font, sizeof(LOGFONT), (LPVOID)&logFont))
+   if (!GetObjectW(font, sizeof(LOGFONTW), (LPVOID)&logFont))
       throw FontException(L"GetObject failed");
 
    this->setLogFont(logFont);
@@ -321,7 +321,7 @@ Font::getHandle
 (void)
 {
    if (this->fontHandle == NULL)
-      this->fontHandle = CreateFontIndirect(&this->fontData);
+      this->fontHandle = CreateFontIndirectW(&this->fontData);
 
    if (this->fontHandle == NULL)
       throw FontException(L"CreateFontIndirect failed");
@@ -345,7 +345,7 @@ FontResources::~FontResources
    for (std::list<std::pair<std::wstring, DWORD > >::iterator iter=this->files.begin();
         iter!=this->files.end();
         ++iter)
-      RemoveFontResourceEx(iter->first.c_str(), iter->second, NULL);
+      RemoveFontResourceExW(iter->first.c_str(), iter->second, NULL);
 }
       
 FontResources *
@@ -359,7 +359,7 @@ int
 FontResources::loadFile
 (std::wstring filename, DWORD flags)
 {
-   int result = AddFontResourceEx(filename.c_str(), flags, NULL);
+   int result = AddFontResourceExW(filename.c_str(), flags, NULL);
 
    if (result == 0)
       throw FontException(L"AddFontResourceEx failed");
@@ -391,7 +391,7 @@ FontResources::loadResource
    size_t resourceSize;
    LPVOID resourceData;
 
-   resourceHandle = FindResource(NULL, resourceName, resourceType.c_str());
+   resourceHandle = FindResourceW(NULL, resourceName, resourceType.c_str());
 
    if (resourceHandle == NULL)
       throw FontException(L"font resource not found");

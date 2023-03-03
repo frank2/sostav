@@ -3,8 +3,9 @@
 #include <cmath>
 #include <utility>
 
-#include "sostav/exception.hpp"
-#include "sostav/math/point.hpp"
+#include <sostav/exception.hpp>
+#include <sostav/math/point.hpp>
+#include <sostav/math/line.hpp>
 
 namespace Sostav
 {
@@ -13,7 +14,7 @@ namespace Sostav
       class EllipseException : public Exception
       {
       public:
-         EllipseException(const char *what);
+         EllipseException(const WCHAR *what);
       };
 
       class Ellipse

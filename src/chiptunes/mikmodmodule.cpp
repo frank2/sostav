@@ -105,7 +105,7 @@ MikModModule::PlayThread
    HANDLE mutex;
    DWORD mutexResult;
 
-   mutex = CreateMutex(NULL, FALSE, L"Sostav::Chiptunes::MikModModule::PlayThread");
+   mutex = CreateMutexW(NULL, FALSE, L"Sostav::Chiptunes::MikModModule::PlayThread");
    mutexResult = WaitForSingleObject(mutex, 0);
 
    if (mutexResult != WAIT_OBJECT_0 && mutexResult != WAIT_ABANDONED)
@@ -140,7 +140,7 @@ MikModModule::setBufferFromResource
    HGLOBAL loadedHandle;
    LPBYTE loadedData;
 
-   resourceHandle = FindResource(NULL, resourceName, resourceType.c_str());
+   resourceHandle = FindResourceW(NULL, resourceName, resourceType.c_str());
 
    if (resourceHandle == NULL)
       throw MikModModuleException(L"FindResource failed");
@@ -168,13 +168,13 @@ MikModModule::setBufferFromFilename
    LPBYTE fileData;
    DWORD bytesRead;
 
-   fileHandle = CreateFile(filename.c_str()
-                           ,GENERIC_READ
-                           ,NULL
-                           ,NULL
-                           ,OPEN_EXISTING
-                           ,FILE_ATTRIBUTE_NORMAL
-                           ,NULL);
+   fileHandle = CreateFileW(filename.c_str()
+                            ,GENERIC_READ
+                            ,NULL
+                            ,NULL
+                            ,OPEN_EXISTING
+                            ,FILE_ATTRIBUTE_NORMAL
+                            ,NULL);
 
    if (fileHandle == NULL)
       throw MikModModuleException(L"CreateFile failed");

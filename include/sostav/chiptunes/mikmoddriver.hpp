@@ -8,11 +8,6 @@
 
 #include <sostav/exception.hpp>
 
-#pragma comment(lib, "libmikmod")
-
-/* also include the audio driver stuff */
-#pragma comment(lib, "dsound")
-
 namespace Sostav
 {
    namespace Chiptunes

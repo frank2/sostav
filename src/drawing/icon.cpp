@@ -16,7 +16,7 @@ Icon::Icon
               
    if (IS_INTRESOURCE(iconFile))
    {
-      switch((UINT)iconFile)
+      switch(reinterpret_cast<UINT>(iconFile))
       {
       case 32512: // IDI_APPLICATION
       case 32516: // IDI_ASTERISK
@@ -25,7 +25,7 @@ Icon::Icon
       case 32514: // IDI_QUESTION
       case 32518: // IDI_SHIELD
       case 32517: // IDI_WINLOGO
-         this->loadOEM((UINT)iconFile);
+         this->loadOEM(reinterpret_cast<UINT>(iconFile));
          break;
 
       default:
@@ -33,7 +33,7 @@ Icon::Icon
          break;
       }
    }
-   else if (FindResource(NULL, iconFile, RT_GROUP_ICON) != NULL)
+   else if (FindResourceW(NULL, iconFile, RT_GROUP_ICON) != NULL)
       this->loadResource(iconFile);
    else
       this->loadFile(iconFile);

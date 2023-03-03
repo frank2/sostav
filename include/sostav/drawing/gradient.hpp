@@ -11,8 +11,6 @@
 #include "sostav/drawing/point.hpp"
 #include "sostav/math/line.hpp"
 
-#pragma comment(lib, "msimg32")
-
 namespace Sostav
 {
    namespace Drawing
