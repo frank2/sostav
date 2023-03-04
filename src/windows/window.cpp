@@ -26,6 +26,7 @@ Window::Window
    this->moving = false;
    this->captured = false;
    this->hovering = false;
+   this->destroyed = true;
    
    this->style = WS_VISIBLE;
    this->exStyle = 0;
@@ -68,6 +69,7 @@ Window::Window
    this->moving = window.isMoving();
    this->captured = window.isCaptured();
    this->hovering = window.isHovering();
+   this->destroyed = window.isBeingDestroyed();
 
    this->style = window.getStyle();
    this->exStyle = window.getExStyle();
@@ -114,6 +116,7 @@ Window::Window
    this->moving = false;
    this->captured = false;
    this->hovering = false;
+   this->destroyed = true;
    
    this->style = 0;
    this->exStyle = 0;
@@ -148,7 +151,7 @@ Window::~Window
    {
       Window *child = *childIter;
 
-      if (child->hasHWND())
+      if (child->hasHWND() && !child->isBeingDestroyed())
          child->destroy();
    }
 
@@ -170,7 +173,11 @@ Window::MessageLoop
       }
       catch (Exception &e)
       {
-         std::wcerr << L"Sostav exception:" << e.what() << std::endl;
+         std::wcerr << L"Sostav exception: " << e.what() << std::endl;
+      }
+      catch (std::exception &e)
+      {
+         std::wcerr << L"Unhandled exception: " << e.what() << std::endl;
       }
    }
 }
@@ -314,6 +321,9 @@ Window::windowProc
    case WM_SYSCOMMAND:
       return this->onSysCommand((WORD)wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
+   case WM_UAHDESTROYWINDOW:
+      return this->onUAHDestroyWindow(wParam, lParam);
+
    case WM_WINDOWPOSCHANGING:
       return this->onWindowPosChanging((LPWINDOWPOS)lParam);
 
@@ -435,6 +445,13 @@ Window::isVisible
       this->visible = this->hasStyle(WS_VISIBLE);
    
    return this->visible;
+}
+
+bool
+Window::isBeingDestroyed
+(void) const
+{
+   return this->destroyed;
 }
 
 bool
@@ -696,6 +713,9 @@ Window::setTopWindow
 
    this->moving = true;
 
+   if (this->destroyed)
+      throw WindowException(L"window is being destroyed");
+
    if (!SetWindowPos(this->hwnd
                      ,HWND_TOP
                      ,0
@@ -717,6 +737,9 @@ Window::setTopmostWindow
 
    this->moving = true;
 
+   if (this->destroyed)
+      throw WindowException(L"window is being destroyed");
+
    if (!SetWindowPos(this->hwnd
                      ,HWND_TOPMOST
                      ,0
@@ -737,6 +760,9 @@ Window::insertAfter
       throw WindowException(L"can't change z-order of uncreated window");
 
    this->moving = true;
+
+   if (this->destroyed)
+      throw WindowException(L"window is being destroyed");
 
    if (!SetWindowPos(this->hwnd
                      ,hwnd
@@ -768,6 +794,9 @@ Window::insertBefore
       throw WindowException(L"can't change z-order of uncreated window");
 
    this->moving = true;
+
+   if (this->destroyed)
+      throw WindowException(L"window is being destroyed");
 
    if (!SetWindowPos(hwnd
                      ,this->hwnd
@@ -1840,6 +1869,7 @@ Window::onCreate
    /* windows created with WS_VISIBLE don't send WM_SHOW, so set this->visible
       if WS_VISIBLE is present */
    this->visible = this->hasStyle(WS_VISIBLE);
+   this->destroyed = false;
    
    return this->defWndProc(this->hwnd, WM_CREATE, NULL, (LPARAM)creationData);
 }
@@ -2236,6 +2266,15 @@ Window::onSysCommand
    }
 
    return this->defWndProc(this->hwnd, WM_SYSCOMMAND, (WPARAM)command, (LPARAM)(y << 16 | x));
+}
+
+LRESULT
+Window::onUAHDestroyWindow
+(WPARAM wParam, LPARAM lParam)
+{
+   this->destroyed = true;
+
+   return this->defWndProc(this->hwnd, WM_UAHDESTROYWINDOW, wParam, lParam);
 }
 
 LRESULT

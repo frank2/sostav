@@ -16,6 +16,9 @@
 #include "sostav/drawing/icon.hpp"
 #include "sostav/drawing/point.hpp"
 
+// this is an undefined Window message that's called by the kernel when a window is being destroyed
+#define WM_UAHDESTROYWINDOW 0x90
+
 namespace Sostav
 {
    namespace Windows
@@ -40,6 +43,7 @@ namespace Sostav
          bool hovering;
          bool moving;
          bool visible;
+         bool destroyed;
 
          Drawing::AbsolutePoint point;
          Drawing::AbsolutePoint capturePoint;
@@ -99,6 +103,7 @@ namespace Sostav
          bool isHovering(void) const;
          bool isMoving(void) const;
          bool isVisible(void);
+         bool isBeingDestroyed(void) const;
 
          virtual void setHWND(HWND window);
          HWND getHWND(void) const;
@@ -260,6 +265,7 @@ namespace Sostav
          virtual LRESULT onSetFocus(HWND lostFocus);
          virtual LRESULT onShowWindow(BOOL shown, WORD status);
          virtual LRESULT onSysCommand(WORD command, WORD x, WORD y);
+         virtual LRESULT onUAHDestroyWindow(WPARAM wParam, LPARAM lParam);
          virtual LRESULT onWindowPosChanging(LPWINDOWPOS windowPos);
          virtual LRESULT onWindowPosChanged(LPWINDOWPOS windowPos);
       };
