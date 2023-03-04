@@ -179,7 +179,10 @@ ImageDialogWindowFrame::onWindowPosChanged
 
       prevWindow = GetNextWindow(this->hwnd, GW_HWNDPREV);
 
-      if (this->windowPane->hasHWND() && prevWindow != this->windowPane->getHWND() && !this->windowPane->isMoving())
+      if (!this->windowPane->isBeingDestroyed() &&
+          this->windowPane->hasHWND() &&
+          prevWindow != this->windowPane->getHWND() &&
+          !this->windowPane->isMoving())
       {
          this->windowPane->insertAfter(windowPos->hwndInsertAfter);
          this->insertAfter(this->windowPane);
