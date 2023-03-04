@@ -2266,9 +2266,6 @@ Window::onWindowPosChanged
       deltaX = windowPos->x - this->point.getX();
       deltaY = windowPos->y - this->point.getY();
 
-      this->point.setX(windowPos->x);
-      this->point.setY(windowPos->y);
-
       for (iter=this->links.begin(); iter!=this->links.end(); ++iter)
       {
          Window *link = *iter;
@@ -2276,6 +2273,9 @@ Window::onWindowPosChanged
          if (!link->isMoving())
             link->move(deltaX, deltaY);
       }
+
+      this->point.setX(windowPos->x);
+      this->point.setY(windowPos->y);
 
       this->moving = false;
    }
