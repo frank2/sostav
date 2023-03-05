@@ -38,6 +38,8 @@ namespace Sostav
          HANDLE playThread;
          HANDLE stopEvent;
          std::shared_ptr<MODULE> module;
+         bool wrap;
+         bool loop;
 
          static int Instances;
          static bool Initialized;
@@ -59,6 +61,12 @@ namespace Sostav
          size_t getBufferSize(void) const;
 
          MODULE *getModule(void) const;
+
+         void setWrapping(bool wrap);
+         bool getWrapping(void) const;
+
+         void setLooping(bool loop);
+         bool getLooping(void) const;
 
          bool isLoaded(void) const;
          void load(void);

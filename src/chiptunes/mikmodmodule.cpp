@@ -1,4 +1,7 @@
 #include "sostav/chiptunes/mikmodmodule.hpp"
+#include <iostream>
+#include <string>
+#include <sstream>
 
 using namespace Sostav;
 using namespace Sostav::Chiptunes;
@@ -22,6 +25,8 @@ MikModModule::MikModModule
    this->playThread = NULL;
    this->stopEvent = NULL;
    this->module = NULL;
+   this->wrap = false;
+   this->loop = true;
    
    this->setBufferFromResource(resourceName, resourceType);
 }
@@ -36,6 +41,8 @@ MikModModule::MikModModule
    this->playThread = NULL;
    this->stopEvent = NULL;
    this->module = NULL;
+   this->wrap = false;
+   this->loop = true;
 
    this->setBufferFromFilename(filename);
 }
@@ -50,6 +57,8 @@ MikModModule::MikModModule
    this->playThread = NULL;
    this->stopEvent = NULL;
    this->module = NULL;
+   this->wrap = false;
+   this->loop = true;
 
    this->setBuffer(bufferData, bufferSize);
 }
@@ -63,6 +72,8 @@ MikModModule::MikModModule
    this->bufferSize = 0;
    this->playThread = NULL;
    this->stopEvent = NULL;
+   this->wrap = false;
+   this->loop = true;
    
    this->setBuffer(module.getBuffer(), module.getBufferSize());
 }
@@ -77,6 +88,8 @@ MikModModule::MikModModule
    this->playThread = NULL;
    this->stopEvent = NULL;
    this->module = NULL;
+   this->wrap = false;
+   this->loop = true;
 }
 
 MikModModule::~MikModModule
@@ -110,7 +123,7 @@ MikModModule::PlayThread
 
    Player_Start(sostavModule->getModule());
    Player_SetPosition(0);
-
+   
    while (Player_Active())
    {
       if (sostavModule->shouldStop())
@@ -233,6 +246,34 @@ MikModModule::getModule
    return this->module.get();
 }
 
+void
+MikModModule::setWrapping
+(bool wrap)
+{
+   this->wrap = wrap;
+}
+
+bool
+MikModModule::getWrapping
+(void) const
+{
+   return this->wrap;
+}
+
+void
+MikModModule::setLooping
+(bool loop)
+{
+   this->loop = loop;
+}
+
+bool
+MikModModule::getLooping
+(void) const
+{
+   return this->loop;
+}
+
 bool
 MikModModule::isLoaded
 (void) const
@@ -257,6 +298,8 @@ MikModModule::load
       throw MikModModuleException(L"Player_LoadMem failed");
 
    this->module = std::shared_ptr<MODULE>(module, MikModDeleter());
+   this->module->wrap = static_cast<int>(this->wrap);
+   this->module->loop = static_cast<int>(this->loop);
 }
 
 void
