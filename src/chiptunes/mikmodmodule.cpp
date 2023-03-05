@@ -120,6 +120,7 @@ MikModModule::PlayThread
    }
 
    Player_Stop();
+   sostavModule->unload();
 
    ReleaseMutex(mutex);
 
@@ -256,6 +257,13 @@ MikModModule::load
       throw MikModModuleException(L"Player_LoadMem failed");
 
    this->module = std::shared_ptr<MODULE>(module, MikModDeleter());
+}
+
+void
+MikModModule::unload
+(void)
+{
+   this->module = nullptr;
 }
 
 std::wstring
