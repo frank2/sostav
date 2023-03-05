@@ -68,14 +68,13 @@ MikModModule::MikModModule
 {
    MikModModule::Instances++;
 
-   this->bufferData = NULL;
-   this->bufferSize = 0;
-   this->playThread = NULL;
-   this->stopEvent = NULL;
-   this->wrap = false;
-   this->loop = true;
-   
-   this->setBuffer(module.getBuffer(), module.getBufferSize());
+   this->bufferData = module.bufferData;
+   this->bufferSize = module.bufferSize;
+   this->playThread = module.playThread;
+   this->stopEvent = module.stopEvent;
+   this->module = module.module;
+   this->wrap = module.wrap;
+   this->loop = module.loop;
 }
 
 MikModModule::MikModModule
