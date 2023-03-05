@@ -62,6 +62,7 @@ namespace Sostav
 
          bool isLoaded(void) const;
          void load(void);
+         void unload(void);
 
          std::wstring getSongName(void) const;
 
