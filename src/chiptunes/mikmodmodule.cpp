@@ -85,12 +85,6 @@ MikModModule::~MikModModule
    if (this->isPlaying())
       this->stop();
 
-   if (this->module != NULL)
-      Player_Free(this->module);
-
-   if (this->bufferData != NULL)
-      HeapFree(GetProcessHeap(), NULL, this->bufferData);
-
    MikModModule::Instances--;
 
    if (MikModModule::Instances == 0 && MikModModule::Initialized)
@@ -113,8 +107,9 @@ MikModModule::PlayThread
 
    if (!sostavModule->isLoaded())
       sostavModule->load();
-      
+
    Player_Start(sostavModule->getModule());
+   Player_SetPosition(0);
 
    while (Player_Active())
    {
@@ -200,20 +195,18 @@ void
 MikModModule::setBuffer
 (LPBYTE bufferData, size_t bufferSize)
 {
-   if (this->bufferData != NULL)
+   if (this->bufferData != nullptr)
    {
-      HeapFree(GetProcessHeap(), NULL, bufferData);
-      this->bufferData = NULL;
+      this->bufferData = nullptr;
    }
 
-   if (this->module != NULL)
+   if (this->module != nullptr)
    {
-      Player_Free(this->module);
-      this->module = NULL;
+      this->module = nullptr;
    }
 
-   this->bufferData = (LPBYTE)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, bufferSize);
-   CopyMemory(this->bufferData, bufferData, bufferSize);
+   this->bufferData = std::shared_ptr<BYTE>(new BYTE[bufferSize]);
+   CopyMemory(this->bufferData.get(), bufferData, bufferSize);
 
    this->bufferSize = bufferSize;
 }
@@ -222,7 +215,7 @@ LPBYTE
 MikModModule::getBuffer
 (void) const
 {
-   return this->bufferData;
+   return this->bufferData.get();
 }
 
 size_t
@@ -236,14 +229,14 @@ MODULE *
 MikModModule::getModule
 (void) const
 {
-   return this->module;
+   return this->module.get();
 }
 
 bool
 MikModModule::isLoaded
 (void) const
 {
-   return this->module != NULL;
+   return this->module != nullptr;
 }
 
 void
@@ -253,13 +246,16 @@ MikModModule::load
    if (!MikModModule::Initialized)
       this->init();
 
-   this->module = Player_LoadMem((const char *)this->bufferData
-                                 ,this->bufferSize
-                                 ,64
-                                 ,0);
+   MODULE *module = Player_LoadMem((const char *)this->bufferData.get()
+                                   ,this->bufferSize
+                                   ,64
+                                   ,0);
+                    
 
-   if (this->module == NULL)
+   if (module == nullptr)
       throw MikModModuleException(L"Player_LoadMem failed");
+
+   this->module = std::shared_ptr<MODULE>(module, MikModDeleter());
 }
 
 std::wstring
@@ -270,9 +266,9 @@ MikModModule::getSongName
 
    if (this->isLoaded())
       return converter.from_bytes(this->module->songname);
-   else if (this->bufferData != NULL)
+   else if (this->bufferData != nullptr)
    {
-      char *title = Player_LoadTitleMem((const char *)this->bufferData, this->bufferSize);
+      char *title = Player_LoadTitleMem((const char *)this->bufferData.get(), this->bufferSize);
 
       return converter.from_bytes(title);
    }

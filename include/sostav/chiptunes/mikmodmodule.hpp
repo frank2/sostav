@@ -6,6 +6,7 @@
 
 #include <codecvt>
 #include <locale>
+#include <memory>
 #include <string>
 
 #include <sostav/exception.hpp>
@@ -16,6 +17,13 @@ namespace Sostav
 {
    namespace Chiptunes
    {
+      struct MikModDeleter
+      {
+         void operator()(MODULE *module) {
+            Player_Free(module);
+         }
+      };
+      
       class MikModModuleException : public Exception
       {
       public:
@@ -26,10 +34,10 @@ namespace Sostav
       {
       protected:
          size_t bufferSize;
-         LPBYTE bufferData;
+         std::shared_ptr<BYTE> bufferData;
          HANDLE playThread;
          HANDLE stopEvent;
-         MODULE *module;
+         std::shared_ptr<MODULE> module;
 
          static int Instances;
          static bool Initialized;
