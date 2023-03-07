@@ -57,6 +57,10 @@ ImageWindow::paint
    this->drawImage(context);
 }
 
+/* for some reason the optimizer mangles this code and causes the call to BitBlt to fail
+   in a really weird way-- GetLastError() is useless and I don't feel like digging into
+   NtGdiBitBlt to figure out where it's failing */
+#pragma optimize("", off)
 void
 ImageWindow::drawImage
 (HDC context)
@@ -74,10 +78,13 @@ ImageWindow::drawImage
    renderedImage = this->image.renderTransparency(this->getBGColor());
    SelectObject(imageContext, renderedImage.getBitmapHandle());
    imageSize = this->image.getImageSize();
-   BitBlt(context, 0, 0, imageSize.cx, imageSize.cy, imageContext, 0, 0, SRCCOPY);
+
+   if (!BitBlt(context, 0, 0, imageSize.cx, imageSize.cy, imageContext, 0, 0, SRCCOPY))
+      ImageWindowException(L"BitBlt failed");
 
    ReleaseDC(NULL, imageContext);
 }
+#pragma optimize("", on)
 
 LayeredImageWindow::LayeredImageWindow
 (Window *parent, std::wstring className, Image image)
